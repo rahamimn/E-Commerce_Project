@@ -1,12 +1,18 @@
-var mongoose = require('mongoose');
+const mongoose = require('mongoose');
 import express = require('express');
 
-i
-import { EDESTADDRREQ } from 'constants';
-import { usersApi } from './usersApi/usersApi';
+// import { EDESTADDRREQ } from 'constants';
+// import { usersApi } from './usersApi/usersApi';
 import {usersApiRouter} from './usersApi/userRoutes';
+require('dotenv').config();
 
-mongoose.connect('mongodb+srv://adir:aDir1701@e-commerce-lxzpz.mongodb.net/new2?retryWrites=true', {useNewUrlParser: true});
+const dbHost = process.env.DB_HOST;
+const dbName = process.env.DB_NAME;
+const dbUser = process.env.DB_USER;
+const dbPassword = process.env.DB_PASSWORD;
+console.log('connection to :' + dbName);
+mongoose.connect('mongodb+srv://'+dbUser+':'+dbPassword+'@'+dbHost+'/'+dbName+
+                    '?retryWrites=true', {useNewUrlParser: true});
 
 const app = express();
 app.use(usersApiRouter);
@@ -14,7 +20,7 @@ app.use(usersApiRouter);
 //app.use(productsApiRouter);
 //app.use(oredersApiRouter);
 
-const port = 3000
+const port = 3000;
 app.listen(port, () => console.log(`listening on port ${port}!`));
 
 
