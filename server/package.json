@@ -6,7 +6,8 @@
     "build": "tsc --watch",
     "start": "tsc && node dist/src/app.js",
     "test": "jest --watchAll",
-    "cover": "jest --coverage"
+    "cover": "jest --coverage",
+    "debug": "tsc && ndb dist/src/app.js"
   },
   "author": "",
   "license": "ISC",
