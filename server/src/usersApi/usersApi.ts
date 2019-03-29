@@ -40,9 +40,23 @@ export class usersApi implements UsersApi{
         //TODO        
     }
 
+    setUserAsStoreOwner(){
+        //TODO        
+    }
+    
+    setUserAsStoreManager(){
+        //TODO        
+    }
+    
     getNotifications(){
         //TODO
     } 
-    
+
+    async removeRole(userId, userIdRemove, storeId){
+        const role = await RoleModel.findOne({ ofUser: userIdRemove, store: storeId });
+        if(role && role.appointor === userId)
+            await role.delete(true);    
+    } 
+
 
 }

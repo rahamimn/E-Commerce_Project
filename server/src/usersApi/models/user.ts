@@ -1,61 +1,57 @@
 
-import { prop, Typegoose, InstanceType, instanceMethod, arrayProp, Ref } from 'typegoose';
-import {Role} from './role';
+import {RoleModel} from './role';
+import {CartModel} from './cart';
+import {MonArray} from '../../../types/moongooseArray';
+import { Model, Document} from 'mongoose';
+import { Schema } from 'inspector';
+import { ObjectID, ObjectId } from 'bson';
+var mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
-export class User extends Typegoose {
-
-    @prop({ required: true })
-    name?: string;
-
-    @prop()
-    email?: string;
-
-    @prop({ required: true })
-    password?: string;
-
-    @arrayProp({itemsRef: Role, required: true ,default:[]})
-    roles?:  Ref<Role>[];
-
-    @prop({ ref: Role })
-    role?: Ref<Role>
-    
-    @instanceMethod
-    public changeName(this: InstanceType<User>, name: string) {
-      this.name = name || "blabla";
-    }
-
-    @instanceMethod
-    public setRole(this: InstanceType<User>, role: Role) {
-      if(this.roles)
-        this.roles.push(role) ;
-      else
-        this.roles = [role];
-
-    }
-
-    @instanceMethod
-    public async getMinCode(this: InstanceType<User>) {
-      let playerWithItems = await this.populate({
-        path: 'roles',
-        model: 'Role'
-      }).execPopulate();
-
-      let mini = 0 ;
-      if(playerWithItems.roles) 
-          mini = playerWithItems.roles.reduce((prev, role) => {
-            if(isRole(role) && role.code){
-              return min(prev, role.code)
-            }
-            else 
-              return prev;
-          },10000)
-      return mini;
-    }
-
+interface IUser{
+  userName?:   String,
+  password?:   String,
+  salt?: String,
+  firstName?:  String,
+  lastName?:  String,
+  email?: String,
+  isRegisteredUser?: Boolean,
+  isDeactivated?: Boolean,
+  roles: MonArray<ObjectID>,
+  carts : MonArray<ObjectID>,
+  notifications: String[],
+  messages: MonArray<ObjectID>, 
 }
-export const UserModel =  new User().getModelForClass(User);
+
+export interface IUserModel extends IUser, Document{
+  addRole(id: ObjectId): Model<IUserModel>,
+  removeRole(id: ObjectId): Model<IUserModel>,
+}
+
+export const userScheme = new Schema({
+  userName:  {type:String , unique: true , 
+    required: () => this.isRegisteredUser },
+  password:   {type:String ,
+    required: () => this.isRegisteredUser },
+  salt:   {type:String , 
+    required: () => this.isRegisteredUser },
+  firstName:  String,
+  lastName:  String,
+  email: String,
+  isRegisteredUser: {type: Boolean},
+  isDeactivated: Boolean,
+  roles: [{type: Schema.Types.ObjectId, ref: 'Role', default:[] }],
+  carts : [{type: Schema.Types.ObjectId, ref: 'Cart', default:[] }],
+  notifications: [{type: String}],
+  Messages: [{type: Schema.Types.ObjectId, ref: 'Message', default:[] }]
+});
+
+export let UserModel : Model<IUserModel>
+try {
+  UserModel = mongoose.model('User');
+} catch (error) {
+  UserModel =  mongoose.model('User',userScheme);
+}
 
 
-const min = (a:number, b:number) => a < b ? a: b; 
-
-const isRole = (role: any): role is Role => true;
+const isIUserModel = (a: any ):IUserModel => a;
