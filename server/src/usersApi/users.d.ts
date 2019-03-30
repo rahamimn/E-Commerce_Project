@@ -1,11 +1,13 @@
+import {ObjectId} from "bson";
+
 export interface UsersApi{
-    login: (username: string, password: string) => number,
-    register: (username: string, password: string) => number,
-    logout: () => void,
+    login: (userName: string, password: string) => number,
+    register: (userName: string, password: string) => number,
+    logout: (userName: string) => number,
+    addProductToCart:(userId: ObjectId, storeID: ObjectId, productId: ObjectId, quantity: number) => number,
+    updateCart: () => void,
     deleteUser: () => void,
-    update: () => void,
     setUserAsSystemAdmin: () => void,
-    addProductToCart:() => void,
     sendMessage: () => void,
     getMessages: () => void,
     getNotifications: () => void

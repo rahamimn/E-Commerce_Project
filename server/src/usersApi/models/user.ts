@@ -4,8 +4,14 @@ import {Role} from './role';
 
 export class User extends Typegoose {
 
-    @prop({ required: true })
-    name?: string;
+    @prop({ required: true , unique:true })
+    userName?: string;
+
+    @prop()
+    firstName?: string;
+
+    @prop()
+    lastName?: string;
 
     @prop()
     email?: string;
@@ -13,11 +19,17 @@ export class User extends Typegoose {
     @prop({ required: true })
     password?: string;
 
+    @prop({ required: true })
+    salt?: string;
+
+    @prop({default: true })
+    isActivated?: boolean;
+
     @arrayProp({itemsRef: Role, required: true ,default:[]})
     roles?:  Ref<Role>[];
 
     @prop({ ref: Role })
-    role?: Ref<Role>
+    role?: Ref<Role>;
     
     @instanceMethod
     public changeName(this: InstanceType<User>, name: string) {
@@ -48,7 +60,7 @@ export class User extends Typegoose {
             }
             else 
               return prev;
-          },10000)
+          },10000);
       return mini;
     }
 
