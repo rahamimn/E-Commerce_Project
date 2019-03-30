@@ -16,8 +16,16 @@ export const USER_EXIST = 1;
 export const BAD_PASSWORD = 2;
 export const BAD_USERNAME = 1;
 
+export const OPEN_STORE = 1;
+export const CLOSE_STORE = 2;
+export const CLOSE_STORE_ADMIN = 3;
+
+
+
+
 // flags
 export const CREATE_SCHEMA = false;
+export const TEST_MODE = true;
 
 //error messages
 export const ERR_PARAMS_MSG ='did not received all of the params'
