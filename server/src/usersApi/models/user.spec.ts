@@ -6,7 +6,7 @@ describe('User model',() => {
   describe('test with db check invariant',() => {
 
     beforeAll(()=>{ //change to testDB
-      mongoose.connect('mongodb+srv://adir:aDir1701@e-commerce-lxzpz.mongodb.net/userTest?retryWrites=true', {useNewUrlParser: true});
+        mongoose.connect('mongodb://localhost:27017/' + process.env.DB_TEST_NAME, {useNewUrlParser: true});
     });
 
     afterAll(()=>{
