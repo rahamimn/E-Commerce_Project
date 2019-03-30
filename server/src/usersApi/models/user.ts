@@ -29,7 +29,7 @@ export interface IUserModel extends IUser, Document{
 }
 
 export const userScheme = new Schema({
-  userName:  {type:String , unique: true ,
+  userName:  {type:String , unique: true, sparse: true ,
     required: () => this.isRegisteredUser },
   password:   {type:String ,
     required: () => this.isRegisteredUser },

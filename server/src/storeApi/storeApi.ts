@@ -1,7 +1,7 @@
-import { MonArray } from "../../../types/moongooseArray";
+import { MonArray } from "../../types/moongooseArray";
 import { ObjectId } from "bson";
-import { StoreModel } from "./store";
-import { OK_STATUS, BAD_USERNAME } from "../../../consts";
+import { StoreModel } from "./models/store";
+import { OK_STATUS, BAD_USERNAME } from "../consts";
 
 export class StoresApi implements StoresApi {
     disableStore: (adminId: string, storeId: string) => void;

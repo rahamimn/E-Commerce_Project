@@ -20,6 +20,7 @@
     "@types/mongoose": "^5.3.23",
     "chance": "^1.0.18",
     "jest": "^24.5.0",
+    "mongodb-memory-server": "^4.2.1",
     "ts-jest": "^24.0.0",
     "typescript": "^3.3.4000"
   },
