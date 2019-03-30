@@ -2,11 +2,9 @@ import { UsersApi } from "./users";
 import {User, UserModel} from './models/user';
 // import {RoleModel } from './models/role';
 // import {CartModel } from './models/cart';
-import * as Constants from "../../consts";
+import * as Constants from "../consts";
 import {ObjectId} from "bson";
 import bcrypt = require('bcryptjs');
-// const path = require('path');
-// require('dotenv').config({ path: path.resolve(__dirname, '../../../.env') });
 
 function verifyPassword(candidatePassword:string, salt: string, userPassword: string){
     const candidateHashedPassword = usersApi.hashPassword(candidatePassword,salt);
