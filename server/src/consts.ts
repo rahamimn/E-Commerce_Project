@@ -18,3 +18,6 @@ export const BAD_USERNAME = 1;
 
 // flags
 export const CREATE_SCHEMA = false;
+
+//error messages
+export const ERR_PARAMS_MSG ='did not received all of the params'

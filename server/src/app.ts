@@ -4,8 +4,8 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
-
 import {usersApiRouter} from './usersApi/userRoutes';
+
 
 require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
 const dbHost = process.env.DB_HOST;

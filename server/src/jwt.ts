@@ -18,11 +18,9 @@ const verifyOptions = {
     algorithm: "RS256"
 };
 
-export function createToken (userId = undefined, storeId = undefined, productId = undefined){
+export function createToken (userId){
     const payload = {
-        userId: userId,
-        storeId: storeId,
-        productId: productId
+        userId: userId
     };
     try {
         return jwt.sign(payload, privateKEY, signOptions);
@@ -37,10 +35,10 @@ export function verifyToken (token){
     try {
         const legit = jwt.verify(token, publicKEY, verifyOptions);
         console.log("\nJWT verification result: " + JSON.stringify(legit));
-        return true
+        return legit
     }
     catch (err){
         console.log(err);
-        return false
+        return null
     }
 }
