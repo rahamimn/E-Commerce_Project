@@ -1,6 +1,6 @@
 import {usersApi} from "./usersApi";
 import {usersApi} from "./usersApi";
-import * as Constants from "../../consts";
+import * as Constants from "../consts";
 import express = require('express');
 import {createToken, verifyToken} from "../jwt";
 

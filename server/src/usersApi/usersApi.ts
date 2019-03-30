@@ -2,7 +2,7 @@ import { UsersApi } from "./users";
 import {User, UserModel} from './models/user';
 // import {RoleModel } from './models/role';
 // import {CartModel } from './models/cart';
-import * as Constants from "../../consts";
+import * as Constants from "../consts";
 import {ObjectId} from "bson";
 import bcrypt = require('bcryptjs');
 // const path = require('path');
