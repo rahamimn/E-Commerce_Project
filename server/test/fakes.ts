@@ -38,6 +38,6 @@ export const fakeCart = (opt: any = {}) => {
         id: genObjectId(),
         ofUser: opt.ofUser || genObjectId(),
         //store: opt.store || genObjectId(),
-        productAmount: opt.productAmount || [],
+        items: opt.items || [],
     });
 }
