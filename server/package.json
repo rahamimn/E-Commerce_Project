@@ -5,8 +5,8 @@
   "scripts": {
     "build": "tsc --watch",
     "start": "tsc && node dist/src/app.js",
-    "test": "jest --watchAll",
-    "cover": "jest --coverage",
+    "test": "tsc && jest --watchAll",
+    "cover": "tsc && jest --coverage",
     "debug": "tsc && ndb dist/src/app.js"
   },
   "author": "",

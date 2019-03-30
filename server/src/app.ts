@@ -22,10 +22,6 @@ console.log('connection to :' + dbName);
 mongoose.connect('mongodb+srv://'+dbUser+':'+dbPassword+'@'+dbHost+'/'+dbName+
                     '?retryWrites=true', {useNewUrlParser: true});
 
-if(Constants.CREATE_SCHEMA){
-    createSchema();
-}
-
 const app = express();
 
 //express extensions

@@ -1,33 +1,29 @@
-import {UserModel} from './user';
-import Chance from 'chance';
-import {fakeRole} from '../../../test/fakes'
+import {fakeUser} from '../../../test/fakes';
+var mongoose = require('mongoose');
+
 describe('User model',() => {
 
-  const chance = new Chance();
+  describe('test with db check invariant',() => {
 
-  it('user changeName', async () => {
-    const someName = chance.name();
-
-    const user = new UserModel({
-      name: chance.name(),
-      password: chance.animal()
+    beforeAll(()=>{ //change to testDB
+      mongoose.connect('mongodb+srv://adir:aDir1701@e-commerce-lxzpz.mongodb.net/userTest?retryWrites=true', {useNewUrlParser: true});
     });
 
-    user.changeName(someName);
-
-    expect(user.name);
-  });
-
-  it('user get Min', async () => {
-
-    const user = new UserModel({
-      name: chance.name(),
-      password: chance.animal()
+    afterAll(()=>{
+      mongoose.connection.db.dropCollection('user');
+      mongoose.disconnect();
     });
 
-    user.roles = [fakeRole({code: 5}),fakeRole({code: 10})];
-
-    expect(user.getMinCode()).toBe(5);
+    it('invariant keep', async done => {
+      try{
+        let user = fakeUser({isRegisteredUser: true });
+        await user.save();
+        fail();
+      }catch(e){
+        done();
+      }
+    });
   });
-
+  
+  
 });

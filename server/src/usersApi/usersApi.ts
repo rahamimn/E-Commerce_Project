@@ -77,16 +77,35 @@ export class usersApi implements UsersApi{
     }
 
     static deleteUser(){
-        //TODO   
+        //TODO
     }
 
     static setUserAsSystemAdmin(){
-        //TODO        
+        //TODO
+    }
+
+    static getNotifications(){
+    setUserAsSystemAdmin(){
+        //TODO
+    }
+
+    static setUserAsStoreOwner(){
+        //TODO
+    }
+
+    static setUserAsStoreManager(){
+        //TODO
     }
 
     static getNotifications(){
         //TODO
-    } 
-    
+    }
+
+    static async removeRole(userId, userIdRemove, storeId){
+        const role = await RoleModel.findOne({ ofUser: userIdRemove, store: storeId });
+        if(role && role.appointor === userId)
+            await role.delete(true);
+    }
+
 
 }
