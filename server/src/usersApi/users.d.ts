@@ -13,6 +13,6 @@ export interface IUsersApi{
     sendMessage: () => void,
     getMessages: () => void,
     popNotifications: (userId:String) => Promise<String[]>,
-    removeRole: (userId:number , userNameRemove:number, storeIdRemove:number) => Promise<void>,
+    removeRole: (userId:number , userIdRemove:number, storeIdRemove:number) => Promise<void>,
     updatePermissions: (userId:String, appointedUserName:String, storeId:String, permissions: String[]) => Promise<number>
 }

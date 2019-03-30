@@ -202,8 +202,7 @@ export class UsersApi implements IUsersApi{
         return notifications;
     } 
 
-    async removeRole(userId, userNameRemove, storeId){
-        const userIdRemove = userNameRemove //todo get id from name
+    async removeRole(userId, userIdRemove, storeId){
         const role = await RoleModel.findOne({ ofUser: userIdRemove, store: storeId });
         if(role && role.appointor === userId)
             await role.delete(true);
