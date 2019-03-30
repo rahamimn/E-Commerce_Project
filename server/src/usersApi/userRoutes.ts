@@ -1,12 +1,15 @@
-import {usersApi} from "./usersApi";
-import {usersApi} from "./usersApi";
+import {UsersApi} from "./usersApi";
+
 import * as Constants from "../consts";
 import express = require('express');
 import {createToken, verifyToken} from "../jwt";
 
 export const usersApiRouter = express.Router();
 
+const usersApi = new UsersApi();
+
 usersApiRouter.get('/usersApi/login', login);
+
 async function login(req: express.Request, res: express.Response) {
     if (req.body.userName == undefined || req.body.password == undefined)
         res.send({response: Constants.MISSING_PARAMETERS, errorMsg: 'did not received user or password'});
@@ -15,6 +18,7 @@ async function login(req: express.Request, res: express.Response) {
         if (response.err)
             res.send(response);
         else {
+//@ts-ignore
             req.session.userId = await createToken('' + response.user._id);
             res.send({response: response.status});
         }
@@ -36,7 +40,9 @@ async function register(req: express.Request, res: express.Response) {
 usersApiRouter.get('/usersApi/logout', logout);
 
 function logout(req: express.Request, res: express.Response) {
+//@ts-ignore    
     if (verifyToken(req.session.userId)) {
+//@ts-ignore  
         req.session.userId = null;
         res.send({status: Constants.OK_STATUS});
     }
