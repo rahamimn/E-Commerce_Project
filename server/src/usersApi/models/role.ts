@@ -2,7 +2,10 @@ import {UserModel} from './User';
 import { Model, Document} from 'mongoose';
 import { ObjectID } from 'bson';
 import { MonArray } from '../../../types/moongooseArray';
+import {STORE_OWNER,STORE_MANAGER} from '../../consts';
+
 var mongoose = require('mongoose');
+
 var Schema = mongoose.Schema;
 
 interface IRole {
@@ -11,6 +14,7 @@ interface IRole {
 //  stores: ObjectID;
   appointor: ObjectID;
   appointees:  MonArray<ObjectID>;
+  permissions: MonArray<String>;
 }
 export interface IRoleModel extends IRole, Document{
   addAppointee(appointee: ObjectID): Model<IRoleModel>,
@@ -20,11 +24,13 @@ export interface IRoleModel extends IRole, Document{
 
 const roleScheme = new Schema({
 
-  name: {type: String, required: true} ,
+  name: {type: String, required: true, } ,
   ofUser: {type: Schema.Types.ObjectId, ref: 'User', required: true },
-  //store: {type: Schema.Types.ObjectId, ref: 'Store', required: true },
+  //store: {type: Schema.Types.ObjectId, ref: 'Store', 
+  //  required: () => [STORE_OWNER, STORE_MANGER].find(this.name)},
   appointor: {type: Schema.Types.ObjectId, ref: 'Role', required: true },
-  appointees: [{type: Schema.Types.ObjectId, ref: 'User', required: true, default:[] }],
+  permissions: [{type:String, default:[]}],
+  appointees: [{type: Schema.Types.ObjectId, ref: 'Role', required: true, default:[] }],
 });
 
 roleScheme.index({ofUser:1/*,store:1*/ },{unique:true})

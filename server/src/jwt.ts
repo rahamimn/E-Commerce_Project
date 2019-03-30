@@ -1,8 +1,9 @@
 const jwt  = require('jsonwebtoken');
 const fs = require ('fs');
 
-const privateKEY  = fs.readFileSync('../../private.key', 'utf8');
-const publicKEY  = fs.readFileSync('../../public.key', 'utf8');
+const path = require('path');
+const privateKEY  = fs.readFileSync(path.resolve(__dirname, '../../private.key'), 'utf8');
+const publicKEY  = fs.readFileSync(path.resolve(__dirname, '../../public.key'), 'utf8');
 
 const i  = 'SANAS group';          // Issuer
 // SIGNING OPTIONS

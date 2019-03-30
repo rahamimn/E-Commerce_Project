@@ -8,7 +8,6 @@ const cookieParser = require('cookie-parser');
 import {usersApiRouter} from './usersApi/userRoutes';
 import * as Constants from "../consts";
 // import {CREATE_SCHEMA} from "../consts";
-import {createSchema} from "./createSchema";
 
 
 require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
