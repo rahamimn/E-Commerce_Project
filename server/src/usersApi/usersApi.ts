@@ -1,11 +1,9 @@
 import { IUsersApi } from "./users";
 // import {RoleModel } from './models/role';
 // import {CartModel } from './models/cart';
-import * as Constants from "../../consts";
+import * as Constants from "../consts";
 import {ObjectId} from "bson";
 import bcrypt = require('bcryptjs');
-// const path = require('path');
-// require('dotenv').config({ path: path.resolve(__dirname, '../../../.env') });
 
 const verifyPassword = (candidatePassword:String, salt: String, userPassword: String) => {
     const candidateHashedPassword = hashPassword(candidatePassword,salt);
@@ -27,7 +25,7 @@ export class UsersApi implements IUsersApi{
         try {
             const user = await UserModel.findOne({userName});
             if(verifyPassword(password, user.salt, user.password)) {
-                return{status: Constants.OK_STATUS, user:user};
+                return{status: Constants.OK_STATUS, user:user._id};
             }
             else {
                 return {status:Constants.BAD_PASSWORD, err:"bad password"}
@@ -106,7 +104,8 @@ export class UsersApi implements IUsersApi{
     }
 
 
-    async setUserAsSystemAdmin(userId, appointedUserId){
+    async setUserAsSystemAdmin(userId, appointedUserName){
+        const appointedUserId = appointedUserName //todo get id from name
         const appointorRole = await RoleModel.findOne({ofUser:userId , name:ADMIN});
         if(!appointorRole)
             return -1;
@@ -125,7 +124,8 @@ export class UsersApi implements IUsersApi{
     }    
     
 
-    async setUserAsStoreOwner(userId, appointedUserId, storeId){
+    async setUserAsStoreOwner(userId, appointedUserName, storeId){
+        const appointedUserId = appointedUserName //todo get id from name
         let newRole;
         const appointorRole = await RoleModel.findOne({ofUser:userId, store:storeId , name:STORE_OWNER});
         if(!appointorRole)
@@ -150,7 +150,8 @@ export class UsersApi implements IUsersApi{
         return 0;
     }
     
-    async setUserAsStoreManager(userId, appointedUserId, storeId, permissions){
+    async setUserAsStoreManager(userId, appointedUserName, storeId, permissions){
+        const appointedUserId = appointedUserName //todo get id from name
         let newRole;
         const appointorRole = await RoleModel.findOne({ofUser:userId, store:storeId , name:STORE_OWNER});
         if(!appointorRole)
@@ -174,8 +175,8 @@ export class UsersApi implements IUsersApi{
         return 0;    
     }
 
-    async updatePermissions(userId, appointedUserId, storeId, permissions){
-
+    async updatePermissions(userId, appointedUserName, storeId, permissions){
+        const appointedUserId = appointedUserName //todo get id from name
         const existRole = await RoleModel.findOne({ofUser:appointedUserId, store:storeId});
 
         if(!existRole)
@@ -201,7 +202,8 @@ export class UsersApi implements IUsersApi{
         return notifications;
     } 
 
-    async removeRole(userId, userIdRemove, storeId){
+    async removeRole(userId, userNameRemove, storeId){
+        const userIdRemove = userNameRemove //todo get id from name
         const role = await RoleModel.findOne({ ofUser: userIdRemove, store: storeId });
         if(role && role.appointor === userId)
             await role.delete(true);
