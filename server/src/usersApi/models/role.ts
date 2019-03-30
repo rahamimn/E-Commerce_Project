@@ -11,7 +11,7 @@ var Schema = mongoose.Schema;
 interface IRole {
   name: String
   ofUser: ObjectID;
-//  stores: ObjectID;
+  store: ObjectID;
   appointor: ObjectID;
   appointees:  MonArray<ObjectID>;
   permissions: MonArray<String>;
@@ -26,8 +26,8 @@ const roleScheme = new Schema({
 
   name: {type: String, required: true, } ,
   ofUser: {type: Schema.Types.ObjectId, ref: 'User', required: true },
-  //store: {type: Schema.Types.ObjectId, ref: 'Store', 
-  //  required: () => [STORE_OWNER, STORE_MANGER].find(this.name)},
+  store: {type: Schema.Types.ObjectId, ref: 'Store', 
+   required: () => [STORE_OWNER, STORE_MANAGER].some(name => this.name)},
   appointor: {type: Schema.Types.ObjectId, ref: 'Role', required: true },
   permissions: [{type:String, default:[]}],
   appointees: [{type: Schema.Types.ObjectId, ref: 'Role', required: true, default:[] }],

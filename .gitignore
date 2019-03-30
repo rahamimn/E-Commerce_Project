@@ -5,3 +5,5 @@
 /server/package-lock.json
 
 .env
+
+private.key
