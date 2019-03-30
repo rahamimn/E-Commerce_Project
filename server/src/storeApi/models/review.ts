@@ -8,7 +8,6 @@ const Schema = mongoose.Schema;
 
 
 interface IReview{
-  ID:   number,
   date:   Date,
   registeredUser: ObjectID, 
   rank:  number,
@@ -16,26 +15,22 @@ interface IReview{
 }
 
 export interface IReviewModel extends IReview, Document{
-  //deleted 2 func
-  addProduct(id: ObjectId): Model<IReviewModel>,
-  removeRole(id: ObjectId): Model<IReviewModel>,
 }
 
-export const storeScheme = new Schema({
-    ID:   {type: Number , unique: true, required: true },
+export const reviewScheme = new Schema({
     date:   {type: Date , required: true},
-    registeredUser: {type: ObjectID , required: true}, 
+    registeredUser: {type: Schema.Types.ObjectId, ref: 'User' , required: true}, 
     rank:  {type: Number ,  required: true },
-    comment:  {type: String ,  required: true },
+    comment:  {type: String },
 
 
 });
 
 export let ReviewModel : Model<IReviewModel>
 try {
-    ReviewModel = mongoose.model('User');
+    ReviewModel = mongoose.model('Review');
 } catch (error) {
-    ReviewModel =  mongoose.model('User',storeScheme);
+    ReviewModel =  mongoose.model('Review',reviewScheme);
 }
 
 

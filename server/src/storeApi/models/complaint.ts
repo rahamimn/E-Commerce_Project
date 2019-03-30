@@ -1,3 +1,4 @@
+import { UserModel } from './../../usersApi/models/user';
 
 import {MonArray} from '../../../types/moongooseArray';
 import { Model, Document} from 'mongoose';
@@ -8,32 +9,27 @@ const Schema = mongoose.Schema;
 
 
 interface IComplaint{
-  ID:   number,
   date:   Date,
-  type: string, 
-  user: string, 
+  user: ObjectID, 
+  order: string,
   body:  string,
 }
 
 export interface IComplaintModel extends IComplaint, Document{
-  //deleted 2 func
-  addProduct(id: ObjectId): Model<IComplaintModel>,
-  removeRole(id: ObjectId): Model<IComplaintModel>,
 }
 
-export const storeScheme = new Schema({
-    ID:   {type: Number , unique: true, required: true },
-    date:   {type: Date , required: true},
-    type: {type: String , required: true}, 
-    user:  {type: String ,  required: true },
+export const complaintScheme = new Schema({
+    date:   {type: Date , required: true}, 
+    user:  {type: Schema.Types.ObjectId, ref: 'User' ,  required: true },
+    order: {type: String ,  required: true },
     body:  {type: String ,  required: true },
 });
 
 export let ComplaintModel : Model<IComplaintModel>
 try {
-    ComplaintModel = mongoose.model('User');
+    ComplaintModel = mongoose.model('Complaint');
 } catch (error) {
-    ComplaintModel =  mongoose.model('User',storeScheme);
+    ComplaintModel =  mongoose.model('Complaint',complaintScheme);
 }
 
 

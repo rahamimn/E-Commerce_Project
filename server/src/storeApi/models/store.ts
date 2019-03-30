@@ -16,11 +16,7 @@ interface IStore{
   storState?: number,
 }
 
-export interface IStoreModel extends IStore, Document{
-  //deleted 2 func
-  addProduct(id: ObjectId): Model<IStoreModel>,
-  removeRole(id: ObjectId): Model<IStoreModel>,
-}
+export interface IStoreModel extends IStore, Document{ } //add methods here
 
 export const storeScheme = new Schema({
   name:   {type:String , unique: true },    

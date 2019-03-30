@@ -8,7 +8,7 @@ const Schema = mongoose.Schema;
 
 
 interface IMessage{
-  ID:   number,
+  date:   Date,
   from:   ObjectID,
   to: ObjectID, 
   title:  string,
@@ -16,15 +16,12 @@ interface IMessage{
 }
 
 export interface IMessageModel extends IMessage, Document{
-  //deleted 2 func
-  addProduct(id: ObjectId): Model<IMessageModel>,
-  removeRole(id: ObjectId): Model<IMessageModel>,
 }
 
-export const storeScheme = new Schema({
-  ID:   {type: Number , unique: true, required: true },
-  from:   {type: ObjectID , required: true } ,
-  to: {type: ObjectID , required: true } , 
+export const messageScheme = new Schema({
+  date:   {type: Date , required: true},
+  from:   {type: Schema.Types.ObjectId, ref: 'User'|| 'Store' , required: true } ,
+  to: {type: Schema.Types.ObjectId, ref: 'User'|| 'Store' , required: true } , 
   title:  {type: String , default: "" } ,
   body:  {type: String , default: "" },
 
@@ -32,9 +29,9 @@ export const storeScheme = new Schema({
 
 export let MessageModel : Model<IMessageModel>
 try {
-    MessageModel = mongoose.model('User');
+    MessageModel = mongoose.model('Message');
 } catch (error) {
-    MessageModel =  mongoose.model('User',storeScheme);
+    MessageModel =  mongoose.model('Message',messageScheme);
 }
 
 
