@@ -3,6 +3,7 @@ import Chance from 'chance';
 import {fakeRole,fakeUser } from '../../../test/fakes';
 import { RoleModel, IRoleModel } from './role';
 import { ObjectID } from 'bson';
+import { connectDB } from "../../../test/connectDbTest";
 var mongoose = require('mongoose');
 
 describe('Role model',() => {
@@ -11,8 +12,8 @@ describe('Role model',() => {
 
   describe('with connection to db', () => {
 
-    beforeAll(()=>{ //change to testDB
-      mongoose.connect('mongodb+srv://adir:aDir1701@e-commerce-lxzpz.mongodb.net/roleTest?retryWrites=true', {useNewUrlParser: true});
+    beforeAll(async ()=>{ //change to testDB
+      await connectDB()
     });
 
     afterAll(()=>{
@@ -73,9 +74,7 @@ describe('Role model',() => {
       await role1.save();
       role2.appointees.push(role3._id);
       await role2.save();
-      debugger;
-      console.log(role1,role2,role3);
-
+   
       await role1.delete(false);
       user1 = await UserModel.findById(user1._id);
       user2 = await UserModel.findById(user2._id);
