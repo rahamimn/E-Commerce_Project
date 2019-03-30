@@ -90,7 +90,7 @@ export class UsersApi implements IUsersApi{
           }]});
         }
       else {
-        cart.addItem(productId, amount);  
+        cart.addItem(productId, amount);
       }
       return ({status: Constants.OK_STATUS});
     }
@@ -165,13 +165,13 @@ export class UsersApi implements IUsersApi{
             appointor: appointorRole._id,
             permissions 
         });
-        
+
         appointedUser.roles.push(newRole._id);
         await appointedUser.save();
     
         appointorRole.appointees.push(newRole._id);
         await appointorRole.save();
-        return ({status: Constants.OK_STATUS});   
+        return ({status: Constants.OK_STATUS});
     }
 
     async updatePermissions(userId, appointedUserName, storeId, permissions){
@@ -201,7 +201,7 @@ export class UsersApi implements IUsersApi{
         return notifications;
     } 
 
-    async removeRole(userId, userIdRemove, storeId){[]      
+    async removeRole(userId, userIdRemove, storeId){[]
         const role = await RoleModel.findOne({ ofUser: userIdRemove, store: storeId });
         if(role && role.appointor === userId)
             await role.delete(true);

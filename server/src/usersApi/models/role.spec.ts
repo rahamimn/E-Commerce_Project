@@ -74,7 +74,9 @@ describe('Role model',() => {
       await role1.save();
       role2.appointees.push(role3._id);
       await role2.save();
-   
+      debugger;
+      console.log(role1,role2,role3);
+
       await role1.delete(false);
       user1 = await UserModel.findById(user1._id);
       user2 = await UserModel.findById(user2._id);
