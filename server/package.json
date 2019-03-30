@@ -5,8 +5,8 @@
   "scripts": {
     "build": "tsc --watch",
     "start": "tsc && node dist/src/app.js",
-    "test": "tsc && jest --watchAll",
-    "cover": "tsc && jest --coverage",
+    "test": "tsc && jest --watchAll spec.ts",
+    "cover": "tsc && jest --coverage spec.ts",
     "debug": "tsc && ndb dist/src/app.js"
   },
   "author": "",
@@ -33,6 +33,7 @@
     "fs": "0.0.1-security",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.4.19",
+    "promise-mock": "^2.1.0",
     "ts-loader": "^5.3.3",
     "tslint": "^5.14.0",
     "typegoose": "^5.6.0"

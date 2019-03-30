@@ -1,23 +1,27 @@
-import { UsersApi } from "./users";
-import {User, UserModel} from './models/user';
+import { IUsersApi } from "./users";
 // import {RoleModel } from './models/role';
 // import {CartModel } from './models/cart';
 import * as Constants from "../consts";
 import {ObjectId} from "bson";
 import bcrypt = require('bcryptjs');
 
-function verifyPassword(candidatePassword:string, salt: string, userPassword: string){
-    const candidateHashedPassword = usersApi.hashPassword(candidatePassword,salt);
+const verifyPassword = (candidatePassword:String, salt: String, userPassword: String) => {
+    const candidateHashedPassword = hashPassword(candidatePassword,salt);
     return candidateHashedPassword == userPassword;
 }
 
-export class usersApi implements UsersApi{
+const hashPassword = (password: String, salt: String) => {
+  return bcrypt.hashSync(password+process.env.HASH_SECRET_KEY, salt);
+}
 
-    static hashPassword(password: string, salt: string){
-        return bcrypt.hashSync(password+process.env.HASH_SECRET_KEY, salt);
-    }
+import {UserModel} from './models/user';
+import {RoleModel } from './models/role';
+import {CartModel } from './models/cart';
+import {STORE_OWNER,STORE_MANAGER,ADMIN} from '../consts';
 
-    static async login(userName:string ,password:string ){
+export class UsersApi implements IUsersApi{
+
+    async login(userName ,password){
         try {
             const user = await UserModel.findOne({userName});
             if(verifyPassword(password, user.salt, user.password)) {
@@ -31,16 +35,16 @@ export class usersApi implements UsersApi{
             return {status: Constants.BAD_USERNAME, err:"bad username"};
         }
     }
+   
 
-    static logout(userName){
+    async logout (userId){
         return Constants.OK_STATUS
     }
 
-
-    static async register(userName,password){
+    async register(userName,password){
         try {
             const salt = bcrypt.genSaltSync(10);
-            const hashedPassword = usersApi.hashPassword(password, salt);
+            const hashedPassword = hashPassword(password, salt);
             const newUserModel = new UserModel({
                 userName: userName,
                 salt:salt,
@@ -57,49 +61,145 @@ export class usersApi implements UsersApi{
         }
     }
 
-    static addProductToCart(userId: ObjectId, storeID: ObjectId, productId: ObjectId, quantity: number){
-        return {status: Constants.OK_STATUS}
-    }
-
-    static updateCart(){
+    updateUser(){
 
     }
 
+    updateCart(){
 
-    static sendMessage(){
+    }
+
+    sendMessage(){
         //TODO
     }
 
-    static getMessages(){
+    async addProductToCart(userId,storeId, productId, amount){
+      //const product = await ProductModel.findById(productId);
+      // if(!product)
+      //     return -1;
+      const cart = await CartModel.findOne({ofUser:userId, store: storeId});
+      
+      if(!cart){
+        await CartModel.create({
+          ofUser: userId,
+          store: storeId,
+          items:[{
+              product:productId,
+              amount
+          }]});
+        }
+      else {
+        cart.addItem(productId, amount);
+          
+      }
+      return 0;
+    }
+
+     getMessages(){
         //TODO
     }
 
-    static deleteUser(){
+    deleteUser(){
         //TODO
     }
 
-    static setUserAsSystemAdmin(){
-        //TODO
+
+    async setUserAsSystemAdmin(userId, appointedUserId){
+        const appointorRole = await RoleModel.findOne({ofUser:userId , name:ADMIN});
+        if(!appointorRole)
+            return -1;
+        const existRole = await RoleModel.findOne({ofUser:appointedUserId, store:ADMIN});
+        if(!existRole)
+            return -1;
+        
+        const newRole = await RoleModel.create({name:ADMIN, ofUser: appointedUserId , appointor: appointorRole._id });
+        const user = await UserModel.findById(appointedUserId);
+        user.roles.push(newRole._id);
+        await user.save();
+
+        appointorRole.appointees.push(newRole._id);
+        await appointorRole.save();
+        return 0;
+    }    
+    
+
+    async setUserAsStoreOwner(userId, appointedUserId, storeId){
+        let newRole;
+        const appointorRole = await RoleModel.findOne({ofUser:userId, store:storeId , name:STORE_OWNER});
+        if(!appointorRole)
+            return -1;
+        const existRole = await RoleModel.findOne({ofUser:appointedUserId, store:storeId});
+        if(existRole.name = STORE_OWNER)
+            return -1;
+        else if(existRole.name = STORE_MANAGER){
+            existRole.name = STORE_OWNER;
+            existRole.permissions.length = 0;
+            existRole.appointor = userId;
+            newRole = await existRole.save();
+        }
+        else{
+            newRole = await RoleModel.create({name:STORE_OWNER, ofUser: appointedUserId, store: storeId, appointor: appointorRole._id });
+            const user = await UserModel.findById(appointedUserId);
+            user.roles.push(newRole._id);
+            await user.save();
+        }
+        appointorRole.appointees.push(newRole._id);
+        await appointorRole.save();
+        return 0;
+    }
+    
+    async setUserAsStoreManager(userId, appointedUserId, storeId, permissions){
+        let newRole;
+        const appointorRole = await RoleModel.findOne({ofUser:userId, store:storeId , name:STORE_OWNER});
+        if(!appointorRole)
+            return -1;
+        if(await RoleModel.findOne({ofUser:appointedUserId, store:storeId}))
+            return -1;
+    
+        newRole = await RoleModel.create({
+            name:STORE_MANAGER,
+            ofUser: appointedUserId,
+            store: storeId,
+            appointor: appointorRole._id,
+            permissions 
+        });
+        const user = await UserModel.findById(appointedUserId);
+        user.roles.push(newRole._id);
+        await user.save();
+    
+        appointorRole.appointees.push(newRole._id);
+        await appointorRole.save();
+        return 0;    
     }
 
-    static getNotifications(){
-    setUserAsSystemAdmin(){
-        //TODO
-    }
+    async updatePermissions(userId, appointedUserId, storeId, permissions){
 
-    static setUserAsStoreOwner(){
-        //TODO
-    }
+        const existRole = await RoleModel.findOne({ofUser:appointedUserId, store:storeId});
 
-    static setUserAsStoreManager(){
-        //TODO
-    }
+        if(!existRole)
+            return -1;
 
-    static getNotifications(){
-        //TODO
-    }
+        const appointorRole = await RoleModel.findOne({ofUser:userId, store:storeId});
+        if(!appointorRole || !appointorRole.appointees.find(existRole._id))
+            return -1;
+        
+        existRole.permissions = permissions; 
+        await existRole.save();
 
-    static async removeRole(userId, userIdRemove, storeId){
+        return 0;    
+    }
+    
+    async popNotifications(userId){
+        const user = await UserModel.findById(userId);
+        const notifications =  user.notifications;
+        // @ts-ignore
+        user.notifications.length=[];
+        await user.save();
+
+        return notifications;
+    } 
+
+    async removeRole(userId, userIdRemove, storeId){
         const role = await RoleModel.findOne({ ofUser: userIdRemove, store: storeId });
         if(role && role.appointor === userId)
             await role.delete(true);

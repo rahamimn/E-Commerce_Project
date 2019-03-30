@@ -4,8 +4,10 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
+
 import {usersApiRouter} from './usersApi/userRoutes';
-import * as Constants from "consts";
+import * as Constants from "../consts";
+// import {CREATE_SCHEMA} from "../consts";
 
 
 require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
