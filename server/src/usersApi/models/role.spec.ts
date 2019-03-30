@@ -3,6 +3,7 @@ import Chance from 'chance';
 import {fakeRole,fakeUser } from '../../../test/fakes';
 import { RoleModel, IRoleModel } from './role';
 import { ObjectID } from 'bson';
+import { connectDB } from "../../../test/connectDbTest";
 var mongoose = require('mongoose');
 
 describe('Role model',() => {
@@ -11,8 +12,8 @@ describe('Role model',() => {
 
   describe('with connection to db', () => {
 
-    beforeAll(()=>{ //change to testDB
-        mongoose.connect('mongodb://localhost:27017/' + process.env.DB_TEST_NAME, {useNewUrlParser: true});
+    beforeAll(async ()=>{ //change to testDB
+      await connectDB()
     });
 
     afterAll(()=>{
