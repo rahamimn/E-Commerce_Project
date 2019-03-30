@@ -3,7 +3,7 @@ import {RoleModel} from '../src/usersApi/models/role'
 import { UserModel } from '../src/usersApi/models/user';
 import { CartModel } from '../src/usersApi/models/cart';
 import { ProductModel } from '../src/productApi/model/product';
-import { StoreModel } from '../src/storeApi/model/store';
+import { StoreModel } from '../src/storeApi/models/store';
 
 const chance = new Chance();
 var mongoose = require('mongoose');
