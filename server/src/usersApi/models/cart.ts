@@ -7,7 +7,7 @@ var Schema = mongoose.Schema;
 
 interface ICart {
   ofUser: ObjectID;
-//  stores: ObjectID;
+  store: ObjectID;
   items:  MonArray<{ product:ObjectId,amount: Number}>;
 }
 export interface ICartModel extends ICart, Document{
@@ -16,7 +16,7 @@ export interface ICartModel extends ICart, Document{
 
 const cartScheme = new Schema({
   ofUser: {type: Schema.Types.ObjectId, ref: 'User', required: true },
-  //store: {type: Schema.Types.ObjectId, ref: 'Store', required: true },
+  store: {type: Schema.Types.ObjectId, ref: 'Store', required: true },
   items: [ {
     product: {type: Schema.Types.ObjectId, ref: 'Product', required: true },
     amount:  {type: Number, required: true ,validation: value => value > 0 }
@@ -24,7 +24,7 @@ const cartScheme = new Schema({
 });
 cartScheme.methods.addItem = function (productId, amount){
     const _this = isIsCartModel(this);
-    const item = _this.items.filter( item => item.product === productId);
+    const item = _this.items.filter( item => item.product.equals(productId));
     if(item.length > 1)
       return -1;
     if(item.length === 0){

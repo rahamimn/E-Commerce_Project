@@ -40,7 +40,7 @@ export const fakeCart = (opt: any = {}) => {
     return new CartModel({
         id: genObjectId(),
         ofUser: opt.ofUser || genObjectId(),
-        //store: opt.store || genObjectId(),
+        store: opt.store || genObjectId(),
         items: opt.items || [],
     });
 }

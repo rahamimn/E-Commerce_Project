@@ -18,7 +18,7 @@ import {UserModel} from './models/user';
 import {RoleModel } from './models/role';
 import {CartModel } from './models/cart';
 import {STORE_OWNER,STORE_MANAGER,ADMIN} from '../consts';
-import { ProductModel } from "../productApi/model/product";
+import { ProductModel } from "../productApi/models/product";
 
 export class UsersApi implements IUsersApi{
 
@@ -70,16 +70,23 @@ export class UsersApi implements IUsersApi{
 
     }
 
-    sendMessage(){
-        //TODO
+    async getCarts(userId){
+        let user = await UserModel.findById(userId);
+        if(!user)
+            return ({status: Constants.BAD_REQUEST});
+        user = await user.populate('carts').execPopulate();
+        return ({status: Constants.OK_STATUS , carts: user.carts.toObject()});
     }
 
+  
+
     async addProductToCart(userId, storeId, productId, amount){
+        const cart = await CartModel.findOne({ofUser:userId, store: storeId});
       const product = await ProductModel.findById(productId);
       if(!product)
-      return ({status: Constants.BAD_REQUEST});
-      const cart = await CartModel.findOne({ofUser:userId, store: storeId});
-      
+        return ({status: Constants.BAD_REQUEST});
+
+ 
       if(!cart){
         await CartModel.create({
           ofUser: userId,
@@ -90,18 +97,14 @@ export class UsersApi implements IUsersApi{
           }]});
         }
       else {
+
         cart.addItem(productId, amount);  
+        await cart.save();
       }
+
       return ({status: Constants.OK_STATUS});
     }
 
-    getMessages(){
-        //TODO
-    }
-
-    deleteUser(){
-        //TODO
-    }
 
 
     async setUserAsSystemAdmin(userId, appointedUserName){
@@ -179,33 +182,53 @@ export class UsersApi implements IUsersApi{
         const existRole = await RoleModel.findOne({ofUser:appointedUser._id, store:storeId});
 
         if(!existRole)
-            return -1;
+            return {status: Constants.BAD_REQUEST};
 
         const appointorRole = await RoleModel.findOne({ofUser:userId, store:storeId});
-        if(!appointorRole || !appointorRole.appointees.find(existRole._id))
-            return -1;
+        console.log(appointorRole);
+        if(!appointorRole || !appointorRole.appointees.some(appointee => appointee.equals(existRole._id)))
+            return {status: Constants.BAD_REQUEST};
         
         existRole.permissions = permissions; 
         await existRole.save();
 
-        return 0;    
+        return {status: Constants.OK_STATUS };  
     }
     
     async popNotifications(userId){
+      
         const user = await UserModel.findById(userId);
-        const notifications =  user.notifications;
+        if(!user)
+            return {status: Constants.BAD_REQUEST};
+        const notifications =  user.notifications.slice(0);
         // @ts-ignore
         user.notifications.length=[];
         await user.save();
 
-        return notifications;
+        return {status: Constants.OK_STATUS , notifications};
     } 
 
     async removeRole(userId, userIdRemove, storeId){[]      
         const role = await RoleModel.findOne({ ofUser: userIdRemove, store: storeId });
+        if(!role)
+            return {status: Constants.BAD_REQUEST};
         if(role && role.appointor === userId)
             await role.delete(true);
+        return {status: Constants.OK_STATUS };     
+        
     }
+
+    sendMessage(){
+        //TODO
+    }
+    getMessages(){
+        //TODO
+    }
+
+    deleteUser(){
+        //TODO
+    }
+
 
 
 }
