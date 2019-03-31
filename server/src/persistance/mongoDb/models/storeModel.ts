@@ -1,7 +1,5 @@
 
 import { Model, Document} from 'mongoose';
-import { ObjectID, ObjectId } from 'bson';
-import { MonArray } from '../../../../types/moongooseArray';
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
