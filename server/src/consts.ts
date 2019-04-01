@@ -14,8 +14,7 @@ export const BAD_USERNAME = 1;
 
 // flags
 export const CREATE_SCHEMA = false;
-export const TEST_MODE = true;
-export const RUN_TEST_LOCAL = true;
+export const RUN_LOCAL = true;
 
 //error messages
 export const ERR_PARAMS_MSG ='did not received all of the params'
