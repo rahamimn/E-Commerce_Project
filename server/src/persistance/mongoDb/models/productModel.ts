@@ -43,5 +43,8 @@ try {
 } catch (error) {
     ProductModel = mongoose.model('Product',productScheme);
 }
+<<<<<<< HEAD
 
 const isProductModel = (a: any ):IProductModel => a; //NIR: What's this?
+=======
+>>>>>>> 0a63a8e5d8e5c012ef81ada24c744e88da47693a
