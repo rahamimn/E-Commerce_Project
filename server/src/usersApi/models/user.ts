@@ -4,6 +4,7 @@ export class User {
     constructor(base: any) {
         this._id = base._id;
         this._userName = base.userName;
+        this._password = base.password;
         this._salt = base.salt;
         this._firstName = base.firstName;
         this._lastName = base.lastName;
@@ -230,8 +231,7 @@ export class User {
        this.lastName = userDetails._lastName;
        this.email = userDetails._email;
     }
-    
-    
+
     private _id: String;
     private _userName:   String;
     private _password:   String;

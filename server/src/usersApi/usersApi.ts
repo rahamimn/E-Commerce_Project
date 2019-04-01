@@ -44,7 +44,7 @@ export class UsersApi implements IUsersApi{
         try {
             const salt = bcrypt.genSaltSync(10);
             const hashedPassword = hashPassword(password, salt);
-            await UserCollection.insert(new User({
+            const user = await UserCollection.insert(new User({
                 userName: userName,
                 salt:salt,
                 firstName: "debugName",
@@ -102,8 +102,6 @@ export class UsersApi implements IUsersApi{
         return ({status: Constants.OK_STATUS , carts});
     }
 
-  
-
     async addProductToCart(userId, storeId, productId, amount){
         const cart = await CartCollection.findOne({ofUser:userId, store: storeId});
       const product = await ProductCollection.findById(productId);
@@ -129,8 +127,6 @@ export class UsersApi implements IUsersApi{
       return ({status: Constants.OK_STATUS});
     }
 
-
-
     async setUserAsSystemAdmin(userId, appointedUserName){
         const appointedUser = await UserCollection.findOne({userName: appointedUserName});
         const appointorRole = await RoleCollection.findOne({ofUser:userId , name:ADMIN});
@@ -148,7 +144,6 @@ export class UsersApi implements IUsersApi{
         await RoleCollection.updateOne(appointorRole);
         return ({status: Constants.OK_STATUS});
     }    
-    
 
     async setUserAsStoreOwner(userId, appointedUserName, storeId){
         const appointedUser = await UserCollection.findOne({userName: appointedUserName});
@@ -175,7 +170,7 @@ export class UsersApi implements IUsersApi{
         await RoleCollection.updateOne(appointorRole);
         return ({status: Constants.OK_STATUS});
     }
-    
+
     async setUserAsStoreManager(userId, appointedUserName, storeId, permissions){
         const appointedUser = await UserCollection.findOne({userName: appointedUserName});
         const appointorRole = await RoleCollection.findOne({ofUser:userId, store:storeId , name:STORE_OWNER});
@@ -240,7 +235,6 @@ export class UsersApi implements IUsersApi{
         
     }
 
-
     async getMessages(userId){
         let user = await UserCollection.findById(userId);
         if(!user)
@@ -257,6 +251,5 @@ export class UsersApi implements IUsersApi{
     sendMessage(){
         //TODO
     }
-
 
 }
