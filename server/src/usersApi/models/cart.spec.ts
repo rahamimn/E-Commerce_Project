@@ -29,6 +29,30 @@ describe('Cart model',() => {
 
     expect(cart.items[0].product).toEqual(productId);
     expect(cart.items[0].amount).toEqual(amount*2);
-  })
+  });
+
+  it('get cart details', () => {
+    const cart = fakeCart({});
+
+    expect(cart.getDetails()).toMatchObject({
+      _id: cart.id,
+      _store: cart.store,
+      _items: cart.items,
+    });
+
+  });
+
+  it('update relevant details onlt items should updated', () => {
+    const newDetils = {
+      _items: [{product:new ObjectId(), amount:6}],
+      _store: new ObjectId(),
+    };
+    const cart = fakeCart({});
+    
+    cart.updateDetails(newDetils);
+
+    expect(cart.items.length).toEqual(1);
+    expect(cart.store).not.toEqual(newDetils._store);
+  });
 
 });

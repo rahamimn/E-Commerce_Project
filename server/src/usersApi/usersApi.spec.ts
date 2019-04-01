@@ -1,18 +1,19 @@
-import { fakeRole, fakeUser, fakeProduct, fakeStore, fakeCart } from "../../test/fakes";
+import { fakeRole, fakeUser, fakeProduct, fakeStore, fakeCart, fakeMessage } from "../../test/fakes";
 
 import { UsersApi } from "./usersApi";
 import Chance from 'chance';
 import { STORE_OWNER, ADMIN, STORE_MANAGER } from "../consts";
 import * as constants from '../consts'
 import { connectDB, disconnectDB } from "../persistance/connectionDbTest";
-import { UserCollection, RoleCollection, CartCollection, ProductCollection, StoreCollection } from "../persistance/mongoDb/Collections";
+import { UserCollection, RoleCollection, CartCollection, ProductCollection, StoreCollection, MessageCollection } from "../persistance/mongoDb/Collections";
 import { User } from "./models/user";
 import { Role } from "./models/role";
+import { ObjectId } from "bson";
 
 
 describe('users-api-integration',() => {
   let storeOwner, storeOwnerRole, storeManager, storeManagerRole, userWithoutRole,adminUser, roleAdmin;
-  let product, store, cart, userWithCart;
+  let product, store, cart, userWithAll, message;
   const usersApi  = new UsersApi();
   const chance = new Chance();
 
@@ -25,8 +26,9 @@ describe('users-api-integration',() => {
   });
 
   beforeEach(async () => { //create database to work with
+    message = await MessageCollection.insert(fakeMessage({}));
     product = await ProductCollection.insert(fakeProduct({}));
-    console.log('p1',product);
+
     store = await StoreCollection.insert(fakeStore({}));
     cart = await CartCollection.insert(fakeCart({
       store: store._id,
@@ -35,13 +37,13 @@ describe('users-api-integration',() => {
         amount:2
       }]
     }));
-    userWithCart = await UserCollection.insert(fakeUser({carts:[cart._id]}));
+    userWithAll = await UserCollection.insert(fakeUser({carts:[cart.id], messages:[message.id]}));
     [adminUser, roleAdmin] = await roleWithUser({},{name: ADMIN});
-    [storeOwner, storeOwnerRole] = await roleWithUser({},{name: STORE_OWNER, store: store._id });
-    [storeManager, storeManagerRole] = await roleWithUser({},{name: STORE_MANAGER, store: store._id });
+    [storeOwner, storeOwnerRole] = await roleWithUser({},{name: STORE_OWNER, store: store.id });
+    [storeManager, storeManagerRole] = await roleWithUser({},{name: STORE_MANAGER, store: store.id });
     userWithoutRole = await UserCollection.insert(fakeUser({}));
 
-    cart.ofUser = userWithCart._id;
+    cart.ofUser = userWithAll._id;
     await CartCollection.updateOne(cart);
 
     storeOwnerRole.appointees.push(storeManagerRole._id);
@@ -72,9 +74,6 @@ describe('users-api-integration',() => {
 }
 
   it('add product to cart of user ', async () => {
-    console.log(product.id);
-    console.log(store.id);
-    console.log(userWithoutRole.id);
     const response = await usersApi.addProductToCart(userWithoutRole.id, store.id,product.id,5);
     const updatedCart = await CartCollection.findOne({ofUser:userWithoutRole.id});
 
@@ -85,8 +84,8 @@ describe('users-api-integration',() => {
 
   it('add product to cart of user with cart of specific store ', async () => {
     
-    const response = await usersApi.addProductToCart(userWithCart.id, store.id,product.id,5);
-    const updatedCart = await CartCollection.findOne({ofUser:userWithCart.id});
+    const response = await usersApi.addProductToCart(userWithAll.id, store.id,product.id,5);
+    const updatedCart = await CartCollection.findOne({ofUser:userWithAll.id});
     expect(response).toMatchObject({status: constants.OK_STATUS});
     expect(updatedCart).toBeTruthy();
     expect(updatedCart.items[0].product).toEqual(product.id);
@@ -94,8 +93,8 @@ describe('users-api-integration',() => {
   });
 
   it('get all carts ', async () => {
-    const res = await usersApi.addProductToCart(userWithCart.id, store.id,product.id,5);
-    const response = await usersApi.getCarts(userWithCart.id);
+    const res = await usersApi.addProductToCart(userWithAll.id, store.id,product.id,5);
+    const response = await usersApi.getCarts(userWithAll.id);
 
     expect(response.status).toEqual(constants.OK_STATUS);
     expect(response.carts[0]).toMatchObject({items:{}});
@@ -130,7 +129,6 @@ describe('users-api-integration',() => {
 
     const response = await usersApi.updatePermissions(storeOwner.id, storeManager.userName, store.id, permissions );
     const userRole = await RoleCollection.findOne({ofUser:storeManager.id, name: STORE_MANAGER});
-    console.log(userRole);
     expect(response).toMatchObject({status: constants.OK_STATUS});
     expect(userRole.permissions[0]).toBe(permissions[0]);
   });
@@ -144,5 +142,53 @@ describe('users-api-integration',() => {
     expect(response).toMatchObject({status: constants.OK_STATUS, notifications:[userWithoutRole.notifications[0]] });
   });
 
+  it('get all messages ', async () => {
+    const response = await usersApi.getMessages(userWithAll.id);
+
+    expect(response.status).toEqual(constants.OK_STATUS);
+    expect(response.messages[0].id).toEqual(message.id);
+  });
+
+
+  it('get user details ', async () => {
+    const user = await UserCollection.findById(userWithAll.id);
+    const response = await usersApi.getUserDetails(userWithAll.id);
+
+    expect(response.status).toEqual(constants.OK_STATUS);
+    expect(response.user._firstName).toEqual(user.firstName);
+  });
  
+  it('update  user details ', async () => {
+    let response = await usersApi.getUserDetails(userWithAll.id);
+
+    const userDetails = response.user;
+    userDetails._firstName= chance.first();
+
+    response = await usersApi.updateUser(userDetails);
+    const {user} = await usersApi.getUserDetails(userWithAll.id);
+
+    expect(response.status).toEqual(constants.OK_STATUS);
+    expect(user._firstName).toEqual(userDetails._firstName);
+  });
+
+  it('get cart details ', async () => {
+    const response = await usersApi.getCart(cart.ofUser,cart.id);
+    expect(response.status).toEqual(constants.OK_STATUS);
+    expect(response.cart._id).toEqual(cart.id);
+  });
+ 
+  it('update cart details ', async () => {
+    let response = await usersApi.getCart(cart.ofUser,cart.id);
+    
+    const cartDetails = response.cart;
+
+    cartDetails._items = [{product: new ObjectId(), amount: chance.integer()}];
+
+    response = await usersApi.updateCart(cartDetails);
+    const res = await usersApi.getCart(cart.ofUser,cartDetails._id);
+    const updatedcart = res.cart;
+
+    expect(response.status).toEqual(constants.OK_STATUS);
+    expect(updatedcart._items[0].amount).toEqual(cartDetails._items[0].amount);
+  });
 });

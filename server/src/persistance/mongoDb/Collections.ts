@@ -10,6 +10,8 @@ import { Product } from "../../productApi/models/popduct";
 import { Store } from "../../storeApi/models/store";
 import { StoreModel } from "./models/storeModel";
 import { ProductModel } from "./models/productModel";
+import { Message } from "../../usersApi/models/message";
+import { MessageModel } from "./models/messageModel";
 
 
 export const UserCollection :ICollection<User> = createCollection(
@@ -31,3 +33,7 @@ export const ProductCollection :ICollection<Product> = createCollection(
 export const StoreCollection :ICollection<Store> = createCollection(
     StoreModel,
     mongo => new Store(mongo));
+
+export const MessageCollection :ICollection<Message> = createCollection(
+    MessageModel,
+    mongo => new Message(mongo));

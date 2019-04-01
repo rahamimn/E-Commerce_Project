@@ -208,6 +208,28 @@ export class User {
 	public set id(value: String) {
 		this._id = value;
     }
+    public getUserDetails (){
+        const {
+            _id,
+            _userName,
+            _firstName,
+            _lastName,
+            _email,
+        } = this;
+        return ({
+            _id,
+            _userName,
+            _firstName,
+            _lastName,
+            _email,
+        });
+    }
+
+    public updateDetails (userDetails){ //nothing else should update for now
+       this.firstName = userDetails._firstName;
+       this.lastName = userDetails._lastName;
+       this.email = userDetails._email;
+    }
     
     
     private _id: String;

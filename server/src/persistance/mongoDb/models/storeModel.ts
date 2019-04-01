@@ -21,4 +21,3 @@ try {
     StoreModel = mongoose.model('Store',storeScheme);
 }
 
-const isStoreModel = (a: any ):IStoreModel => a;

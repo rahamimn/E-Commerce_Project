@@ -40,7 +40,7 @@ export const userScheme = new Schema({
   roles: [{type: Schema.Types.ObjectId, ref: 'Role', default:[] }],
   carts : [{type: Schema.Types.ObjectId, ref: 'Cart', default:[] }],
   notifications: [{type: String}],
-  Messages: [{type: Schema.Types.ObjectId, ref: 'Message', default:[] }]
+  messages: [{type: Schema.Types.ObjectId, ref: 'Message', default:[] }]
 });
 
 export let UserModel : Model<IUserModel>
@@ -49,8 +49,5 @@ try {
 } catch (error) {
   UserModel =  mongoose.model('User',userScheme);
 }
-
-
-const isIUserModel = (a: any ):IUserModel => a;
 
 const a =new UserModel({});

@@ -9,6 +9,10 @@ export const createCollection =(TModel,extractT) =>
             const modelsDb = await TModel.find(opt);
             return modelsDb.map(extractT);
         };
+        static async findByIds(ids=[]){
+            const modelsDb = await TModel.find({ _id: { $in: ids}});
+            return modelsDb.map(extractT);
+        };
 
         static async findOne(opt={}){
             const res = await TModel.findOne(opt);
@@ -21,7 +25,7 @@ export const createCollection =(TModel,extractT) =>
         };
 
         static async updateOne(model){
-            const modelDb = await TModel.findById(model.id);
+            const modelDb = await TModel.findById(model.id || model._id);
             updateMongoFields(modelDb,model);
             
             const res = await modelDb.save();
