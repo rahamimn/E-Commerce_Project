@@ -1,16 +1,20 @@
 import Chance from 'chance';
-import {RoleModel} from '../src/usersApi/models/role'
-import { UserModel } from '../src/usersApi/models/user';
-import { CartModel } from '../src/usersApi/models/cart';
-import { ProductModel } from '../src/productApi/model/product';
-import { StoreModel } from '../src/storeApi/model/store';
+
+import { ProductModel } from '../src/persistance/mongoDb/models/productModel';
+import { User } from '../src/usersApi/models/user';
+import { Cart } from '../src/usersApi/models/cart';
+import { Role } from '../src/usersApi/models/role';
+import { Product } from '../src/productApi/models/product';
+import { Store } from '../src/storeApi/models/store';
+import { Message } from '../src/usersApi/models/message';
+
 
 const chance = new Chance();
 var mongoose = require('mongoose');
 var genObjectId = mongoose.Types.ObjectId;
 
 export const fakeRole = (opt: any = {}) => {
-    return new RoleModel({
+    return new Role({
         id : genObjectId(),
         name : opt.name || chance.name(),
         appointor : opt.appointor || genObjectId(),
@@ -22,7 +26,7 @@ export const fakeRole = (opt: any = {}) => {
 
 
 export const fakeUser = (opt: any = {}, isGuest = false) => {
-        return new UserModel({
+        return new User({
             id : genObjectId(),
             notifications : opt.notifications || [],
             userName: opt.userName || chance.name() ,
@@ -37,23 +41,40 @@ export const fakeUser = (opt: any = {}, isGuest = false) => {
 
 
 export const fakeCart = (opt: any = {}) => {
-    return new CartModel({
+    return new Cart({
         id: genObjectId(),
         ofUser: opt.ofUser || genObjectId(),
-        //store: opt.store || genObjectId(),
+        store: opt.store || genObjectId(),
         items: opt.items || [],
     });
 }
 
 export const fakeProduct = (opt: any = {}) => {
-    return new ProductModel({
-        id: genObjectId(),
+    return new Product({
+        
+        amountInventory: opt.store || genObjectId(),
+        sellType: opt.sellType || chance.string(),
+        price: opt.price || chance.natural(),
+        coupons: opt.coupons || chance.string(),
+        acceptableDiscount: opt.acceptableDiscount || chance.natural(),
+        discountPrice: opt.discountPrice || chance.natural(),
+        rank: opt.rank || chance.natural(),
+        reviews: opt.reviews || [genObjectId(), genObjectId()],
+        keyWords: opt.keyWords || [chance.string(),chance.string()],
+        category: opt.category || chance.string(),
+        isActivated: opt.isActivated || chance.bool(),
     });
 }
 
 export const fakeStore = (opt: any = {}) => {
-    return new StoreModel({
+    return new Store({
         id: genObjectId(),
         name: opt.name || chance.name()
+    });
+}
+
+export const fakeMessage = (opt: any = {}) => {
+    return new Message({
+        id: genObjectId(),
     });
 }

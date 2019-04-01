@@ -1,57 +1,249 @@
 
-import {RoleModel} from './role';
-import {CartModel} from './cart';
-import {MonArray} from '../../../types/moongooseArray';
-import { Model, Document} from 'mongoose';
-import { Schema } from 'inspector';
-import { ObjectID, ObjectId } from 'bson';
-var mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+export class User {
 
-interface IUser{
-  userName?:   String,
-  password?:   String,
-  salt?: String,
-  firstName?:  String,
-  lastName?:  String,
-  email?: String,
-  isRegisteredUser?: Boolean,
-  isDeactivated?: Boolean,
-  roles: MonArray<ObjectID>,
-  carts : MonArray<ObjectID>,
-  notifications: String[],
-  messages: MonArray<ObjectID>,
+    constructor(base: any) {
+        this._id = base._id;
+        this._userName = base.userName;
+        this._password = base.password;
+        this._salt = base.salt;
+        this._firstName = base.firstName;
+        this._lastName = base.lastName;
+        this._email = base.email;
+        this._isDeactivated = base.isDeactivated;
+        this._roles = base.roles;
+        this._carts = base.carts;
+        this._notifications = base.notifications;
+        this._messages = base.messages;
+    }
+
+
+    /**
+     * Getter userName
+     * @return {  String}
+     */
+	public get userName():   String {
+		return this._userName;
+	}
+
+    /**
+     * Getter password
+     * @return {  String}
+     */
+	public get password():   String {
+		return this._password;
+	}
+
+    /**
+     * Getter salt
+     * @return {String}
+     */
+	public get salt(): String {
+		return this._salt;
+	}
+
+    /**
+     * Getter firstName
+     * @return { String}
+     */
+	public get firstName():  String {
+		return this._firstName;
+	}
+
+    /**
+     * Getter lastName
+     * @return { String}
+     */
+	public get lastName():  String {
+		return this._lastName;
+	}
+
+    /**
+     * Getter email
+     * @return {String}
+     */
+	public get email(): String {
+		return this._email;
+	}
+
+    /**
+     * Getter isDeactivated
+     * @return {Boolean}
+     */
+	public get isDeactivated(): Boolean {
+		return this._isDeactivated;
+	}
+
+    /**
+     * Getter roles
+     * @return {any[]}
+     */
+	public get roles(): any[] {
+		return this._roles;
+	}
+
+    /**
+     * Getter carts
+     * @return {any[]}
+     */
+	public get carts(): any[] {
+		return this._carts;
+	}
+
+    /**
+     * Getter notifications
+     * @return {any[]}
+     */
+	public get notifications(): any[] {
+		return this._notifications;
+	}
+
+    /**
+     * Getter messages
+     * @return {any[]}
+     */
+	public get messages(): any[] {
+		return this._messages;
+	}
+
+    /**
+     * Setter userName
+     * @param {  String} value
+     */
+	public set userName(value:   String) {
+		this._userName = value;
+	}
+
+    /**
+     * Setter password
+     * @param {  String} value
+     */
+	public set password(value:   String) {
+		this._password = value;
+	}
+
+    /**
+     * Setter salt
+     * @param {String} value
+     */
+	public set salt(value: String) {
+		this._salt = value;
+	}
+
+    /**
+     * Setter firstName
+     * @param { String} value
+     */
+	public set firstName(value:  String) {
+		this._firstName = value;
+	}
+
+    /**
+     * Setter lastName
+     * @param { String} value
+     */
+	public set lastName(value:  String) {
+		this._lastName = value;
+	}
+
+    /**
+     * Setter email
+     * @param {String} value
+     */
+	public set email(value: String) {
+		this._email = value;
+	}
+
+    /**
+     * Setter isDeactivated
+     * @param {Boolean} value
+     */
+	public set isDeactivated(value: Boolean) {
+		this._isDeactivated = value;
+	}
+
+    /**
+     * Setter roles
+     * @param {any[]} value
+     */
+	public set roles(value: any[]) {
+		this._roles = value;
+	}
+
+    /**
+     * Setter carts
+     * @param {any[]} value
+     */
+	public set carts(value: any[]) {
+		this._carts = value;
+	}
+
+    /**
+     * Setter notifications
+     * @param {any[]} value
+     */
+	public set notifications(value: any[]) {
+		this._notifications = value;
+	}
+
+    /**
+     * Setter messages
+     * @param {any[]} value
+     */
+    
+	public set messages(value: any[]) {
+		this._messages = value;
+	}
+
+    /**
+     * Getter id
+     * @return {String}
+     */
+	public get id(): String {
+		return this._id;
+	}
+
+    /**
+     * Setter id
+     * @param {String} value
+     */
+	public set id(value: String) {
+		this._id = value;
+    }
+    public getUserDetails (){
+        const {
+            _id,
+            _userName,
+            _firstName,
+            _lastName,
+            _email,
+        } = this;
+        return ({
+            _id,
+            _userName,
+            _firstName,
+            _lastName,
+            _email,
+        });
+    }
+
+    public updateDetails (userDetails){ //nothing else should update for now
+       this.firstName = userDetails._firstName;
+       this.lastName = userDetails._lastName;
+       this.email = userDetails._email;
+    }
+
+    private _id: String;
+    private _userName:   String;
+    private _password:   String;
+    private _salt: String;
+    private _firstName:  String;
+    private _lastName:  String;
+    private _email: String;
+    private _isDeactivated: Boolean;
+    private _roles: any[];
+    private _carts : any[];
+    private _notifications: any[];
+    private _messages: any[];
 }
 
-export interface IUserModel extends IUser, Document{
-  addRole(id: ObjectId): Model<IUserModel>,
-  removeRole(id: ObjectId): Model<IUserModel>,
-}
 
-export const userScheme = new Schema({
-  userName:  {type:String , unique: true, sparse: true ,
-    required: () => this.isRegisteredUser },
-  password:   {type:String ,
-    required: () => this.isRegisteredUser },
-  salt:   {type:String ,
-    required: () => this.isRegisteredUser },
-  firstName:  String,
-  lastName:  String,
-  email: String,
-  isRegisteredUser: {type: Boolean},
-  isDeactivated: Boolean,
-  roles: [{type: Schema.Types.ObjectId, ref: 'Role', default:[] }],
-  carts : [{type: Schema.Types.ObjectId, ref: 'Cart', default:[] }],
-  notifications: [{type: String}],
-  Messages: [{type: Schema.Types.ObjectId, ref: 'Message', default:[] }]
-});
-
-export let UserModel : Model<IUserModel>
-try {
-  UserModel = mongoose.model('User');
-} catch (error) {
-  UserModel =  mongoose.model('User',userScheme);
-}
-
-
-const isIUserModel = (a: any ):IUserModel => a;

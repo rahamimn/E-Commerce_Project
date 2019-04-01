@@ -39,6 +39,6 @@ export function verifyToken (token){
     }
     catch (err){
         console.log(err);
-        return null
+        throw err;
     }
 }

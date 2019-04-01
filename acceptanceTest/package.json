@@ -1,0 +1,27 @@
+{
+  "name": "acceptancetest",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/main.js",
+  "scripts": {
+    "test": "tsc & jest --watchAll --runInBand spec.ts"
+  },
+  "devDependencies": {
+    "@types/chance": "^1.0.1",
+    "@types/jest": "^24.0.11",
+    "@types/node": "^11.12.2",
+    "chance": "^1.0.18",
+    "jest": "^24.5.0",
+    "ts-jest": "^24.0.0",
+    "typescript": "^3.3.4000"
+  },
+  "dependencies": {
+    "cookie-store": "^1.0.3",
+    "fetch-cookie": "^0.7.2",
+    "node-fetch": "^2.3.0",
+    "ts-loader": "^5.3.3",
+    "tslint": "^5.14.0"
+  },
+  "author": "",
+  "license": "ISC"
+}

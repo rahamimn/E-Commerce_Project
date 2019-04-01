@@ -1,51 +1,108 @@
+export class Cart{
 
-import { Model, Document} from 'mongoose';
-import { ObjectID, ObjectId } from 'bson';
-import { MonArray } from '../../../types/moongooseArray';
-var mongoose = require('mongoose');
-var Schema = mongoose.Schema;
+    /**
+     * Getter id
+     * @return {string}
+     */
+	public get id(): string {
+		return this._id;
+	}
 
-interface ICart {
-  ofUser: ObjectID;
-//  stores: ObjectID;
-  items:  MonArray<{ product:ObjectId,amount: Number}>;
-}
-export interface ICartModel extends ICart, Document{
-	addItem(productId:ObjectID, amount:number ): Promise<void>
-}
+    /**
+     * Getter ofUser
+     * @return {any}
+     */
+	public get ofUser(): any {
+		return this._ofUser;
+	}
 
-const cartScheme = new Schema({
-  ofUser: {type: Schema.Types.ObjectId, ref: 'User', required: true },
-  //store: {type: Schema.Types.ObjectId, ref: 'Store', required: true },
-  items: [ {
-    product: {type: Schema.Types.ObjectId, ref: 'Product', required: true },
-    amount:  {type: Number, required: true ,validation: value => value > 0 }
-  }],
-});
-cartScheme.methods.addItem = function (productId, amount){
-    const _this = isIsCartModel(this);
-    const item = _this.items.filter( item => item.product === productId);
-    if(item.length > 1)
-      return -1;
-    if(item.length === 0){
-      
-      _this.items.push({
-        product:productId,
-        amount
+    /**
+     * Getter store
+     * @return {any}
+     */
+	public get store(): any {
+		return this._store;
+	}
+
+    /**
+     * Setter id
+     * @param {string} value
+     */
+	public set items(value: {product: any, amount:Number}[]) {
+		this._items = value;
+  }
+  
+  public get items(): {product: any, amount:Number}[] {
+		return this._items;
+	}
+
+    /**
+     * Setter id
+     * @param {string} value
+     */
+	public set id(value: string) {
+		this._id = value;
+	}
+
+    /**
+     * Setter ofUser
+     * @param {any} value
+     */
+	public set ofUser(value: any) {
+		this._ofUser = value;
+	}
+
+    /**
+     * Setter store
+     * @param {any} value
+     */
+	public set store(value: any) {
+		this._store = value;
+	}
+    private _id: string;
+    private _ofUser: any;
+    private _store: any;
+    private _items:  {product:any, amount:Number}[];
+
+    constructor(opt: any){
+        this._id = opt.id;
+        this._items = opt.items;
+        this._store = opt.store;
+        this._ofUser = opt.ofUser;
+    }
+  
+    public addItem = function (productId, amount){
+      const item = this._items.filter( item =>item.product.equals(productId));
+      console.log(item);
+      if(item.length > 1)
+        return -1;
+      if(item.length === 0){
+        this.items.push({
+          product:productId,
+          amount
+        });
+      }
+      else{
+        item[0].amount += amount;
+      }
+    }
+
+    public getDetails (){
+      const {
+          _id,
+          _items,
+          _store,
+      } = this;
+      return ({
+        _id,
+        _items,
+        _store,
       });
-    }
-    else{
-      item[0].amount += amount;
-    }
-}
+  } 
+    public updateDetails (cartDetails){ //nothing else should update for now
+      this.items = cartDetails._items;
+   }
+   
 
-cartScheme.index({ofUser:1/*,store:1*/ },{unique:true})
-
-export let CartModel : Model<ICartModel>
-try {
-  CartModel = mongoose.model('Cart');
-} catch (error) {
-  CartModel = mongoose.model('Cart',cartScheme);
-}
-
-const isIsCartModel = (a: any ):ICartModel => a;
+  }
+  

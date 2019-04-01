@@ -1,7 +1,3 @@
-const path = require('path');
-require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
-
-// export const {DB_HOST, DB_NAME , DB_USER, DB_PASSWORD, DB_TEST_NAME}  = process.env;
 
 //names
 export const STORE_OWNER = 'store-owner';
@@ -18,6 +14,9 @@ export const BAD_USERNAME = 1;
 
 // flags
 export const CREATE_SCHEMA = false;
+export const TEST_MODE = true;
+export const RUN_TEST_LOCAL = true;
 
 //error messages
 export const ERR_PARAMS_MSG ='did not received all of the params'
+export const ERR_GENERAL_MSG ='Bad request';

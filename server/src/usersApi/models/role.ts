@@ -1,65 +1,152 @@
-import {UserModel} from './User';
-import { Model, Document} from 'mongoose';
-import { ObjectID } from 'bson';
-import { MonArray } from '../../../types/moongooseArray';
-import {STORE_OWNER,STORE_MANAGER} from '../../consts';
+import { RoleCollection, UserCollection } from "../../persistance/mongoDb/Collections";
 
-var mongoose = require('mongoose');
+export class Role {
 
-var Schema = mongoose.Schema;
+    constructor(base:any){
+        this._id = base._id;
+        this._name =  base.name;
+        this._ofUser = base.ofUser;
+        this._store = base.store;
+        this._appointor  = base.appointor;
+        this._appointees = base.appointees;
+        this._permissions = base.permissions;
 
-interface IRole {
-  name: String
-  ofUser: ObjectID;
-  store: ObjectID;
-  appointor: ObjectID;
-  appointees:  MonArray<ObjectID>;
-  permissions: MonArray<String>;
-}
-export interface IRoleModel extends IRole, Document{
-  addAppointee(appointee: ObjectID): Model<IRoleModel>,
-  removeAppointee(appointee: ObjectID): Model<IRoleModel>,
-  delete(removeFromAppointor: Boolean): Promise<void>
-}
+    }
+    /**
+     * Getter ofUser
+     * @return {any}
+     */
+	public get ofUser(): any {
+		return this._ofUser;
+	}
 
-const roleScheme = new Schema({
+    /**
+     * Getter store
+     * @return {any}
+     */
+	public get store(): any {
+		return this._store;
+	}
 
-  name: {type: String, required: true, } ,
-  ofUser: {type: Schema.Types.ObjectId, ref: 'User', required: true },
-  store: {type: Schema.Types.ObjectId, ref: 'Store', 
-   required: () => [STORE_OWNER, STORE_MANAGER].some(name => this.name)},
-  appointor: {type: Schema.Types.ObjectId, ref: 'Role', required: true },
-  permissions: [{type:String, default:[]}],
-  appointees: [{type: Schema.Types.ObjectId, ref: 'Role', required: true, default:[] }],
-});
+    /**
+     * Getter appointor
+     * @return {any}
+     */
+	public get appointor(): any {
+		return this._appointor;
+	}
 
-roleScheme.index({ofUser:1/*,store:1*/ },{unique:true})
+    /**
+     * Getter appointees
+     * @return { any[]}
+     */
+	public get appointees():  any[] {
+		return this._appointees;
+	}
+
+    /**
+     * Getter permissions
+     * @return {String[]}
+     */
+	public get permissions(): String[] {
+		return this._permissions;
+	}
+
+    /**
+     * Setter ofUser
+     * @param {any} value
+     */
+	public set ofUser(value: any) {
+		this._ofUser = value;
+	}
+
+    /**
+     * Setter store
+     * @param {any} value
+     */
+	public set store(value: any) {
+		this._store = value;
+	}
+
+    /**
+     * Setter appointor
+     * @param {any} value
+     */
+	public set appointor(value: any) {
+		this._appointor = value;
+	}
+
+    /**
+     * Setter appointees
+     * @param { any[]} value
+     */
+	public set appointees(value:  any[]) {
+		this._appointees = value;
+	}
+
+    /**
+     * Setter permissions
+     * @param {String[]} value
+     */
+	public set permissions(value: String[]) {
+		this._permissions = value;
+    }
+
+    /**
+     * Getter id
+     * @return {String}
+     */
+	public get id(): String {
+		return this._id;
+	}
+
+    /**
+     * Setter id
+     * @param {String} value
+     */
+	public set id(value: String) {
+		this._id = value;
+	}
+
+    /**
+     * Getter name
+     * @return {String}
+     */
+	public get name(): String {
+		return this._name;
+	}
+
+    /**
+     * Setter name
+     * @param {String} value
+     */
+	public set name(value: String) {
+		this._name = value;
+    }
 
 
-roleScheme.methods.delete = async function (removeFromAppointor: Boolean) {
-      const _this = isIsRoleModel(this);
-      console.log(this._id, _this.appointees);
-      if(removeFromAppointor){
-          const appointor = await RoleModel.findById(_this.appointor);
-          appointor.appointees.remove(_this.id);
-          await appointor.save();
-      }
-      const RolesToDelete = await RoleModel.find({ '_id': { $in: _this.appointees}});
+    async delete(removeFromAppointor: Boolean){
+        if(removeFromAppointor){
+            const appointor = await RoleCollection.findById(this.appointor);
+            appointor.appointees = appointor.appointees.filter(appointee => appointee === this.id);
+            await RoleCollection.updateOne(appointor);
+        }
+        const RolesToDelete = await RoleCollection.findByIds(this.appointees); 
     
-      await (async () => RolesToDelete.forEach(async role => await role.delete(false))) ();
+        await (async () => RolesToDelete.forEach(async role => await role.delete(false))) ();
+        const user = await UserCollection.findById(this.ofUser);
+        user.roles = user.roles.filter(role => role === this.id);
+        await UserCollection.updateOne(user);
 
-      const user = await UserModel.findById(_this.ofUser);
-      user.roles.remove(this.id);
-      await user.save();
+        await RoleCollection.delete({ _id : this.id});
+  };
 
-      await this.remove();
-    };
 
-export let RoleModel : Model<IRoleModel>
-try {
-  RoleModel = mongoose.model('Role');
-} catch (error) {
-  RoleModel = mongoose.model('Role',roleScheme);
+    private _id: String;
+    private _name: String;
+    private _ofUser: any;
+    private _store: any;
+    private _appointor: any;
+    private _appointees:  any[];
+    private _permissions: String[];
 }
-
-const isIsRoleModel = (a: any ):IRoleModel => a;
