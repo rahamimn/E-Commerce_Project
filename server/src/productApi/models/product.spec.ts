@@ -4,6 +4,8 @@ import {fakeUser, fakeProduct } from '../../../test/fakes';
 describe('Product model',() => {
 
   const chance = new Chance();
+
+  
   it('Sanity test - Product', () => {
 
     const product = fakeProduct({});
