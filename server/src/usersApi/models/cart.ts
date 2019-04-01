@@ -87,5 +87,22 @@ export class Cart{
       }
     }
 
+    public getDetails (){
+      const {
+          _id,
+          _items,
+          _store,
+      } = this;
+      return ({
+        _id,
+        _items,
+        _store,
+      });
+  } 
+    public updateDetails (cartDetails){ //nothing else should update for now
+      this.items = cartDetails._items;
+   }
+   
+
   }
   

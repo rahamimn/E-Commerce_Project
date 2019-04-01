@@ -36,25 +36,6 @@ const roleScheme = new Schema({
 roleScheme.index({ofUser:1/*,store:1*/ },{unique:true})
 
 
-roleScheme.methods.delete = async function (removeFromAppointor: Boolean) {
-      const _this = isIsRoleModel(this);
-      console.log(this._id, _this.appointees);
-      if(removeFromAppointor){
-          const appointor = await RoleModel.findById(_this.appointor);
-          appointor.appointees.remove(_this.id);
-          await appointor.save();
-      }
-      const RolesToDelete = await RoleModel.find({ '_id': { $in: _this.appointees}});
-    
-      await (async () => RolesToDelete.forEach(async role => await role.delete(false))) ();
-
-      const user = await UserModel.findById(_this.ofUser);
-      user.roles.remove(this.id);
-      await user.save();
-
-      await this.remove();
-    };
-
 export let RoleModel : Model<IRoleModel>
 try {
   RoleModel = mongoose.model('Role');
@@ -62,4 +43,3 @@ try {
   RoleModel = mongoose.model('Role',roleScheme);
 }
 
-const isIsRoleModel = (a: any ):IRoleModel => a;

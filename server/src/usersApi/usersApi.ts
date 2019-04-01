@@ -3,7 +3,7 @@ import * as Constants from "../consts";
 import bcrypt = require('bcryptjs');
 
 import {STORE_OWNER,STORE_MANAGER,ADMIN} from '../consts';
-import { UserCollection, CartCollection, ProductCollection, RoleCollection } from "../persistance/mongoDb/Collections";
+import { UserCollection, CartCollection, ProductCollection, RoleCollection, MessageCollection } from "../persistance/mongoDb/Collections";
 import { Cart } from "./models/cart";
 import { Role } from "./models/role";
 import { User } from "./models/user";
@@ -58,13 +58,40 @@ export class UsersApi implements IUsersApi{
             return {status:Constants.BAD_USERNAME, err:"bad username"};
         }
     }
+    async getUserDetails(userId){
+        let user = await UserCollection.findById(userId);
+        if(!user)
+            return ({status: Constants.BAD_REQUEST}); //inorder to remove props from object
 
-    updateUser(){
-
+        return ({status: Constants.OK_STATUS , user: user.getUserDetails()});
     }
 
-    updateCart(){
 
+    async updateUser(userDetails){//should get user props with _ from client
+        let userToUpdate = await UserCollection.findById(userDetails._id);
+        if(!userToUpdate)
+            return ({status: Constants.BAD_REQUEST});
+        userToUpdate.updateDetails(userDetails);
+        userToUpdate = await UserCollection.updateOne(userToUpdate);
+        return ({status: Constants.OK_STATUS});
+    }
+
+    async getCart(userId, cartId){
+        let cart = await CartCollection.findById(cartId);
+        if(!cart || !cart.ofUser.equals(userId))
+            {
+            return ({status: Constants.BAD_REQUEST});
+            }
+        return ({status: Constants.OK_STATUS ,cart: cart.getDetails()});
+    }
+
+    async updateCart(cartDetails){
+        let cartToUpdate = await CartCollection.findById(cartDetails._id);
+        if(!cartToUpdate)
+            return ({status: Constants.BAD_REQUEST});
+        cartToUpdate.updateDetails(cartDetails);
+        cartToUpdate = await CartCollection.updateOne(cartToUpdate);
+        return ({status: Constants.OK_STATUS});
     }
 
     async getCarts(userId){
@@ -213,17 +240,23 @@ export class UsersApi implements IUsersApi{
         
     }
 
-    sendMessage(){
-        //TODO
-    }
-    getMessages(){
-        //TODO
+
+    async getMessages(userId){
+        let user = await UserCollection.findById(userId);
+        if(!user)
+            return ({status: Constants.BAD_REQUEST});
+        const messages = await MessageCollection.findByIds(user.messages);
+   
+        return ({status: Constants.OK_STATUS , messages});
     }
 
     deleteUser(){
         //TODO
     }
 
+    sendMessage(){
+        //TODO
+    }
 
 
 }

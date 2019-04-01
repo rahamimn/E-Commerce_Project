@@ -131,7 +131,7 @@ export class Role {
             appointor.appointees = appointor.appointees.filter(appointee => appointee === this.id);
             await RoleCollection.updateOne(appointor);
         }
-        const RolesToDelete = await RoleCollection.find({ '_id': { $in: this.appointees}}); //need to fix
+        const RolesToDelete = await RoleCollection.findByIds(this.appointees); 
     
         await (async () => RolesToDelete.forEach(async role => await role.delete(false))) ();
         const user = await UserCollection.findById(this.ofUser);
