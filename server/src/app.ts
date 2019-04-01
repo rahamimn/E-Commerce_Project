@@ -1,4 +1,4 @@
-import {storesApiRouter} from "./storeApi/storeRoutes";
+//import {storesApiRouter} from "./storeApi/storeRoutes";
 
 const mongoose = require('mongoose');
 import express = require('express');
@@ -7,7 +7,7 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 import {usersApiRouter} from './usersApi/userRoutes';
-import {productsApiRouter} from "./productApi/productRoutes";
+//import {productsApiRouter} from "./productApi/productRoutes";
 import * as Constants from "./consts";
 
 
@@ -45,9 +45,9 @@ app.use(session({
 }));
 
 app.use(usersApiRouter);
-app.use(storesApiRouter);
-app.use(productsApiRouter);
-//app.use(oredersApiRouter);
+// app.use(storesApiRouter);
+// app.use(productsApiRouter);
+// app.use(oredersApiRouter);
 
 const port = process.env.SERVER_PORT;
 app.listen(port, () => console.log(`listening on port ${port}!`));
