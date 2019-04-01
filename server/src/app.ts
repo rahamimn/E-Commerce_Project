@@ -35,15 +35,6 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cookieParser());
-<<<<<<< HEAD
-=======
-app.use(cors({
-    origin:['*'],
-    methods:['GET','POST'],
-    credentials: true // enable set cookie
-}));
-
->>>>>>> 0a63a8e5d8e5c012ef81ada24c744e88da47693a
 // Express Session
 app.use(session({
     secret: 'secret',
