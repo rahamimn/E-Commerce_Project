@@ -5,7 +5,6 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 import {usersApiRouter} from './usersApi/userRoutes';
-import { UserCollection } from './persistance/mongoDb/Collections';
 
 
 require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
@@ -36,12 +35,9 @@ app.use(session({
 }));
 
 app.use(usersApiRouter);
-//app.use(storesApiRouter);
-//app.use(productsApiRouter);
-//app.use(oredersApiRouter);
+// app.use(storesApiRouter);
+// app.use(productsApiRouter);
+// app.use(oredersApiRouter);
 
 const port = process.env.SERVER_PORT;
 app.listen(port, () => console.log(`listening on port ${port}!`));
-
-
-(async () => await UserCollection.findOne({}))();

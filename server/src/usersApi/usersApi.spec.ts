@@ -1,13 +1,14 @@
 import { fakeRole, fakeUser, fakeProduct, fakeStore, fakeCart } from "../../test/fakes";
-import { RoleModel, IRoleModel } from "./models/role";
+
 import { UsersApi } from "./usersApi";
 import Chance from 'chance';
-import { UserModel,IUserModel } from "./models/user";
-import { CartModel } from "./models/cart";
 import { STORE_OWNER, ADMIN, STORE_MANAGER } from "../consts";
 import * as constants from '../consts'
-import { connectDB } from "../../test/connectDbTest";
-var mongoose = require('mongoose');
+import { connectDB, disconnectDB } from "../persistance/connectionDbTest";
+import { UserCollection, RoleCollection, CartCollection, ProductCollection, StoreCollection } from "../persistance/mongoDb/Collections";
+import { User } from "./models/user";
+import { Role } from "./models/role";
+
 
 describe('users-api-integration',() => {
   let storeOwner, storeOwnerRole, storeManager, storeManagerRole, userWithoutRole,adminUser, roleAdmin;
@@ -20,72 +21,81 @@ describe('users-api-integration',() => {
   });
 
   afterAll(()=>{
-    mongoose.disconnect();
+     disconnectDB();
   });
 
   beforeEach(async () => { //create database to work with
-    product = await fakeProduct({}).save();
-    store = await fakeStore({}).save();
-    cart = await fakeCart({store: store._id, items:[{
-      product: product._id,
-      amount:2
-    }] }).save();
-    userWithCart = await fakeUser({carts:[cart._id]}).save();
+    product = await ProductCollection.insert(fakeProduct({}));
+    console.log('p1',product);
+    store = await StoreCollection.insert(fakeStore({}));
+    cart = await CartCollection.insert(fakeCart({
+      store: store._id,
+      items:[{
+        product: product._id,
+        amount:2
+      }]
+    }));
+    userWithCart = await UserCollection.insert(fakeUser({carts:[cart._id]}));
     [adminUser, roleAdmin] = await roleWithUser({},{name: ADMIN});
     [storeOwner, storeOwnerRole] = await roleWithUser({},{name: STORE_OWNER, store: store._id });
     [storeManager, storeManagerRole] = await roleWithUser({},{name: STORE_MANAGER, store: store._id });
-    userWithoutRole = await fakeUser({}).save();
+    userWithoutRole = await UserCollection.insert(fakeUser({}));
 
-    cart.ofUser=userWithCart._id;
-    await cart.save();
+    cart.ofUser = userWithCart._id;
+    await CartCollection.updateOne(cart);
 
     storeOwnerRole.appointees.push(storeManagerRole._id);
-    await storeOwnerRole.save();
+    await RoleCollection.updateOne(storeOwnerRole);
   });
 
   afterEach(()=>{
-    UserModel.collection.drop();
-    RoleModel.collection.drop();
-    CartModel.collection.drop();
+    StoreCollection.drop();
+    ProductCollection.drop();
+    UserCollection.drop();
+    RoleCollection.drop();
+    CartCollection.drop();
   })
   
-  const roleWithUser = async (userOpt, roleOpt): Promise<[IUserModel, IRoleModel]> => {
-    let userOfRole = await fakeUser(userOpt).save(); 
+  const roleWithUser = async (userOpt={}, roleOpt={}): Promise<[User, Role]> => {
+    let userOfRole = await UserCollection.insert(fakeUser(userOpt)); 
+    let role = fakeRole({
+        ...roleOpt,
+        ofUser: userOfRole.id
+    });
 
-    let role = await fakeRole({
-      ...roleOpt,
-      ofUser: userOfRole._id
-    }).save();
+    role = await RoleCollection.insert(role);
 
-    userOfRole.roles.push(role._id);
-    await userOfRole.save();
+    userOfRole.roles.push(role.id);
+    role = await RoleCollection.updateOne(role);
 
     return [userOfRole,role];
-  }
+}
 
   it('add product to cart of user ', async () => {
-    const response = await usersApi.addProductToCart(userWithoutRole._id, store._id,product._id,5);
-    const updatedCart = await CartModel.findOne({ofUser:userWithoutRole._id});
+    console.log(product.id);
+    console.log(store.id);
+    console.log(userWithoutRole.id);
+    const response = await usersApi.addProductToCart(userWithoutRole.id, store.id,product.id,5);
+    const updatedCart = await CartCollection.findOne({ofUser:userWithoutRole.id});
 
     expect(response).toMatchObject({status: constants.OK_STATUS});
     expect(updatedCart).toBeTruthy();
-    expect(updatedCart.items[0].product).toEqual(product._id);
+    expect(updatedCart.items[0].product).toEqual(product.id);
   });
 
   it('add product to cart of user with cart of specific store ', async () => {
     
-    const response = await usersApi.addProductToCart(userWithCart._id, store._id,product._id,5);
-    const updatedCart = await CartModel.findOne({ofUser:userWithCart._id});
-
+    const response = await usersApi.addProductToCart(userWithCart.id, store.id,product.id,5);
+    const updatedCart = await CartCollection.findOne({ofUser:userWithCart.id});
     expect(response).toMatchObject({status: constants.OK_STATUS});
     expect(updatedCart).toBeTruthy();
-    expect(updatedCart.items[0].product).toEqual(product._id);
+    expect(updatedCart.items[0].product).toEqual(product.id);
     expect(updatedCart.items[0].amount).toEqual(7);
   });
 
   it('get all carts ', async () => {
-    const res = await usersApi.addProductToCart(userWithCart._id, store._id,product._id,5);
-    const response = await usersApi.getCarts(userWithCart._id);
+    const res = await usersApi.addProductToCart(userWithCart.id, store.id,product.id,5);
+    const response = await usersApi.getCarts(userWithCart.id);
 
     expect(response.status).toEqual(constants.OK_STATUS);
     expect(response.carts[0]).toMatchObject({items:{}});
@@ -95,7 +105,7 @@ describe('users-api-integration',() => {
     const response = await usersApi.setUserAsSystemAdmin(adminUser._id,userWithoutRole.userName);
 
     expect(response).toMatchObject({status: constants.OK_STATUS});
-    expect(await RoleModel.findOne({ofUser:userWithoutRole._id, name: ADMIN})).toBeTruthy();
+    expect(await RoleCollection.findOne({ofUser:userWithoutRole.id, name: ADMIN})).toBeTruthy();
   });
    
 
@@ -103,23 +113,23 @@ describe('users-api-integration',() => {
     const response = await usersApi.setUserAsStoreOwner(storeOwner._id,userWithoutRole.userName,store._id);
     
     expect(response).toMatchObject({status: constants.OK_STATUS});
-    expect(await RoleModel.findOne({ofUser:userWithoutRole._id, name: STORE_OWNER})).toBeTruthy();
+    expect(await RoleCollection.findOne({ofUser:userWithoutRole.id, name: STORE_OWNER})).toBeTruthy();
   });
 
   it('set user as store manager when dont play a role in store', async () => {
     const permissions = [ chance.name() ];
 
-    const response = await usersApi.setUserAsStoreManager(storeOwner._id, userWithoutRole.userName, store._id,permissions );
+    const response = await usersApi.setUserAsStoreManager(storeOwner.id, userWithoutRole.userName, store.id,permissions );
 
     expect(response).toMatchObject({status: constants.OK_STATUS});
-    expect(await RoleModel.findOne({ofUser:userWithoutRole._id, name: STORE_MANAGER})).toBeTruthy();
+    expect(await RoleCollection.findOne({ofUser:userWithoutRole.id, name: STORE_MANAGER})).toBeTruthy();
   });
 
   it('update permissions', async () => {
     const permissions = [ chance.domain() ];
 
-    const response = await usersApi.updatePermissions(storeOwner._id, storeManager.userName, store._id, permissions );
-    const userRole = await RoleModel.findOne({ofUser:storeManager._id, name: STORE_MANAGER});
+    const response = await usersApi.updatePermissions(storeOwner.id, storeManager.userName, store.id, permissions );
+    const userRole = await RoleCollection.findOne({ofUser:storeManager.id, name: STORE_MANAGER});
     console.log(userRole);
     expect(response).toMatchObject({status: constants.OK_STATUS});
     expect(userRole.permissions[0]).toBe(permissions[0]);
@@ -127,8 +137,8 @@ describe('users-api-integration',() => {
 
   it('pop notification', async () => {
     userWithoutRole.notifications = [chance.name()];
-    await userWithoutRole.save();
-    const response = await usersApi.popNotifications(userWithoutRole._id);
+    await UserCollection.updateOne(userWithoutRole);
+    const response = await usersApi.popNotifications(userWithoutRole.id);
 
 
     expect(response).toMatchObject({status: constants.OK_STATUS, notifications:[userWithoutRole.notifications[0]] });

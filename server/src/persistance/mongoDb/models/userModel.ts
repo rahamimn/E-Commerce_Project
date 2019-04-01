@@ -1,7 +1,4 @@
-
-import {RoleModel} from './role';
-import {CartModel} from './cart';
-import {MonArray} from '../../../types/moongooseArray';
+import {MonArray} from '../../../../types/moongooseArray';
 import { Model, Document} from 'mongoose';
 import { Schema } from 'inspector';
 import { ObjectID, ObjectId } from 'bson';
@@ -55,3 +52,5 @@ try {
 
 
 const isIUserModel = (a: any ):IUserModel => a;
+
+const a =new UserModel({});

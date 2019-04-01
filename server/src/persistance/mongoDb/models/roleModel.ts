@@ -1,8 +1,8 @@
-import {UserModel} from './User';
+import {UserModel} from './userModel';
 import { Model, Document} from 'mongoose';
 import { ObjectID } from 'bson';
-import { MonArray } from '../../../types/moongooseArray';
-import {STORE_OWNER,STORE_MANAGER} from '../../consts';
+import { MonArray } from '../../../../types/moongooseArray';
+import {STORE_OWNER,STORE_MANAGER} from '../../../consts';
 
 var mongoose = require('mongoose');
 

@@ -1,7 +1,6 @@
+import MongoMemoryServer from 'mongodb-memory-server';
 var mongoose = require('mongoose');
 
-import MongoMemoryServer from 'mongodb-memory-server';
- 
 const mongoServer = new MongoMemoryServer();
  
 mongoose.Promise = Promise;
@@ -15,4 +14,7 @@ export const connectDB = async  () =>{
     };
 
     mongoose.connect(mongoUri, mongooseOpts);
+}
+export const disconnectDB = () => {
+    mongoose.disconnect();
 }

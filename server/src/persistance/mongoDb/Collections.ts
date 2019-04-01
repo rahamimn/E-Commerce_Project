@@ -1,23 +1,33 @@
-import { UserModel, IUserModel } from "./models/userModel";
-import { User } from "../../usersApi/user";
+import { UserModel } from "./models/userModel";
+import { RoleModel } from "./models/roleModel";
+import { CartModel } from "./models/cartModel";
 import { ICollection } from "../Icollection";
 import { createCollection } from "./GeneralCollection";
-import { Role } from "../../usersApi/role";
-import { RoleModel } from "./models/roleModel";
+import { User } from "../../usersApi/models/user";
+import { Cart } from "../../usersApi/models/cart";
+import { Role } from "../../usersApi/models/role";
+import { Product } from "../../productApi/models/popduct";
+import { Store } from "../../storeApi/models/store";
+import { StoreModel } from "./models/storeModel";
+import { ProductModel } from "./models/productModel";
 
-
-const extractUser = (mongoUser:IUserModel): User => {console.log(1); debugger; return null; };
-const extracrMongoUser = (user:User): IUserModel => null;
-const updateFieldsUser = (mongoUser , user:User) => null;
 
 export const UserCollection :ICollection<User> = createCollection(
-    User,
     UserModel,
-    extractUser,extracrMongoUser,updateFieldsUser);
+    mongo => new User(mongo));
 
+export const RoleCollection :ICollection<Role> = createCollection(
+    RoleModel,
+    mongo  => new Role(mongo));
 
-const extractRole = (mongoUser): User => null;
-const extracrMongoRole = (user): IUserModel => null;
-const updateFields = (mongoUser , user:User) => null;
+export const CartCollection :ICollection<Cart> = createCollection(
+    CartModel,
+    mongo => new Cart(mongo));
 
-export const RoleCollection :ICollection<Role> = createCollection(Role,RoleModel,extractRoleextracrMongoUser,updateFields);
+export const ProductCollection :ICollection<Product> = createCollection(
+    ProductModel,
+    mongo => new Product(mongo));
+
+export const StoreCollection :ICollection<Store> = createCollection(
+    StoreModel,
+    mongo => new Store(mongo));

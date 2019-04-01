@@ -1,4 +1,3 @@
-import { UserModel } from './../usersApi/models/user';
 import { MonArray } from '../../types/moongooseArray';
 import { ObjectID } from 'bson';
 export interface StoresApi{

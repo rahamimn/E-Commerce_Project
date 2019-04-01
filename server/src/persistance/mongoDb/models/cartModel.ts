@@ -22,22 +22,6 @@ const cartScheme = new Schema({
     amount:  {type: Number, required: true ,validation: value => value > 0 }
   }],
 });
-cartScheme.methods.addItem = function (productId, amount){
-    const _this = isIsCartModel(this);
-    const item = _this.items.filter( item => item.product.equals(productId));
-    if(item.length > 1)
-      return -1;
-    if(item.length === 0){
-      
-      _this.items.push({
-        product:productId,
-        amount
-      });
-    }
-    else{
-      item[0].amount += amount;
-    }
-}
 
 cartScheme.index({ofUser:1/*,store:1*/ },{unique:true})
 
