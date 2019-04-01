@@ -14,8 +14,7 @@ export const connectDB = async () => {
         mongoUri = 'mongodb://localhost:27017/' + process.env.DB_TEST_NAME;
     else
         mongoUri = await mongoServer.getConnectionString();
-
-    console.log(mongoUri);
+        console.log(mongoUri);
     const mongooseOpts = {
         autoReconnect: true,
         reconnectTries: 5,

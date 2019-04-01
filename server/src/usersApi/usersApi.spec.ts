@@ -34,7 +34,7 @@ describe('users-api-integration',() => {
       store: store._id,
       items:[{
         product: product._id,
-        amount:2
+        amount:777
       }]
     }));
     userWithAll = await UserCollection.insert(fakeUser({carts:[cart.id], messages:[message.id]}));

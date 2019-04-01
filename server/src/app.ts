@@ -29,25 +29,21 @@ else {
 }
 
 const app = express();
-
 //express extensions
 
 // BodyParser Middleware
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cookieParser());
-
 // Express Session
 app.use(session({
     secret: 'secret',
     saveUninitialized: true,
     resave: true
 }));
-
 app.use(usersApiRouter);
 // app.use(storesApiRouter);
 // app.use(productsApiRouter);
 // app.use(oredersApiRouter);
-
 const port = process.env.SERVER_PORT;
 app.listen(port, () => console.log(`listening on port ${port}!`));
