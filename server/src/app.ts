@@ -35,6 +35,12 @@ const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cookieParser());
+app.use(cors({
+    origin:['*'],
+    methods:['GET','POST'],
+    credentials: true // enable set cookie
+}));
+
 // Express Session
 app.use(session({
     secret: 'secret',
@@ -42,6 +48,7 @@ app.use(session({
     saveUninitialized: true,
     cookie: { maxAge: 600000000 }
 }));
+
 app.use(usersApiRouter);
 // app.use(storesApiRouter);
 // app.use(productsApiRouter);
