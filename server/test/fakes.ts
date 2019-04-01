@@ -51,7 +51,18 @@ export const fakeCart = (opt: any = {}) => {
 
 export const fakeProduct = (opt: any = {}) => {
     return new Product({
-        id: genObjectId(),
+        
+        amountInventory: opt.store || genObjectId(),
+        sellType: opt.sellType || chance.string(),
+        price: opt.price || chance.natural(),
+        coupons: opt.coupons || chance.string(),
+        acceptableDiscount: opt.acceptableDiscount || chance.natural(),
+        discountPrice: opt.discountPrice || chance.natural(),
+        rank: opt.rank || chance.natural(),
+        reviews: opt.reviews || [genObjectId(), genObjectId()],
+        keyWords: opt.keyWords || [chance.string(),chance.string()],
+        category: opt.category || chance.string(),
+        isActivated: opt.isActivated || chance.bool(),
     });
 }
 
