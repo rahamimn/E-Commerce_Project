@@ -4,7 +4,7 @@ export class Product {
         this._amountInventory = base._amountInventory;
         this._sellType = base._sellType;
         this._price = base._price;
-        this._this._coupons = base._coupons;
+        this._coupons = base._coupons;
         this._acceptableDiscount = base._acceptableDiscount;
         this._discountPrice = base._discountPrice;
         this._rank = base._rank;
@@ -40,11 +40,11 @@ export class Product {
 	}
 
     /**
-     * Getter this
+     * Getter coupons
      * @return {any}
      */
 	public get this(): any {
-		return this._this;
+		return this._coupons;
 	}
 
     /**
@@ -131,8 +131,8 @@ export class Product {
      * Setter this
      * @param {any} value
      */
-	public set this(value: any) {
-		this._this = value;
+	public set coupons(value: any) {
+		this._coupons = value;
 	}
 
     /**
@@ -189,13 +189,42 @@ export class Product {
      */
 	public set isActivated(value: any) {
 		this._isActivated = value;
-	}
+    }
+    
+    public getProductDetails (){
+        const {
+            _amountInventory,
+            _sellType,
+            _price,
+            _coupons,
+            _acceptableDiscount,
+            _discountPrice,
+            _rank,
+            _reviews,
+            _keyWords,
+            _category,
+            _isActivated,
+        } = this;
+        return ({
+            _amountInventory,
+            _sellType,
+            _price,
+            _coupons,
+            _acceptableDiscount,
+            _discountPrice,
+            _rank,
+            _reviews,
+            _keyWords,
+            _category,
+            _isActivated,
+        });
+    }
 
 
     private _amountInventory: any;
     private _sellType: any;
     private _price: any;
-    private _this: any;
+    private _coupons: any;
     private _acceptableDiscount: any;
     private _discountPrice: any;
     private _rank: any;
