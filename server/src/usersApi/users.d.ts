@@ -9,10 +9,11 @@ export interface IUsersApi{
     setUserAsStoreOwner: (userId:String, appointedUserName:String, storeId:String) => Promise< {status:Number, err?: String   }>,
     setUserAsStoreManager: (userId:String, appointedUserName:String, storeId:String, permissions:String[]) =>Promise<{status:Number, err?: String   }>,
     addProductToCart:(userId:String,storeId: String, productId: String, amount: Number) =>  Promise< {status:Number, err?: String   }>,
-    updateCart:()=>void,
+    updateCart:() => void,
+    getCarts:(userId:String) => Promise< {status:Number, err?: String , carts?: any[]  }>,
     sendMessage: () => void,
     getMessages: () => void,
-    popNotifications: (userId:String) => Promise<String[]>,
-    removeRole: (userId:number , userIdRemove:number, storeIdRemove:number) => Promise<void>,
-    updatePermissions: (userId:String, appointedUserName:String, storeId:String, permissions: String[]) => Promise<number>
+    popNotifications: (userId:String) => Promise< {status:Number, err?: String , notifications?: String[]  }>,
+    removeRole: (userId:number , userIdRemove:number, storeIdRemove:number) => Promise< {status:Number, err?: String}>,
+    updatePermissions: (userId:String, appointedUserName:String, storeId:String, permissions: String[]) => Promise< {status:Number, err?: String   }>
 }

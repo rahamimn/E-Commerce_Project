@@ -1,4 +1,4 @@
-import {RUN_TEST_LOCAL} from "../src/consts";
+import {RUN_TEST_LOCAL} from "../../src/consts";
 
 var mongoose = require('mongoose');
 
@@ -19,19 +19,11 @@ export const connectDB = async () => {
     const mongooseOpts = {
         autoReconnect: true,
         reconnectTries: 5,
-        reconnectInterval: 1,
-        useMongoClient: true
+        reconnectInterval: 1
     };
 
     mongoose.connect(mongoUri, mongooseOpts);
-
-    mongoose.connection.on('error', (e) => {
-        if (e.message.code === 'ETIMEDOUT') {
-            console.log('------------------------\n\n\n\n\n\n-----------------------', e);
-            mongoose.connect(mongoUri, mongooseOpts);
-        }
-        console.log(e);
-    });
-
-    console.log(1);
+}
+export const disconnectDB = () => {
+    mongoose.disconnect();
 }
