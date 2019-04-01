@@ -21,5 +21,3 @@ try {
 } catch (error) {
     ProductModel = mongoose.model('Product',productScheme);
 }
-
-const isProductModel = (a: any ):IProductModel => a;

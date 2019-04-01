@@ -1,5 +1,5 @@
 import {  Model } from "mongoose";
-export const createCollection =(TModel,extractT) =>
+export const createCollection = (TModel,extractT) =>
     class {
         static async drop (){
            await TModel.collection.drop();

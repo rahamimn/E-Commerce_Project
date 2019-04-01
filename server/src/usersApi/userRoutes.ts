@@ -9,7 +9,7 @@ export const usersApiRouter = express.Router();
 
 const usersApi = new UsersApi();
 
-usersApiRouter.get('/usersApi/login', login);
+usersApiRouter.post('/usersApi/login', login);
 
 async function login(req: Request, res: express.Response) {
     try {
@@ -32,7 +32,7 @@ async function login(req: Request, res: express.Response) {
     }
 }
 
-usersApiRouter.get('/usersApi/register', register);
+usersApiRouter.post('/usersApi/register', register);
 
 async function register(req: Request, res: express.Response) {
     try {

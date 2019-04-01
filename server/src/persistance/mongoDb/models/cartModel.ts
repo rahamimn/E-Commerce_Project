@@ -32,4 +32,3 @@ try {
   CartModel = mongoose.model('Cart',cartScheme);
 }
 
-const isIsCartModel = (a: any ):ICartModel => a;
