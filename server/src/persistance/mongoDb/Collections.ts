@@ -6,7 +6,7 @@ import { createCollection } from "./GeneralCollection";
 import { User } from "../../usersApi/models/user";
 import { Cart } from "../../usersApi/models/cart";
 import { Role } from "../../usersApi/models/role";
-import { Product } from "../../productApi/models/popduct";
+import { Product } from "../../productApi/models/product";
 import { Store } from "../../storeApi/models/store";
 import { StoreModel } from "./models/storeModel";
 import { ProductModel } from "./models/productModel";

@@ -4,7 +4,7 @@ import { ProductModel } from '../src/persistance/mongoDb/models/productModel';
 import { User } from '../src/usersApi/models/user';
 import { Cart } from '../src/usersApi/models/cart';
 import { Role } from '../src/usersApi/models/role';
-import { Product } from '../src/productApi/models/popduct';
+import { Product } from '../src/productApi/models/product';
 import { Store } from '../src/storeApi/models/store';
 import { Message } from '../src/usersApi/models/message';
 
