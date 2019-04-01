@@ -22,8 +22,6 @@ describe('Product model',() => {
       _category: product.category,
       _isActivated: product.isActivated,
     });
-
-  
   });
 
 
