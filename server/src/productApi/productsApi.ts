@@ -1,11 +1,10 @@
-// import { IProductsApi } from "./products";
-// // import * as Constants from "../consts";
-// // import {STORE_OWNER,STORE_MANAGER,ADMIN} from '../consts';
+import { IProductsApi } from "./productsApiInterface";
 
-// export class ProductsApi implements IProductsApi{
-//     addProduct: (amountInventory: number, sellType: number, price: number, category: string) => void;
-//     removeProduct: (productID: string) => void;
-//     getProducts: (storeID?: string, category?: string, keyWords?: string[]) => void;
-//     addReview: (UserID: string, rank: number, comment: string) => void;
-//     disableProduct: (ProductID: string) => void;
-// }
+export class ProductsApi implements IProductsApi{
+    addProduct: (amountInventory: number, sellType: number, price: number, category: string) => void;//amount-in the shop, selltype- regular auction lottery
+    removeProduct: (productId: string) => void;
+    getProducts: (storeId?: string, category?: string, keyWords?: string[]) => void; //returns the right version
+    addReview: (userId: string, rank: number, comment: string) => void;
+    disableProduct: (adminId: string, productId: string) => void;
+    //updateProduct: (productID: string, newPrice: number) => void, //need to be changed to the productModel
+}

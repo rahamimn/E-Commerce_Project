@@ -1,4 +1,4 @@
-import { IUsersApi } from "./users";
+import { IUsersApi } from "./usersApiInterface";
 import * as Constants from "../consts";
 import bcrypt = require('bcryptjs');
 
@@ -12,11 +12,11 @@ import { User } from "./models/user";
 const verifyPassword = (candidatePassword:String, salt: String, userPassword: String) => {
     const candidateHashedPassword = hashPassword(candidatePassword,salt);
     return candidateHashedPassword == userPassword;
-}
+};
 
 const hashPassword = (password: String, salt: String) => {
     return bcrypt.hashSync(password+process.env.HASH_SECRET_KEY, salt);
-}
+};
 
 export class UsersApi implements IUsersApi{
 
@@ -225,14 +225,13 @@ export class UsersApi implements IUsersApi{
         return {status: Constants.OK_STATUS , notifications};
     }
 
-    async removeRole(userId, userIdRemove, storeId){[]
+    async removeRole(userId, userIdRemove, storeId){
         const role = await RoleCollection.findOne({ ofUser: userIdRemove, store: storeId });
         if(!role)
             return {status: Constants.BAD_REQUEST};
         if(role && role.appointor === userId)
             await role.delete(true);
         return {status: Constants.OK_STATUS };
-
     }
 
     async getMessages(userId){
