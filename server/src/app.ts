@@ -18,7 +18,7 @@ const dbUser = process.env.DB_USER;
 const dbPassword = process.env.DB_PASSWORD;
 
 // Conenct to DB
-if(Constants.TEST_MODE) {
+if(Constants.RUN_LOCAL) {
     console.log('connection to :' +  process.env.DB_TEST_NAME);
     mongoose.connect('mongodb://localhost:27017/' + process.env.DB_TEST_NAME, {useNewUrlParser: true});
 }

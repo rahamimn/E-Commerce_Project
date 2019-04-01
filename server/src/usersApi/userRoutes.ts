@@ -48,7 +48,7 @@ async function register(req: Request, res: express.Response) {
     }
 }
 
-usersApiRouter.get('/usersApi/logout', logout);
+usersApiRouter.post('/usersApi/logout', logout);
 
 function logout(req: Request, res: express.Response) {
     try {
@@ -64,7 +64,90 @@ function logout(req: Request, res: express.Response) {
     }
 }
 
-usersApiRouter.get('/usersApi/addProductToCart', addProductToCart);
+
+usersApiRouter.post('/usersApi/updateUser', updateUser);
+
+function updateUser(req: Request, res: express.Response) {
+    try {
+        const userId = verifyToken(req.session.token).userId;
+        const user = req.body.user;
+        if (!user)
+            res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
+        const response = usersApi.updateUser(userId, user);
+        res.send(response);
+    }
+    catch (err) {
+        res.send({status: Constants.BAD_REQUEST});
+    }
+}
+
+
+usersApiRouter.post('/usersApi/getUserDetails', getUserDetails);
+
+function getUserDetails(req: Request, res: express.Response) {
+    try {
+        const userId = verifyToken(req.session.token).userId;
+        const response = usersApi.getUserDetails(userId);
+        res.send(response);
+    }
+    catch (err) {
+        res.send({status: Constants.BAD_REQUEST});
+    }
+}
+
+usersApiRouter.post('/usersApi/getCarts', getCarts);
+
+function getCarts(req: Request, res: express.Response) {
+    try {
+        const userId = verifyToken(req.session.token).userId;
+        const response = usersApi.getCarts(userId);
+        res.send(response);
+    }
+    catch (err) {
+        res.send({status: Constants.BAD_REQUEST});
+    }
+}
+
+usersApiRouter.post('/usersApi/getCart', getCart);
+
+function getCart(req: Request, res: express.Response) {
+    try {
+        const userId = verifyToken(req.session.token).userId;
+        const cartId = req.body.cartId;
+
+        if (!cartId)
+            res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
+        else {
+            const response = usersApi.getCart(userId, cartId);
+            res.send(response);
+        }
+    }
+    catch (err) {
+        res.send({status: Constants.BAD_REQUEST});
+    }
+}
+
+usersApiRouter.post('/usersApi/updateCart', updateCart);
+
+function updateCart(req: Request, res: express.Response) {
+    try {
+        const userId = verifyToken(req.session.token).userId;
+        const cartDetails = req.body.cartDetails;
+
+        if (!cartDetails)
+            res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
+        else {
+            const response = usersApi.updateCart(cartDetails);
+            res.send(response);
+        }
+    }
+    catch (err) {
+        res.send({status: Constants.BAD_REQUEST});
+    }
+}
+
+
+usersApiRouter.post('/usersApi/addProductToCart', addProductToCart);
 
 function addProductToCart(req: Request, res: express.Response) {
     try {
@@ -85,7 +168,7 @@ function addProductToCart(req: Request, res: express.Response) {
     }
 }
 
-usersApiRouter.get('/usersApi/setUserAsSystemAdmin', setUserAsSystemAdmin);
+usersApiRouter.post('/usersApi/setUserAsSystemAdmin', setUserAsSystemAdmin);
 
 function setUserAsSystemAdmin(req: Request, res: express.Response) {
     try {
@@ -105,7 +188,7 @@ function setUserAsSystemAdmin(req: Request, res: express.Response) {
 }
 
 
-usersApiRouter.get('/usersApi/setUserAsStoreOwner', setUserAsStoreOwner);
+usersApiRouter.post('/usersApi/setUserAsStoreOwner', setUserAsStoreOwner);
 
 function setUserAsStoreOwner(req: Request, res: express.Response) {
     try {
@@ -127,7 +210,7 @@ function setUserAsStoreOwner(req: Request, res: express.Response) {
     }
 }
 
-usersApiRouter.get('/usersApi/setUserAsStoreManager', setUserAsStoreManager);
+usersApiRouter.post('/usersApi/setUserAsStoreManager', setUserAsStoreManager);
 
 function setUserAsStoreManager(req: Request, res: express.Response) {
     try {
@@ -150,7 +233,7 @@ function setUserAsStoreManager(req: Request, res: express.Response) {
     }
 }
 
-usersApiRouter.get('/usersApi/removeRole', removeRole);
+usersApiRouter.post('/usersApi/removeRole', removeRole);
 
 function removeRole(req: Request, res: express.Response) {
     try {
@@ -172,7 +255,7 @@ function removeRole(req: Request, res: express.Response) {
     }
 }
 
-usersApiRouter.get('/usersApi/updatePermissions', updatePermissions);
+usersApiRouter.post('/usersApi/updatePermissions', updatePermissions);
 
 function updatePermissions(req: Request, res: express.Response) {
     try {
@@ -195,12 +278,25 @@ function updatePermissions(req: Request, res: express.Response) {
     }
 }
 
-usersApiRouter.get('/usersApi/popNotifications', popNotifications);
+usersApiRouter.post('/usersApi/popNotifications', popNotifications);
 
 function popNotifications(req: Request, res: express.Response) {
     try {
         const userId = verifyToken(req.session.token).userId;
         const response = usersApi.popNotifications(userId);
+        res.send(response);
+    }
+    catch (err) {
+        res.send({status: Constants.BAD_REQUEST});
+    }
+}
+
+usersApiRouter.post('/usersApi/getMessages', getMessages);
+
+function getMessages(req: Request, res: express.Response) {
+    try {
+        const userId = verifyToken(req.session.token).userId;
+        const response = usersApi.getMessages(userId);
         res.send(response);
     }
     catch (err) {

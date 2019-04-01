@@ -1,4 +1,4 @@
-import { IUsersApi } from "./users";
+import { IUsersApi } from "./usersApiInterface";
 import * as Constants from "../consts";
 import bcrypt = require('bcryptjs');
 
@@ -12,11 +12,11 @@ import { User } from "./models/user";
 const verifyPassword = (candidatePassword:String, salt: String, userPassword: String) => {
     const candidateHashedPassword = hashPassword(candidatePassword,salt);
     return candidateHashedPassword == userPassword;
-}
+};
 
 const hashPassword = (password: String, salt: String) => {
-  return bcrypt.hashSync(password+process.env.HASH_SECRET_KEY, salt);
-}
+    return bcrypt.hashSync(password+process.env.HASH_SECRET_KEY, salt);
+};
 
 export class UsersApi implements IUsersApi{
 
@@ -34,7 +34,7 @@ export class UsersApi implements IUsersApi{
             return {status: Constants.BAD_USERNAME, err:"bad username"};
         }
     }
-   
+
 
     async logout (userId){
         return Constants.OK_STATUS
@@ -67,8 +67,8 @@ export class UsersApi implements IUsersApi{
     }
 
 
-    async updateUser(userDetails){//should get user props with _ from client
-        let userToUpdate = await UserCollection.findById(userDetails._id);
+    async updateUser(userId, userDetails){//should get user props with _ from client    //todo userToUpdate not used - check why
+        let userToUpdate = await UserCollection.findById(userId);
         if(!userToUpdate)
             return ({status: Constants.BAD_REQUEST});
         userToUpdate.updateDetails(userDetails);
@@ -79,9 +79,9 @@ export class UsersApi implements IUsersApi{
     async getCart(userId, cartId){
         let cart = await CartCollection.findById(cartId);
         if(!cart || !cart.ofUser.equals(userId))
-            {
+        {
             return ({status: Constants.BAD_REQUEST});
-            }
+        }
         return ({status: Constants.OK_STATUS ,cart: cart.getDetails()});
     }
 
@@ -104,27 +104,27 @@ export class UsersApi implements IUsersApi{
 
     async addProductToCart(userId, storeId, productId, amount){
         const cart = await CartCollection.findOne({ofUser:userId, store: storeId});
-      const product = await ProductCollection.findById(productId);
-      if(!product)
-        return ({status: Constants.BAD_REQUEST});
+        const product = await ProductCollection.findById(productId);
+        if(!product)
+            return ({status: Constants.BAD_REQUEST});
 
- 
-      if(!cart){
-        await CartCollection.insert(new Cart({
-          ofUser: userId,
-          store: storeId,
-          items:[{
-              product:productId,
-              amount
-          }]}));
+
+        if(!cart){
+            await CartCollection.insert(new Cart({
+                ofUser: userId,
+                store: storeId,
+                items:[{
+                    product:productId,
+                    amount
+                }]}));
         }
-      else {
+        else {
 
-        cart.addItem(productId, amount);  
-        await CartCollection.updateOne(cart);
-      }
+            cart.addItem(productId, amount);
+            await CartCollection.updateOne(cart);
+        }
 
-      return ({status: Constants.OK_STATUS});
+        return ({status: Constants.OK_STATUS});
     }
 
     async setUserAsSystemAdmin(userId, appointedUserName){
@@ -143,7 +143,7 @@ export class UsersApi implements IUsersApi{
         appointorRole.appointees.push(newRole.id);
         await RoleCollection.updateOne(appointorRole);
         return ({status: Constants.OK_STATUS});
-    }    
+    }
 
     async setUserAsStoreOwner(userId, appointedUserName, storeId){
         const appointedUser = await UserCollection.findOne({userName: appointedUserName});
@@ -178,21 +178,21 @@ export class UsersApi implements IUsersApi{
             return ({status: Constants.BAD_REQUEST});
         if(await RoleCollection.findOne({ofUser:appointedUser.id, store:storeId}))
             return ({status: Constants.BAD_REQUEST});
-    
+
         const newRole = await RoleCollection.insert(new Role({
             name:STORE_MANAGER,
             ofUser: appointedUser.id,
             store: storeId,
             appointor: appointorRole.id,
-            permissions 
+            permissions
         }));
-        
+
         appointedUser.roles.push(newRole.id);
         await UserCollection.updateOne(appointedUser);
 
         appointorRole.appointees.push(newRole.id);
         await RoleCollection.updateOne(appointorRole);
-        return ({status: Constants.OK_STATUS});   
+        return ({status: Constants.OK_STATUS});
     }
 
     async updatePermissions(userId, appointedUserName, storeId, permissions){
@@ -205,15 +205,15 @@ export class UsersApi implements IUsersApi{
         const appointorRole = await RoleCollection.findOne({ofUser:userId, store:storeId});
         if(!appointorRole || !appointorRole.appointees.some(appointee => appointee.equals(existRole.id)))
             return {status: Constants.BAD_REQUEST};
-        
-        existRole.permissions = permissions; 
+
+        existRole.permissions = permissions;
         await RoleCollection.updateOne(existRole);
 
-        return {status: Constants.OK_STATUS };  
+        return {status: Constants.OK_STATUS };
     }
-    
+
     async popNotifications(userId){
-      
+
         const user = await UserCollection.findById(userId);
         if(!user)
             return {status: Constants.BAD_REQUEST};
@@ -223,16 +223,15 @@ export class UsersApi implements IUsersApi{
         await UserCollection.updateOne(user);
 
         return {status: Constants.OK_STATUS , notifications};
-    } 
+    }
 
-    async removeRole(userId, userIdRemove, storeId){[]      
+    async removeRole(userId, userIdRemove, storeId){
         const role = await RoleCollection.findOne({ ofUser: userIdRemove, store: storeId });
         if(!role)
             return {status: Constants.BAD_REQUEST};
         if(role && role.appointor === userId)
             await role.delete(true);
-        return {status: Constants.OK_STATUS };     
-        
+        return {status: Constants.OK_STATUS };
     }
 
     async getMessages(userId){
@@ -240,7 +239,7 @@ export class UsersApi implements IUsersApi{
         if(!user)
             return ({status: Constants.BAD_REQUEST});
         const messages = await MessageCollection.findByIds(user.messages);
-   
+
         return ({status: Constants.OK_STATUS , messages});
     }
 

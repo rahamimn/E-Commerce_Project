@@ -1,4 +1,4 @@
-import {RUN_TEST_LOCAL} from "../../src/consts";
+import {RUN_LOCAL} from "../../src/consts";
 
 var mongoose = require('mongoose');
 
@@ -10,11 +10,11 @@ const mongoServer = new MongoMemoryServer({});
 mongoose.Promise = Promise;
 export const connectDB = async () => {
     let mongoUri;
-    if (RUN_TEST_LOCAL)
+    if (RUN_LOCAL)
         mongoUri = 'mongodb://localhost:27017/' + process.env.DB_TEST_NAME;
     else
         mongoUri = await mongoServer.getConnectionString();
-        const mongooseOpts = {
+    const mongooseOpts = {
         autoReconnect: true,
         reconnectTries: 5,
         reconnectInterval: 1
