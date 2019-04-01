@@ -4,7 +4,7 @@ import { ProductModel } from '../src/persistance/mongoDb/models/productModel';
 import { User } from '../src/usersApi/models/user';
 import { Cart } from '../src/usersApi/models/cart';
 import { Role } from '../src/usersApi/models/role';
-import { Product } from '../src/productApi/models/popduct';
+import { Product } from '../src/productApi/models/product';
 import { Store } from '../src/storeApi/models/store';
 import { Message } from '../src/usersApi/models/message';
 
@@ -51,7 +51,18 @@ export const fakeCart = (opt: any = {}) => {
 
 export const fakeProduct = (opt: any = {}) => {
     return new Product({
-        id: genObjectId(),
+        
+        amountInventory: opt.store || genObjectId(),
+        sellType: opt.sellType || chance.string(),
+        price: opt.price || chance.natural(),
+        coupons: opt.coupons || chance.string(),
+        acceptableDiscount: opt.acceptableDiscount || chance.natural(),
+        discountPrice: opt.discountPrice || chance.natural(),
+        rank: opt.rank || chance.natural(),
+        reviews: opt.reviews || [genObjectId(), genObjectId()],
+        keyWords: opt.keyWords || [chance.string(),chance.string()],
+        category: opt.category || chance.string(),
+        isActivated: opt.isActivated || chance.bool(),
     });
 }
 

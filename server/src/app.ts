@@ -29,7 +29,6 @@ else {
 }
 
 const app = express();
-
 //express extensions
 
 // BodyParser Middleware
@@ -54,6 +53,5 @@ app.use(usersApiRouter);
 // app.use(storesApiRouter);
 // app.use(productsApiRouter);
 // app.use(oredersApiRouter);
-
 const port = process.env.SERVER_PORT;
 app.listen(port, () => console.log(`listening on port ${port}!`));
