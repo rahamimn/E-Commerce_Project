@@ -5,7 +5,9 @@
   "scripts": {
     "build": "tsc --watch",
     "start": "tsc && node dist/src/app.js",
-    "test": "tsc && jest --watchAll spec.ts",
+    "start:CleanTest": "tsc && node dist/src/app.js cleanTest ",
+    "start:Test": "tsc && node dist/src/app.js test",
+    "test": "tsc && jest --watchAll --runInBand spec.ts",
     "cover": "tsc && jest --coverage spec.ts",
     "debug": "tsc && ndb dist/src/app.js"
   },

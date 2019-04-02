@@ -20,8 +20,8 @@ export const connectDB = async () => {
         reconnectInterval: 1
     };
 
-    mongoose.connect(mongoUri, mongooseOpts);
+    await mongoose.connect(mongoUri, mongooseOpts);
 }
-export const disconnectDB = () => {
-    mongoose.disconnect();
+export const disconnectDB = async () => {
+    await mongoose.disconnect();
 }
