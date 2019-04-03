@@ -6,6 +6,7 @@ import { connectDB, disconnectDB } from "../../persistance/connectionDbTest";
 import { UserCollection, RoleCollection } from '../../persistance/mongoDb/Collections';
 import { User } from './user';
 import { Role } from './role';
+jest.setTimeout(100000);
 
 describe('Role model',() => {
 
