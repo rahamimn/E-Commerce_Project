@@ -14,13 +14,25 @@ productsApiRouter.post('/productsApi/addProduct', addProduct);
 function addProduct(req: Request, res: express.Response) {
     try {
        verifyToken(req.session.token).userId;
-        const amountInventory = req.body.amountInventory;
+       const storeId = req.session.storeId; 
+       const amountInventory = req.body.amountInventory;
         const sellType = req.body.sellType;
         const price = req.body.price;
         const category = req.body.category;
+        // const coupons = req.body.coupons;
+        // const acceptableDiscount = req.body.acceptableDiscount;
+        // const discountPrice = req.body.id;
+        const rank = req.body.rank;
+        const keyWords = req.body.keyWords;
+        const id = req.body.id;
+        const reviews = req.body.reviews;
+
+
+
+
         if (!amountInventory || !sellType || !price || !category )
             res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
-        const response = productsApi.addProduct(amountInventory, sellType, price, category);
+        const response = productsApi.addProduct(storeId, amountInventory, sellType, price, rank, reviews, keyWords, category);
         res.send(response);
     }
     catch (err) {
@@ -77,18 +89,18 @@ function addReview(req: Request, res: express.Response) {
     }
 }
 
-productsApiRouter.post('/productsApi/disableProduct', disableProduct);
+// productsApiRouter.post('/productsApi/disableProduct', disableProduct);
 
-function disableProduct(req: Request, res: express.Response) {
-    try {
-        const userId = verifyToken(req.session.token).userId;
-        const productId = req.session.productId;
-        if (!productId)
-            throw Error(ERR_GENERAL_MSG);
-        const response = productsApi.disableProduct(userId, productId);
-        res.send(response);
-    }
-    catch (err) {
-        res.send({status: Constants.BAD_REQUEST});
-    }
-}
+// function disableProduct(req: Request, res: express.Response) {
+//     try {
+//         const userId = verifyToken(req.session.token).userId;
+//         const productId = req.session.productId;
+//         if (!productId)
+//             throw Error(ERR_GENERAL_MSG);
+//         const response = productsApi.disableProduct(userId, productId);
+//         res.send(response);
+//     }
+//     catch (err) {
+//         res.send({status: Constants.BAD_REQUEST});
+//     }
+// }

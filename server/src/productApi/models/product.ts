@@ -1,236 +1,278 @@
 export class Product {
 
+    private _id: String;
+    private _storeId: String;
+
+    /**
+     * Getter storeId
+     * @return {String}
+     */
+
+    private _amountInventory: Number;
+    private _sellType: String;
+    private _price: Number;
+    private _coupons: String;
+    private _acceptableDiscount: Number;
+    private _discountPrice: Number;
+    private _rank: Number;
+    private _reviews: String[];
+    private _keyWords: String[];
+    private _category: String;
+    private _isActivated: Boolean;
+
     constructor(base:any){
-        this._amountInventory = base._amountInventory;
-        this._sellType = base._sellType;
-        this._price = base._price;
-        this._coupons = base._coupons;
-        this._acceptableDiscount = base._acceptableDiscount;
-        this._discountPrice = base._discountPrice;
-        this._rank = base._rank;
-        this._reviews = base._reviews;
-        this._keyWords = base._keyWords;
-        this._category = base._category;
-        this._isActivated = base._isActivated;
+        this._id = base.id;
+        this._storeId = base.storeId;
+        this._amountInventory = base.amountInventory;
+        this._sellType = base.sellType;
+        this._price = base.price;
+        this._coupons = base.coupons;
+        this._acceptableDiscount = base.acceptableDiscount;
+        this._discountPrice = base.discountPrice;
+        this._rank = base.rank;
+        this._reviews = base.reviews;
+        this._keyWords = base.keyWords;
+        this._category = base.category;
+        this._isActivated = base.isActivated;
     }
+
+    // public getProductDetails (){
+    //     const {
+    //         _id,
+    //         _amountInventory,
+    //         _sellType,
+    //         _price,
+    //         _coupons,
+    //         _acceptableDiscount,
+    //         _discountPrice,
+    //         _rank,
+    //         _reviews,
+    //         _keyWords,
+    //         _category,
+    //         _isActivated,
+    //     } = this;
+    //     return ({
+    //         _id,
+    //         _amountInventory,
+    //         _sellType,
+    //         _price,
+    //         _coupons,
+    //         _acceptableDiscount,
+    //         _discountPrice,
+    //         _rank,
+    //         _reviews,
+    //         _keyWords,
+    //         _category,
+    //         _isActivated,
+    //     });
+    // }
+
+
 
 
     /**
-     * Getter amountInventory
-     * @return {any}
+     * Getter id
+     * @return {String}
      */
-	public get amountInventory(): any {
+	public get id(): String {
+		return this._id;
+	}
+
+    /**
+     * Getter amountInventory
+     * @return {Number}
+     */
+	public get amountInventory(): Number {
 		return this._amountInventory;
 	}
 
     /**
      * Getter sellType
-     * @return {any}
+     * @return {String}
      */
-	public get sellType(): any {
+	public get sellType(): String {
 		return this._sellType;
 	}
 
     /**
      * Getter price
-     * @return {any}
+     * @return {Number}
      */
-	public get price(): any {
+	public get price(): Number {
 		return this._price;
 	}
 
     /**
      * Getter coupons
-     * @return {any}
+     * @return {String}
      */
-	public get this(): any {
+	public get coupons(): String {
 		return this._coupons;
 	}
 
     /**
      * Getter acceptableDiscount
-     * @return {any}
+     * @return {Number}
      */
-	public get acceptableDiscount(): any {
+	public get acceptableDiscount(): Number {
 		return this._acceptableDiscount;
 	}
 
     /**
      * Getter discountPrice
-     * @return {any}
+     * @return {Number}
      */
-	public get discountPrice(): any {
+	public get discountPrice(): Number {
 		return this._discountPrice;
 	}
 
     /**
      * Getter rank
-     * @return {any}
+     * @return {Number}
      */
-	public get rank(): any {
+	public get rank(): Number {
 		return this._rank;
 	}
 
     /**
      * Getter reviews
-     * @return {any}
+     * @return {String[]}
      */
-	public get reviews(): any {
+	public get reviews(): String[] {
 		return this._reviews;
 	}
 
     /**
      * Getter keyWords
-     * @return {any}
+     * @return {String[]}
      */
-	public get keyWords(): any {
+	public get keyWords(): String[] {
 		return this._keyWords;
 	}
 
     /**
      * Getter category
-     * @return {any}
+     * @return {String}
      */
-	public get category(): any {
+	public get category(): String {
 		return this._category;
 	}
 
     /**
      * Getter isActivated
-     * @return {any}
+     * @return {Boolean}
      */
-	public get isActivated(): any {
+	public get isActivated(): Boolean {
 		return this._isActivated;
 	}
 
     /**
-     * Setter amountInventory
-     * @param {any} value
+     * Setter id
+     * @param {String} value
      */
-	public set amountInventory(value: any) {
+	public set id(value: String) {
+		this._id = value;
+	}
+
+    /**
+     * Setter amountInventory
+     * @param {Number} value
+     */
+	public set amountInventory(value: Number) {
 		this._amountInventory = value;
 	}
 
     /**
      * Setter sellType
-     * @param {any} value
+     * @param {String} value
      */
-	public set sellType(value: any) {
+	public set sellType(value: String) {
 		this._sellType = value;
 	}
 
     /**
      * Setter price
-     * @param {any} value
+     * @param {Number} value
      */
-	public set price(value: any) {
+	public set price(value: Number) {
 		this._price = value;
 	}
 
     /**
-     * Setter this
-     * @param {any} value
+     * Setter coupons
+     * @param {String} value
      */
-	public set coupons(value: any) {
+	public set coupons(value: String) {
 		this._coupons = value;
 	}
 
     /**
      * Setter acceptableDiscount
-     * @param {any} value
+     * @param {Number} value
      */
-	public set acceptableDiscount(value: any) {
+	public set acceptableDiscount(value: Number) {
 		this._acceptableDiscount = value;
 	}
 
     /**
      * Setter discountPrice
-     * @param {any} value
+     * @param {Number} value
      */
-	public set discountPrice(value: any) {
+	public set discountPrice(value: Number) {
 		this._discountPrice = value;
 	}
 
     /**
      * Setter rank
-     * @param {any} value
+     * @param {Number} value
      */
-	public set rank(value: any) {
+	public set rank(value: Number) {
 		this._rank = value;
 	}
 
     /**
      * Setter reviews
-     * @param {any} value
+     * @param {String[]} value
      */
-	public set reviews(value: any) {
+	public set reviews(value: String[]) {
 		this._reviews = value;
 	}
 
     /**
      * Setter keyWords
-     * @param {any} value
+     * @param {String[]} value
      */
-	public set keyWords(value: any) {
+	public set keyWords(value: String[]) {
 		this._keyWords = value;
 	}
 
     /**
      * Setter category
-     * @param {any} value
+     * @param {String} value
      */
-	public set category(value: any) {
+	public set category(value: String) {
 		this._category = value;
+    }
+    
+
+    /**
+     * Setter storeId
+     * @param {String} value
+     */
+	public set storeId(value: String) {
+		this._storeId = value;
+    }
+    
+    public get storeId(): String {
+		return this._storeId;
 	}
 
     /**
      * Setter isActivated
-     * @param {any} value
+     * @param {Boolean} value
      */
-	public set isActivated(value: any) {
+	public set isActivated(value: Boolean) {
 		this._isActivated = value;
-    }
+	}}
+
     
-    public getProductDetails (){
-        const {
-            _amountInventory,
-            _sellType,
-            _price,
-            _coupons,
-            _acceptableDiscount,
-            _discountPrice,
-            _rank,
-            _reviews,
-            _keyWords,
-            _category,
-            _isActivated,
-        } = this;
-        return ({
-            _amountInventory,
-            _sellType,
-            _price,
-            _coupons,
-            _acceptableDiscount,
-            _discountPrice,
-            _rank,
-            _reviews,
-            _keyWords,
-            _category,
-            _isActivated,
-        });
-    }
-
-
-    private _amountInventory: any;
-    private _sellType: any;
-    private _price: any;
-    private _coupons: any;
-    private _acceptableDiscount: any;
-    private _discountPrice: any;
-    private _rank: any;
-    private _reviews: any;
-    private _keyWords: any;
-    private _category: any;
-    private _isActivated: any;
-
-}
