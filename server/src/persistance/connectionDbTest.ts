@@ -8,20 +8,21 @@ const mongoServer = new MongoMemoryServer({});
 
 
 mongoose.Promise = Promise;
-export const connectDB = async () => {
+export const connectDB =  () => {
     let mongoUri;
-    if (RUN_LOCAL)
-        mongoUri = 'mongodb://localhost:27017/' + process.env.DB_TEST_NAME;
-    else
-        mongoUri = await mongoServer.getConnectionString();
     const mongooseOpts = {
         autoReconnect: true,
         reconnectTries: 5,
         reconnectInterval: 1
     };
+    if (RUN_LOCAL)
+        mongoUri = 'mongodb://localhost:27017/' + process.env.DB_TEST_NAME;
+    // else
+    //     mongoUri = mongoServer.getConnectionString();
+ 
 
-    await mongoose.connect(mongoUri, mongooseOpts);
+    mongoose.connect(mongoUri, mongooseOpts);
 }
-export const disconnectDB = async () => {
-    await mongoose.disconnect();
+export const disconnectDB =  () => {
+     mongoose.disconnect();
 }
