@@ -10,13 +10,20 @@ import { Product } from "../../productApi/models/product";
 import { Store } from "../../storeApi/models/store";
 import { StoreModel } from "./models/storeModel";
 import { ProductModel } from "./models/productModel";
-import { Message } from "../../usersApi/models/message";
 import { MessageModel } from "./models/messageModel";
+import { Message } from '../../storeApi/models/message';
+import {  Complaint } from './../../storeApi/models/complaint';
+import { ComplaintModel } from './models/complaintModel';
+import { Review } from '../../storeApi/models/review';
+import { ReviewModel } from './models/reviewModel';
 
 
 export const UserCollection :ICollection<User> = createCollection(
     UserModel,
     mongo => new User(mongo));
+
+
+
 
 export const RoleCollection :ICollection<Role> = createCollection(
     RoleModel,
@@ -37,3 +44,15 @@ export const StoreCollection :ICollection<Store> = createCollection(
 export const MessageCollection :ICollection<Message> = createCollection(
     MessageModel,
     mongo => new Message(mongo));
+
+
+export const ComplaintCollection :ICollection<Complaint> = createCollection(
+    ComplaintModel,
+    mongo => new Complaint(mongo));
+
+
+
+export const ReviewCollection :ICollection<Review> = createCollection(
+    ReviewModel,
+    mongo => new Review(mongo));
+    

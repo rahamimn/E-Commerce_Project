@@ -1,4 +1,69 @@
-import { fakeRole, fakeUser, fakeProduct, fakeStore, fakeCart, fakeMessage } from "../../test/fakes";
+// import { fakeRole, fakeUser, fakeProduct, fakeStore, fakeCart, fakeMessage } from "../../test/fakes";
+
+// import { UsersApi } from "./usersApi";
+// import Chance from 'chance';
+// import { STORE_OWNER, ADMIN, STORE_MANAGER } from "../consts";
+// import * as constants from '../consts'
+// import { connectDB, disconnectDB } from "../persistance/connectionDbTest";
+// import { UserCollection, RoleCollection, CartCollection, ProductCollection, StoreCollection, MessageCollection } from "../persistance/mongoDb/Collections";
+// import { User } from "./models/user";
+// import { Role } from "./models/role";
+// import { ObjectId } from "bson";
+
+
+// describe('users-api-integration',() => {
+//   let storeOwner, storeOwnerRole, storeManager, storeManagerRole, userWithoutRole,adminUser, roleAdmin;
+//   let product, store, cart, userWithAll, message;
+//   const usersApi  = new UsersApi();
+//   const chance = new Chance();
+
+//   beforeAll(async ()=>{
+//     await connectDB();
+//   });
+
+//   afterAll(()=>{
+//      disconnectDB();
+//   });
+
+//   beforeEach(async () => { //create database to work with
+//     message = await MessageCollection.insert(fakeMessage({}));
+//     product = await ProductCollection.insert(fakeProduct({}));
+
+//     store = await StoreCollection.insert(fakeStore({}));
+//     cart = await CartCollection.insert(fakeCart({
+//       store: store._id,
+//       items:[{
+//         product: product._id,
+//         amount:2
+//       }]
+//     }));
+//     userWithAll = await UserCollection.insert(fakeUser({carts:[cart.id], messages:[message.id]}));
+//     [adminUser, roleAdmin] = await roleWithUser({},{name: ADMIN});
+//     [storeOwner, storeOwnerRole] = await roleWithUser({},{name: STORE_OWNER, store: store.id });
+//     [storeManager, storeManagerRole] = await roleWithUser({},{name: STORE_MANAGER, store: store.id });
+//     userWithoutRole = await UserCollection.insert(fakeUser({}));
+
+//     cart.ofUser = userWithAll._id;
+//     await CartCollection.updateOne(cart);
+
+//     storeOwnerRole.appointees.push(storeManagerRole._id);
+//     await RoleCollection.updateOne(storeOwnerRole);
+//   });
+
+  // afterEach(()=>{
+  //   StoreCollection.drop();
+  //   ProductCollection.drop();
+  //   UserCollection.drop();
+  //   RoleCollection.drop();
+  //   CartCollection.drop();
+  // })
+  
+//   const roleWithUser = async (userOpt={}, roleOpt={}): Promise<[User, Role]> => {
+//     let userOfRole = await UserCollection.insert(fakeUser(userOpt)); 
+//     let role = fakeRole({
+//         ...roleOpt,
+//         ofUser: userOfRole.id
+//     });
 
 import { UsersApi } from "./usersApi";
 import Chance from 'chance';
@@ -9,6 +74,7 @@ import { UserCollection, RoleCollection, CartCollection, ProductCollection, Stor
 import { User } from "./models/user";
 import { Role } from "./models/role";
 import { ObjectId } from "bson";
+import { fakeMessage, fakeProduct, fakeStore, fakeCart, fakeUser, fakeRole } from "../../test/fakes";
 
 
 describe('users-api-integration',() => {
@@ -139,6 +205,9 @@ describe('users-api-integration',() => {
       await UserCollection.updateOne(userWithoutRole);
       const response = await usersApi.popNotifications(userWithoutRole.id);
 
+//     expect(response.status).toEqual(constants.OK_STATUS);
+//     expect(user._firstName).toEqual(userDetails._firstName);
+//   });
 
       expect(response).toMatchObject({status: constants.OK_STATUS, notifications:[userWithoutRole.notifications[0]] });
   });
@@ -150,6 +219,10 @@ describe('users-api-integration',() => {
       expect(response.messages[0].id).toEqual(message.id);
   });
 
+//     expect(response.status).toEqual(constants.OK_STATUS);
+//     expect(updatedcart._items[0].amount).toEqual(cartDetails._items[0].amount);
+//   });
+// });
 
   it('get user details ', async () => {
       const user = await UserCollection.findById(userWithAll.id);

@@ -1,169 +1,151 @@
-import {MonArray} from '../../../types/moongooseArray';
-import { Model, Document} from 'mongoose';
-import { ObjectID} from 'bson';
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+import { Message } from "./message";
 
-
-interface IStore{
-  name:   String,
-  workers?: MonArray<ObjectID>, //already an array of users
-  rank?:  number,
-  review?:  MonArray<ObjectID>, //array of review
-  purchasePolicy?: String,
-  storState?: number,
-}
-
-export interface IStoreModel extends IStore, Document{ } //add methods here
-
-export const storeScheme = new Schema({
-  name:   {type:String , unique: true },
-  workers:   [{type: Schema.Types.ObjectId, ref: 'User', default:[] }],
-  rank:  Number,
-  review: [{type: Schema.Types.ObjectId, ref: 'Review', default:[] }],
-  purchasePolicy: String,
-  storState: {type:Number  }
-
-});
-
-export let StoreModel : Model<IStoreModel>;
-try {
-    StoreModel = mongoose.model('Store');
-} catch (error) {
-    StoreModel =  mongoose.model('Store',storeScheme);
-}
-
-
-// const ISModel = (a: any ):IStoreModel => a;
-
-export class Store{
-
-	constructor(base) {
-     this._id = base._id;
-     this._name =  base.name;
-     this._workers = base.workers;
-     this._rank =  base.rank;
-     this._reviews =  base.reviews;
-     this._purchasePolicy = base.purchasePolicy;
-     this._storeState = base.storeState;
+export class Store {
+  constructor(base: any) {
+    this._id = base.id;
+    this._name = base.name;
+    this._workers = base.workers;
+    this._rank = base.rank;
+    this._review = base.reviews;
+    this._purchasePolicy = base.purchasePolicy;
+    this._storeState = base.storeState;
+    this._messages = base.messages;
   }
 
-    /**
-     * Getter name
-     * @return {  String}
-     */
-	public get name():   String {
-		return this._name;
-	}
+  private _id: string;
+  private _name: string;
+  private _workers: any[]; //already an array of users
+  private _rank: number;
+  private _review: any[]; //array of review
+  private _purchasePolicy: string;
+  private _storeState: string;
 
-    /**
-     * Getter workers
-     * @return {any[]}
-     */
-	public get workers(): any[] {
-		return this._workers;
-	}
-
-    /**
-     * Getter rank
-     * @return { number}
-     */
-	public get rank():  number {
-		return this._rank;
-	}
-
-    /**
-     * Getter reviews
-     * @return { any[]}
-     */
-	public get reviews():  any[] {
-		return this._reviews;
-	}
-
-    /**
-     * Getter purchasePolicy
-     * @return {String}
-     */
-	public get purchasePolicy(): String {
-		return this._purchasePolicy;
-	}
-
-    /**
-     * Getter storeState
-     * @return {number}
-     */
-	public get storeState(): number {
-		return this._storeState;
-	}
-
-    /**
-     * Setter name
-     * @param {  String} value
-     */
-	public set name(value:   String) {
-		this._name = value;
-	}
-
-    /**
-     * Setter workers
-     * @param {any[]} value
-     */
-	public set workers(value: any[]) {
-		this._workers = value;
-	}
-
-    /**
-     * Setter rank
-     * @param { number} value
-     */
-	public set rank(value:  number) {
-		this._rank = value;
-	}
-
-    /**
-     * Setter reviews
-     * @param { any[]} value
-     */
-	public set reviews(value:  any[]) {
-		this._reviews = value;
-	}
-
-    /**
-     * Setter purchasePolicy
-     * @param {String} value
-     */
-	public set purchasePolicy(value: String) {
-		this._purchasePolicy = value;
-	}
-
-    /**
-     * Setter storeState
-     * @param {number} value
-     */
-	public set storeState(value: number) {
-		this._storeState = value;
+  /**
+   * Getter id
+   * @return {string}
+   */
+  public get id(): string {
+    return this._id;
   }
 
-    /**
-     * Getter id
-     * @return {String}
-     */
-	public get id(): String {
-		return this._id;
-	}
+  /**
+   * Getter name
+   * @return {  string}
+   */
+  public get name(): string {
+    return this._name;
+  }
 
-    /**
-     * Setter id
-     * @param {String} value
-     */
-	public set id(value: String) {
-		this._id = value;
-	}
-  private _id: String;
-  private _name:   String;
-  private _workers: any[];
-  private _rank:  number;
-  private _reviews:  any[];
-  private _purchasePolicy: String;
-  private _storeState: number;
+  /**
+   * Getter workers
+   * @return {any[]}
+   */
+  public get workers(): any[] {
+    return this._workers;
+  }
+
+  /**
+   * Getter rank
+   * @return { number}
+   */
+  public get rank(): number {
+    return this._rank;
+  }
+
+  /**
+   * Getter review
+   * @return { any[]}
+   */
+  public get review(): any[] {
+    return this._review;
+  }
+
+  /**
+   * Getter purchasePolicy
+   * @return {string}
+   */
+  public get purchasePolicy(): string {
+    return this._purchasePolicy;
+  }
+
+  /**
+   * Getter storeState
+   * @return {string}
+   */
+  public get storeState(): string {
+    return this._storeState;
+  }
+
+  /**
+   * Getter messages
+   * @return {any[]}
+   */
+  public get messages(): any[] {
+    return this._messages;
+  }
+
+  /**
+   * Setter id
+   * @param {string} value
+   */
+  public set id(value: string) {
+    this._id = value;
+  }
+
+  /**
+   * Setter name
+   * @param {  string} value
+   */
+  public set name(value: string) {
+    this._name = value;
+  }
+
+  /**
+   * Setter workers
+   * @param {any[]} value
+   */
+  public set workers(value: any[]) {
+    this._workers = value;
+  }
+
+  /**
+   * Setter rank
+   * @param { number} value
+   */
+  public set rank(value: number) {
+    this._rank = value;
+  }
+
+  /**
+   * Setter review
+   * @param { any[]} value
+   */
+  public set review(value: any[]) {
+    this._review = value;
+  }
+
+  /**
+   * Setter purchasePolicy
+   * @param {string} value
+   */
+  public set purchasePolicy(value: string) {
+    this._purchasePolicy = value;
+  }
+
+  /**
+   * Setter storeState
+   * @param {string} value
+   */
+  public set storeState(value: string) {
+    this._storeState = value;
+  }
+
+  /**
+   * Setter messages
+   * @param {any[]} value
+   */
+  public set messages(value: any[]) {
+    this._messages = value;
+  }
+  private _messages: any[];
 }

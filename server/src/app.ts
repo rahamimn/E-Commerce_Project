@@ -1,5 +1,5 @@
+import { fakeStore, fakeMessage, fakeUser, fakeCart, fakeRole } from './../test/fakes';
 //import {storesApiRouter} from "./storeApi/storeRoutes";
-
 const mongoose = require('mongoose');
 import express = require('express');
 const path = require('path');
@@ -10,6 +10,9 @@ import {usersApiRouter} from './usersApi/userRoutes';
 //import {productsApiRouter} from "./productApi/productRoutes";
 import * as Constants from "./consts";
 import cors from 'cors';
+import { StoreCollection, ComplaintCollection, MessageCollection, UserCollection, CartCollection, ReviewCollection } from './persistance/mongoDb/Collections';
+import { getStore_test_from_app, disable_store_from_app, addStore_test_from_app, close_store_from_app, get_store_messages_test_from_app, get_store_workers_test_from_app } from '../test/aviv_fakes';
+
 
 require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
 const dbHost = process.env.DB_HOST;
@@ -62,3 +65,13 @@ app.use(usersApiRouter);
 // app.use(oredersApiRouter);
 const port = process.env.SERVER_PORT;
 app.listen(port, () => console.log(`listening on port ${port}!`));
+
+
+// FUNCTIONS THAT TEST THE FUNC THAT HAS BEEN DONE IN STORESAPI AND IMPLEMENTED IN FAKES
+// getStore_test_from_app({});
+// disable_store_from_app({});
+// addStore_test_from_app({});
+// close_store_from_app({});
+// get_store_messages_test_from_app({});
+
+// get_store_workers_test_from_app({});
