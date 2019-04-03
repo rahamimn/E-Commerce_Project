@@ -24,6 +24,7 @@ export interface IProductModel extends IProduct, Document{
 }
 
 const productScheme = new Schema({
+    storeId: {type: String}, 
     amountInventory: {type: Number}, 
     sellType: {type: String},
     price: {type: Number}, 

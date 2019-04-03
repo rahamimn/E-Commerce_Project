@@ -52,16 +52,17 @@ export const fakeCart = (opt: any = {}) => {
 export const fakeProduct = (opt: any = {}) => {
     return new Product({
         
-        amountInventory: opt.store || genObjectId(),
-        sellType: opt.sellType || chance.string(),
-        price: opt.price || chance.natural(),
-        coupons: opt.coupons || chance.string(),
+        id: genObjectId(),
+        amountInventory: opt.amountInventory || chance.natural(),
+        sellType: opt.sellType || chance.name(),
+        price: chance.natural(),
+        coupons: opt.coupons || chance.name(),
         acceptableDiscount: opt.acceptableDiscount || chance.natural(),
         discountPrice: opt.discountPrice || chance.natural(),
         rank: opt.rank || chance.natural(),
         reviews: opt.reviews || [genObjectId(), genObjectId()],
-        keyWords: opt.keyWords || [chance.string(),chance.string()],
-        category: opt.category || chance.string(),
+        keyWords: opt.keyWords || [chance.name(),chance.name()],
+        category: opt.category || chance.name(),
         isActivated: opt.isActivated || chance.bool(),
     });
 }
