@@ -20,6 +20,7 @@ export const connectDB = async () => {
         '?retryWrites=true' ;
         if(false){
             mongooseOpts= {
+                useNewUrlParser: true,
                 autoReconnect: true,
                 reconnectTries: 5,
                 reconnectInterval: 1

@@ -5,8 +5,8 @@
   "scripts": {
     "build": "tsc --watch",
     "start": "tsc && node dist/src/app.js",
-    "start:CleanTest": "tsc && node dist/src/app.js cleanTest ",
-    "start:Test": "tsc && node dist/src/app.js test",
+    "start:cleanLocal": "tsc && node dist/src/app.js cleanLocal ",
+    "start:local": "tsc && node dist/src/app.js local",
     "test": "tsc && jest --watchAll --runInBand spec.ts",
     "cover": "tsc && jest --coverage spec.ts",
     "debug": "tsc && ndb dist/src/app.js"
