@@ -9,7 +9,7 @@ export interface IStoresApi{
     getWorkers: (managerId: string, storeId: string) =>Promise <{status: number,  arrat_of_messages?: any[]}>, //needs to change to the message type once the moodle is build
     addReview:(userId: string, storeId: string, rank: number, comment: string) => void,
     getStoreMessages: (managerId: string, storeId: string) => Promise< {status:Number, arrat_of_messages?: any[]  }>,//(? for this version) //nseeds to change to the message type once the moodle is build
-    getStore: (storeName: string) => Promise <{status: number,  err?: string}>
+    getStore: (storeName: string) => Promise <{status: number,  err?: string, store?:any}>
     // AddDiscount: (ProductID: string, discountPercentage: string)=> Boolean,
     // addCondDiscount: (ProductID: string, discountPercentage: string, expirationDate: Date, condID: string) =>void,
 }

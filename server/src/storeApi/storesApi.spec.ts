@@ -1,7 +1,8 @@
 import {
   CLOSE_STORE_BY_ADMIN,
   CLOSE_STORE_BY_OWNER,
-  OPEN_STORE
+  OPEN_STORE,
+  
 } from "./../consts";
 import { fakeStore, fakeRole, fakeUser, fakeMessage } from "../../test/fakes";
 import Chance from "chance";
@@ -10,38 +11,48 @@ import { StoresApi } from "./storesApi";
 import {
   UserCollection,
   RoleCollection,
-  StoreCollection
+  StoreCollection,
 } from "../persistance/mongoDb/Collections";
+import { connectDB, disconnectDB } from "../persistance/connectionDbTest";
 
-describe("Store model", () => {
+describe("Store api model", () => {
   const storesApi = new StoresApi();
   const chance = new Chance();
-  /*it('chenge the name', async () => {
-        const new_store_name ="aviv the king";
-        const response = await storesApi.addStore(new_store_name);
-        expect(response.status).toEqual(OK_STATUS);
-        });*/
+  jest.setTimeout(10000);
 
-  beforeEach(async () => {
-    jest.setTimeout(900000);
+
+  beforeAll(()=>{
+    connectDB();
   });
 
+  // afterAll(async ()=>{
+  //   await disconnectDB();
+  // });
+
+
+  afterAll(async() => {
+    await StoreCollection.drop();
+    //ProductCollection.drop();
+    await UserCollection.drop();
+    await RoleCollection.drop();
+    //CartCollection.drop();
+  });
+
+
   it("test disable store (currentlly in app.ts)", async () => {
-    const storesApi  = new StoresApi();
-var user1 = fakeUser({});
-var user2 =  await UserCollection.insert(user1);
-// UserCollection.insert(user1);
-var role1 = fakeRole({name: "admin" , ofUser:user2.id });
-var role2 = await RoleCollection.insert(role1);
-var store1 = fakeStore({});
-var store2 =  await StoreCollection.insert(store1);
-const status_of_function = await storesApi.disableStore(user2.id, store2.id);
+    var user1 = fakeUser({});
+    var user2 =  await UserCollection.insert(user1);
+    // UserCollection.insert(user1);
+    var role1 = fakeRole({name: "admin" , ofUser:user2.id });
+    var role2 = await RoleCollection.insert(role1);
+    var store1 = fakeStore({});
+    var store2 =  await StoreCollection.insert(store1);
+    const status_of_function = await storesApi.disableStore(user2.id, store2.id);
 
     expect(status_of_function.status).toEqual(OK_STATUS);
   });
 
   it("test CLOSE STORE (currentlly in app.ts)", async () => {
-    const storesApi = new StoresApi();
     var user1 = fakeUser({});
     var user2 = await UserCollection.insert(user1);
     var user2_id = user2.id;
@@ -52,23 +63,20 @@ const status_of_function = await storesApi.disableStore(user2.id, store2.id);
     var store2 = await StoreCollection.insert(store1);
     var hi = await storesApi.closeStore(user2_id, store2.id);
 
-    expect(hi.status).toEqual(CLOSE_STORE_BY_OWNER);
+    expect(hi.status).toEqual(OK_STATUS);
   });
 
   it("test add store (currentlly in app.ts)", async () => {
-    const storesApi = new StoresApi();
     var user1 = fakeUser({});
     var user2 = await UserCollection.insert(user1);
     const status_of_add_store = await storesApi.addStore(
       user2.id,
       chance.string()
     ); //may need to change type of user2 to string not String
-    expect(status_of_add_store.status).toEqual(OPEN_STORE);
+    expect(status_of_add_store.store.storeState).toEqual(OPEN_STORE);
   });
 
   it("test GET STORE (currentlly in app.ts)", async () => {
-    const storesApi = new StoresApi();
-
     var store1 = fakeStore({});
     var store2 = await StoreCollection.insert(store1);
     var store_name = store2.name;
@@ -79,8 +87,6 @@ const status_of_function = await storesApi.disableStore(user2.id, store2.id);
   });
 
   it("test GET STORE MESSAGES (currentlly in app.ts)", async () => {
-    const storesApi = new StoresApi();
-
     var user1 = fakeUser({});
     var user2 = await UserCollection.insert(user1);
     var user2_id = user2.id.toString();
@@ -104,7 +110,6 @@ const status_of_function = await storesApi.disableStore(user2.id, store2.id);
   });
 
   it("test GET STORE WORKERS (currentlly in app.ts)", async () => {
-    const storesApi = new StoresApi();
 
     var user1 = fakeUser({});
     var user2 = await UserCollection.insert(user1);
@@ -117,12 +122,10 @@ const status_of_function = await storesApi.disableStore(user2.id, store2.id);
     const store_from_db = await storesApi.getWorkers(user2_id, store2.store.id);
     expect(store_from_db.arrat_of_messages.length).toEqual(1);
   });
+    /*it('chenge the name', async () => {
+        const new_store_name ="aviv the king";
+        const response = await storesApi.addStore(new_store_name);
+        expect(response.status).toEqual(OK_STATUS);
+        });*/
 
-  afterEach(() => {
-    StoreCollection.drop();
-    //ProductCollection.drop();
-    UserCollection.drop();
-    RoleCollection.drop();
-    //CartCollection.drop();
-  });
 });

@@ -16,15 +16,15 @@ describe('users-api-integration',() => {
   let product, store, cart, userWithAll, message;
   const usersApi  = new UsersApi();
   const chance = new Chance();
-  jest.setTimeout(60000);
+  jest.setTimeout(10000);
 
-  beforeAll(()=>{
-       connectDB();
+  beforeAll(async()=>{
+       await connectDB();
   });
 
-  afterAll(async ()=>{
-      await disconnectDB();
-  });
+//   afterAll(async ()=>{
+//       await disconnectDB();
+//   });
 
   beforeEach(async () => { //create database to work with
       message = await MessageCollection.insert(fakeMessage({}));
@@ -53,12 +53,12 @@ describe('users-api-integration',() => {
       await RoleCollection.updateOne(storeOwnerRole);
   });
 
-  afterEach(()=>{
-      StoreCollection.drop();
-      ProductCollection.drop();
-      UserCollection.drop();
-      RoleCollection.drop();
-      CartCollection.drop();
+  afterEach(async()=>{
+      await StoreCollection.drop();
+      await ProductCollection.drop();
+      await UserCollection.drop();
+      await RoleCollection.drop();
+      await CartCollection.drop();
   })
 
   const roleWithUser = async (userOpt={}, roleOpt={}): Promise<[User, Role]> => {
@@ -82,7 +82,7 @@ describe('users-api-integration',() => {
 
       expect(response).toMatchObject({status: constants.OK_STATUS});
       expect(updatedCart).toBeTruthy();
-      expect(updatedCart.items[0].product).toEqual(product.id);
+      expect(updatedCart.items[0].product.equals(product.id)).toBe(true);
   });
 
   it('add product to cart of user with cart of specific store ', async () => {
@@ -92,7 +92,7 @@ describe('users-api-integration',() => {
 
       expect(response).toMatchObject({status: constants.OK_STATUS});
       expect(updatedCart).toBeTruthy();
-      expect(updatedCart.items[0].product).toEqual(product.id);
+      expect(updatedCart.items[0].product.equals(product.id)).toBe(true);
       expect(updatedCart.items[0].amount).toEqual(7);
   });
 

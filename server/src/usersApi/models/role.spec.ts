@@ -6,7 +6,7 @@ import { connectDB, disconnectDB } from "../../persistance/connectionDbTest";
 import { UserCollection, RoleCollection } from '../../persistance/mongoDb/Collections';
 import { User } from './user';
 import { Role } from './role';
-jest.setTimeout(60000);
+jest.setTimeout(10000);
 
 describe('Role model',() => {
 
@@ -21,7 +21,7 @@ describe('Role model',() => {
     afterAll(async () => {
       await UserCollection.drop();
       await RoleCollection.drop();
-      await disconnectDB();
+      //await disconnectDB();
     });
 
     const roleWithUser = async (userOpt={}, roleOpt={}): Promise<[User, Role]> => {

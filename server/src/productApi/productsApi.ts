@@ -11,7 +11,7 @@ export class ProductsApi implements IProductApi{
     async addProduct(storeId: String, amountInventory: Number, sellType: String, price: Number, rank: Number, reviews: String[], keyWords: String[], category: String){
 
         try{ 
-            await ProductCollection.insert(new Product({
+            const product = await ProductCollection.insert(new Product({
                 storeId: storeId,
                 amountInventory: amountInventory,
                 sellType: sellType,
@@ -25,7 +25,7 @@ export class ProductsApi implements IProductApi{
                 category: category,
                 //isActivated: isActivated 
             }));
-            return {status: OK_STATUS}
+            return {status: OK_STATUS , product: product}
 
         } catch(error) {
             return ({status: BAD_REQUEST});

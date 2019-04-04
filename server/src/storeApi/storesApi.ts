@@ -79,7 +79,7 @@ export class StoresApi implements IStoresApi {
             return {store: storeDetails ,status: BAD_REQUEST};
         }
         else {
-        return {store: storeDetails, status: OK_STATUS};
+            return {store: storeDetails, status: OK_STATUS};
         }
     };
     
