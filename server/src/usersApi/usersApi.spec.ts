@@ -18,8 +18,8 @@ describe('users-api-integration',() => {
   const chance = new Chance();
   jest.setTimeout(10000);
 
-  beforeAll(async()=>{
-       await connectDB();
+  beforeAll(()=>{
+        connectDB();
   });
 
 //   afterAll(async ()=>{

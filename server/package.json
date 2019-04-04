@@ -5,6 +5,7 @@
   "scripts": {
     "build": "tsc --watch",
     "start": "tsc && node dist/src/app.js",
+    "start:accetanceTest": "tsc && node dist/src/app.js acceptanceTest",
     "start:cleanLocal": "tsc && node dist/src/app.js cleanLocal ",
     "start:local": "tsc && node dist/src/app.js local",
     "test": "tsc && jest --watchAll --runInBand spec.ts",

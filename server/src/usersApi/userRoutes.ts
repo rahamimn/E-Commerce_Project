@@ -23,7 +23,7 @@ async function login(req: Request, res: express.Response) {
                 res.send(response);
             else {
                 req.session.token = await createToken('' + response.user);
-                res.send({status: response.status});
+                res.send(response);
             }
         }
     }
