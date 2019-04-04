@@ -1,15 +1,11 @@
-import { Message } from './models/message';
-import { MonArray } from './../../types/moongooseArray.d';
-import { BAD_REQUEST } from './../consts';
-import { StoreCollection, UserCollection, RoleCollection } from '../persistance/mongoDb/Collections';
-import { ObjectId } from "bson";
+
+import { BAD_REQUEST, STORE_OWNER, CLOSE_STORE_BY_OWNER, CLOSE_STORE_BY_ADMIN } from './../consts';
+import { StoreCollection, UserCollection, RoleCollection, MessageCollection } from '../persistance/mongoDb/Collections';
 import { OK_STATUS, BAD_USERNAME, OPEN_STORE, ADMIN } from "../consts";
 import { Store } from './models/store';
-import { workers } from 'cluster';
-import * as Constants from "../consts";
-import bcrypt = require('bcryptjs');
 import { Role } from '../usersApi/models/role';
 import { IStoresApi } from './storesApiInterface';
+import { Message } from '../usersApi/models/message';
 
 export class StoresApi implements IStoresApi {
   
@@ -18,7 +14,7 @@ export class StoresApi implements IStoresApi {
     async addStore( storeNewOwnerId: String, storeName: string){
         try {
             const role_of_owner = await RoleCollection.insert(new Role({
-                name:"store owner", ofUser: storeNewOwnerId , appointor: storeNewOwnerId
+                name:STORE_OWNER, ofUser: storeNewOwnerId , appointor: storeNewOwnerId
             }));
             const new_store_added = await StoreCollection.insert(new Store({
                 name: storeName,
@@ -50,11 +46,11 @@ export class StoresApi implements IStoresApi {
     async closeStore(ownerId: String, storeId: string){
         
         //const user_details = await UserCollection.findOne({userName: adminId});
-        const role_details_of_user = await RoleCollection.findOne({ofUser: ownerId , name: "store owner"});
+        const role_details_of_user = await RoleCollection.findOne({ofUser: ownerId , name: STORE_OWNER});
 
         if(!role_details_of_user){
             console.log("bad role could not find" );
-            return ({status: Constants.BAD_REQUEST});
+            return ({status: BAD_REQUEST});
 
         }
 
@@ -62,15 +58,15 @@ export class StoresApi implements IStoresApi {
 
         if(!store_object_from_db){
             console.log("bad store could not find" );
-            return ({status: Constants.BAD_REQUEST});
+            return ({status: BAD_REQUEST});
         }
 
-        store_object_from_db.storeState = Constants.CLOSE_STORE_BY_OWNER;
+        store_object_from_db.storeState = CLOSE_STORE_BY_OWNER;
 
         const store_curr = await StoreCollection.updateOne(store_object_from_db);
 
         //console.log("store_curr : "+ store_curr.storeState );
-        return ({status: Constants.OK_STATUS});
+        return ({status: OK_STATUS});
     }
 
     async getStore (storeName: String) {
@@ -79,18 +75,18 @@ export class StoresApi implements IStoresApi {
             return {store: storeDetails ,status: BAD_REQUEST};
         }
         else {
-            return {store: storeDetails, status: OK_STATUS};
+        return {store: storeDetails, status: OK_STATUS};
         }
     };
     
 
     async getStoreMessages(ownerId: string, storeID: string) {
         //const user_details = await UserCollection.findOne({userName: adminId});
-        const role_details_of_user = await RoleCollection.findOne({ofUser: ownerId , name: "store owner"});
+        const role_details_of_user = await RoleCollection.findOne({ofUser: ownerId , name: STORE_OWNER});
 
         if(!role_details_of_user){
             //console.log("bad role could not find" );
-            return ({status: Constants.BAD_REQUEST});
+            return ({status: BAD_REQUEST});
 
         }
 
@@ -102,18 +98,18 @@ export class StoresApi implements IStoresApi {
             console.log("fail in get store messages return from func ");
 
             //console.log("bad store could not find" );
-            return ({status: Constants.BAD_REQUEST});
+            return ({status: BAD_REQUEST});
         }
         return ({status: OK_STATUS,  arrat_of_messages: store_object_from_db.messages});
     };
     
     async getWorkers(ownerId: string, storeID: string) {
         //const user_details = await UserCollection.findOne({userName: adminId});
-        const role_details_of_user = await RoleCollection.findOne({ofUser: ownerId , name: "store owner"});
+        const role_details_of_user = await RoleCollection.findOne({ofUser: ownerId , name: STORE_OWNER});
 
         if(!role_details_of_user){
             //console.log("bad role could not find" );
-            return ({status: Constants.BAD_REQUEST});
+            return ({status: BAD_REQUEST});
 
         }
 
@@ -125,7 +121,7 @@ export class StoresApi implements IStoresApi {
             console.log("fail in get store messages return from func ");
 
             //console.log("bad store could not find" );
-            return ({status: Constants.BAD_REQUEST});
+            return ({status: BAD_REQUEST});
         }
         return ({status: OK_STATUS,  arrat_of_messages: store_object_from_db.workers});
     };
@@ -140,7 +136,7 @@ export class StoresApi implements IStoresApi {
 
         if(!role_details_of_user){
             //console.log("bad role could not find" );
-            return ({status: Constants.BAD_REQUEST });
+            return ({status: BAD_REQUEST });
 
         }
 
@@ -148,16 +144,41 @@ export class StoresApi implements IStoresApi {
 
         if(!store_object_from_db){
             //console.log("bad store could not find" );
-            return ({status: Constants.BAD_REQUEST});
+            return ({status: BAD_REQUEST});
         }
 
-        store_object_from_db.storeState = Constants.CLOSE_STORE_BY_ADMIN;
+        store_object_from_db.storeState = CLOSE_STORE_BY_ADMIN;
 
         const store_curr = await StoreCollection.updateOne(store_object_from_db);
 
         //console.log("store_curr : "+ store_curr.storeState );
-        return ({status: Constants.OK_STATUS, MonArray: store_curr.Message});
+        return ({status: OK_STATUS, MonArray: store_curr.Message});
     }
+
+    async sendMessage(workerId, storeId, title, body, userId) {
+        let worker =  await RoleCollection.findOne({ofUser: workerId , store: storeId});
+        const toUser = await UserCollection.findById(userId);
+        const store = await StoreCollection.findById(storeId);
+        if(!worker || !toUser || !store)
+            return ({status: BAD_REQUEST});
+
+        const message = await MessageCollection.insert(
+            new Message({
+                date: new Date(),
+                from:storeId,
+                title,
+                body,
+                to: userId
+            }));
+        
+        store.messages.push(message.id);
+        await StoreCollection.updateOne(store);
+
+        toUser.messages.push(message.id);
+        await UserCollection.updateOne(toUser);
+   
+        return ({status: OK_STATUS , message});
+    } 
         
     
     /*

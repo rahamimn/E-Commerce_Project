@@ -1,5 +1,6 @@
 import { Cart } from "./models/cart";
-import { Message } from "../storeApi/models/message";
+import { Message } from "./models/message";
+import { User } from "./models/user";
 
 export interface IUsersApi{
     login: (userName: String, password: String) => Promise<{status:Number, err?: String , user?: any   }>,
@@ -18,8 +19,8 @@ export interface IUsersApi{
     getCart:(userId:String , cartId:String) => Promise< {status:Number, err?: String , cart?: any  }>,
     getCarts:(userId:String) => Promise< {status:Number, err?: String , carts?: Cart[]  }>,
     getMessages: (userId:String) => Promise< {status:Number, err?: String , messsages?: Message[]  }>,
-    sendMessage: () => void,
-    deleteUser: (userId: string, ) => void
+    deleteUser: (adminId: string, userToDisActivate:String ) =>  Promise< {status:Number, err?: String , user?: User  }>,
+    sendMessage: (userId:String, title:String, body:String, toId:String, toIsStore: Boolean) => Promise<{status:Number, err?: String, message?:Message}>,
     //next version
     // RemoveStoreOwner: (storeID: string, userNameToBeRemoved: string, storeOwnerID: string) => Boolean, //return true if succeed. can change to void for test to pass
     // RemoveStoreManager: (storeID: string, userNameToBeRemoved: string, storeOwnerID: string) => Boolean, //return true if succeed. can change to void for test to pass

@@ -10,6 +10,7 @@ export interface IStoresApi{
     addReview:(userId: string, storeId: string, rank: number, comment: string) => void,
     getStoreMessages: (managerId: string, storeId: string) => Promise< {status:Number, arrat_of_messages?: any[]  }>,//(? for this version) //nseeds to change to the message type once the moodle is build
     getStore: (storeName: string) => Promise <{status: number,  err?: string, store?:any}>
+    sendMessage:(workerId: String,storeId: string, title:String, body:String, userId:String) => Promise <{status: number,  err?: string, message?:any}>
     // AddDiscount: (ProductID: string, discountPercentage: string)=> Boolean,
     // addCondDiscount: (ProductID: string, discountPercentage: string, expirationDate: Date, condID: string) =>void,
 }

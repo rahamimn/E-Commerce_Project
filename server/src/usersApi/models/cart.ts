@@ -73,7 +73,6 @@ export class Cart{
   
     public addItem = function (productId, amount){
       const item = this._items.filter( item =>item.product.equals(productId));
-      console.log(item);
       if(item.length > 1)
         return -1;
       if(item.length === 0){

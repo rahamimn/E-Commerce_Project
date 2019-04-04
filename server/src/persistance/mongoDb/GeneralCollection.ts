@@ -52,7 +52,7 @@ export const createCollection = (TModel,extractT) =>
     const updateMongoFields = (modelDb,model)=>{
         const keys = Object.keys(model);
         keys.forEach(key => {
-            if(key !== '_id'  && model[key]){  
+            if(key !== '_id'  && model[key] !== undefined){  
                 modelDb[key.substring(1)] = model[key];
             }
         });
