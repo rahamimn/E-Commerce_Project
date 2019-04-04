@@ -11,7 +11,7 @@ import { User } from "./models/user";
 
 const verifyPassword = (candidatePassword:String, salt: String, userPassword: String) => {
     const candidateHashedPassword = hashPassword(candidatePassword,salt);
-    return candidateHashedPassword == userPassword;
+    return candidateHashedPassword===userPassword;
 };
 
 const hashPassword = (password: String, salt: String) => {
