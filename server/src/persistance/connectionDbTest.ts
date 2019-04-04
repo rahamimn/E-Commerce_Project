@@ -16,8 +16,7 @@ export const connectDB = async () => {
             useNewUrlParser: true,
         };
 
-        mongoUri = 'mongodb+srv://' + 'SANAS' + ':' + 'sanas123456' + '@' + 'workshopse-siwox.mongodb.net' + '/' + 'Test-Commerce' +
-        '?retryWrites=true' ;
+        mongoUri = 'mongodb://localhost:27017/unit-test-local' ;
         if(false){
             mongooseOpts= {
                 useNewUrlParser: true,
