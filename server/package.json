@@ -7,7 +7,7 @@
     "start": "tsc && node dist/src/app.js",
     "start:cleanLocal": "tsc && node dist/src/app.js cleanLocal ",
     "start:local": "tsc && node dist/src/app.js local",
-    "test": "tsc && jest --watchAll --runInBand spec.ts",
+    "test": "tsc && jest --watchAll --runInBand product.spec.ts productsApi.spec.ts",
     "cover": "tsc && jest --coverage spec.ts",
     "debug": "tsc && ndb dist/src/app.js"
   },

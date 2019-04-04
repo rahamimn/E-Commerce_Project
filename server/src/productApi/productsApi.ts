@@ -8,29 +8,30 @@ import { IProductApi } from "./productsApiInterface";
 export class ProductsApi implements IProductApi{
 
 
-    async addProduct(storeId: String, amountInventory: Number, sellType: String, price: Number, rank: Number, reviews: String[], keyWords: String[], category: String){
+    async addProduct(storeId: String, amountInventory: Number, sellType: String, price: Number, keyWords: String[], category: String){
 
         try{ 
-            const product = await ProductCollection.insert(new Product({
+            const productToInsert = await ProductCollection.insert(new Product({
                 storeId: storeId,
                 amountInventory: amountInventory,
                 sellType: sellType,
                 price: price,
-                // coupons: coupons,
-                // acceptableDiscount: acceptableDiscount,
-                // discountPrice: discountPrice,
-                rank: rank,
-                reviews: reviews,
+                coupons: null,
+                acceptableDiscount: null,
+                discountPrice: null,
+                rank: null,
+                reviews: null,
                 keyWords: keyWords,
                 category: category,
-                //isActivated: isActivated 
+                isActivated: true
             }));
-            return {status: OK_STATUS , product: product}
+            return {status: OK_STATUS , product: productToInsert}
 
         } catch(error) {
             return ({status: BAD_REQUEST});
         }
     }
+    
 
     removeProduct: (productId: String) => void;
     updateProduct: (productId: String, newPrice: Number) => void; //need to be changed to the productModel

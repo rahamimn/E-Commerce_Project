@@ -24,16 +24,10 @@ describe('Product model',() => {
     const response = await productsApi.addProduct(
     product.storeId,
     product.amountInventory,
-      product.sellType,
-      product.price,
-      //product.coupons,
-      //product.acceptableDiscount,
-      //product.discountPrice,
-      product.rank,
-      product.reviews,
-      product.keyWords,
-      product.category,
-      //product.isActivated 
+    product.sellType,
+    product.price,
+    product.keyWords,
+    product.category
     );
 
     const productFromDB = await ProductCollection.findById(response.product.id);
