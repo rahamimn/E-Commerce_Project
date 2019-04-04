@@ -22,7 +22,7 @@ var genObjectId = mongoose.Types.ObjectId;
 
 export const fakeRole = (opt: any = {}) => {
     return new Role({
-        id : genObjectId(),
+        _id : genObjectId(),
         name : opt.name || chance.name(),
         appointor : opt.appointor || genObjectId(),
         store: opt.store || genObjectId(),
@@ -34,7 +34,7 @@ export const fakeRole = (opt: any = {}) => {
 
 export const fakeUser = (opt: any = {}, isGuest = false) => {
         return new User({
-            id : genObjectId(),
+            _id : genObjectId(),
             notifications : opt.notifications || [],
             userName: opt.userName || chance.name() ,
             password: opt.password || chance.country(),
@@ -49,7 +49,7 @@ export const fakeUser = (opt: any = {}, isGuest = false) => {
 
 export const fakeStore = (opt: any = {}) => {
     return new Store({
-        id : genObjectId(),
+        _id : genObjectId(),
         name: opt.userName || chance.name() ,
         workers : opt.workers || [],
         rank: opt.rank || chance.integer(),
@@ -63,7 +63,7 @@ export const fakeStore = (opt: any = {}) => {
 
 export const fakeReview = (opt: any = {}) => {
     return new Review({
-        id : genObjectId(),
+        _id : genObjectId(),
         date: opt.date || chance.date() ,
         registeredUser : opt.registeredUser || genObjectId(),
         rank: opt.rank || chance.integer(),
@@ -75,7 +75,7 @@ export const fakeReview = (opt: any = {}) => {
 
 export const fakeMessage = (opt: any = {}) => {
     return new Message({
-        id : genObjectId(),
+        _id : genObjectId(),
         date:  chance.date({string: true}), 
         from : opt.from || genObjectId(),
         to : opt.to || genObjectId(),
@@ -86,7 +86,7 @@ export const fakeMessage = (opt: any = {}) => {
 
 export const fakeComplaint = (opt: any = {}) => {
     return new Complaint({
-        id : genObjectId(),
+        _id : genObjectId(),
         date: opt.date || chance.date(), 
         user : opt.user || genObjectId(),
         order: opt.order ||chance.string(),
@@ -99,7 +99,7 @@ export const fakeComplaint = (opt: any = {}) => {
 
 export const fakeCart = (opt: any = {}) => {
     return new Cart({
-        id: genObjectId(),
+        _id: genObjectId(),
         ofUser: opt.ofUser || genObjectId(),
         store: opt.store || genObjectId(),
         items: opt.items || [],
@@ -109,7 +109,7 @@ export const fakeCart = (opt: any = {}) => {
 export const fakeProduct = (opt: any = {}) => {
     return new Product({
         
-        id: genObjectId(),
+        _id: genObjectId(),
         amountInventory: opt.amountInventory || chance.natural(),
         sellType: opt.sellType || chance.name(),
         price: chance.natural(),

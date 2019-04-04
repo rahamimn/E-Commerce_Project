@@ -1,13 +1,11 @@
+import { ProductCollection } from "../../persistance/mongoDb/Collections";
+import { BAD_REQUEST, OK_STATUS } from "../../consts";
+
 export class Product {
+
 
     private _id: String;
     private _storeId: String;
-
-    /**
-     * Getter storeId
-     * @return {String}
-     */
-
     private _amountInventory: Number;
     private _sellType: String;
     private _price: Number;
@@ -273,6 +271,5 @@ export class Product {
      */
 	public set isActivated(value: Boolean) {
 		this._isActivated = value;
-	}}
-
-    
+	}
+};

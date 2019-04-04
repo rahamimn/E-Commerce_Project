@@ -32,7 +32,7 @@ function addProduct(req: Request, res: express.Response) {
 
         if (!amountInventory || !sellType || !price || !category )
             res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
-        const response = productsApi.addProduct(storeId, amountInventory, sellType, price, rank, reviews, keyWords, category);
+        const response = productsApi.addProduct(storeId, amountInventory, sellType, price, keyWords, category);
         res.send(response);
     }
     catch (err) {
