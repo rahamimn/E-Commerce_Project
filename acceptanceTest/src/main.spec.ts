@@ -2,83 +2,76 @@ import nodeFetch from 'node-fetch'
 import fetchFun from 'fetch-cookie'
 import {initializeDatabase} from "./setUp";
 import * as Constants from "../../server/src/consts";
-
 const fetch = fetchFun(nodeFetch);
 
-beforeAll(() => {
-    return initializeDatabase();
-});
-
 describe('acceptance Test', () => {
+    
+    beforeAll(() => {
+        return initializeDatabase();
+    });
 
     it('register', async () => {
-        const fieldsNames = ['userName', 'password'];
-        const fieldsValues = ['user123456','Flintstone'];
-        const params = createMessage('post', fieldsNames, fieldsValues);
+        const response = await fetchServer('/usersApi/register','post', {
+            userName: 'user123456',
+            password: 'Flintstone'
+        });
 
-        let res = await fetch('http://localhost:3000/usersApi/register', params);
-        let converted = await res.json();
-        expect(converted.status).toBe(Constants.OK_STATUS);
+        expect(response.status).toBe(Constants.OK_STATUS);
+    });
+    
+    it('register with exist userName should fale', async () => {
+        const response = await fetchServer('/usersApi/register','post', {
+            userName: 'user1',
+            password: 'pass23456'
+        });
+
+        expect(response.status).toBe(Constants.BAD_USERNAME);
     });
 
     it('goodLogin', async () => {
-        const fieldsNames = ['userName', 'password'];
-        const fieldsValues = ['user1','password1'];
-        const params = createMessage('post', fieldsNames, fieldsValues);
-
-        let res = await fetch('http://localhost:3000/usersApi/login', params);
-        let converted = await res.json();
-        expect(converted.status).toBe(Constants.OK_STATUS);       //check status
-        expect(converted.user).toBeDefined();           //check we found userName
-
-        console.log(converted);
-        res = await fetch('http://localhost:3000/usersApi/popNotifications', {
-            method: 'post',
-            headers: {'Content-Type': 'application/json'},
+        const response = await fetchServer('/usersApi/login','post', {
+            userName: 'user1',
+            password: 'password1'
         });
-        converted = await res.json();
-        console.log(converted);
+        const responseNotifications = await fetchServer('/usersApi/popNotifications','post');
+ 
+        expect(response.status).toBe(Constants.OK_STATUS);       //check status
+        expect(response.user).toBeDefined();           //check we found userName
+        expect(responseNotifications.status).toBe(Constants.OK_STATUS);
     });
 
     it('logOut', async () => {
-        const fieldsNames = [];
-        const fieldsValues = [];
-        const params = createMessage('post', fieldsNames, fieldsValues);
+        const response = await fetchServer('/usersApi/logout','post');
 
-        let res = await fetch('http://localhost:3000/usersApi/logout', params);
-        let converted = await res.json();
-        expect(converted.status).toBe(Constants.OK_STATUS);       //check status
+        expect(response.status).toBe(Constants.OK_STATUS);       //check status
     });
 
-    it('BadLogin', async () => {
+    it('BadLogin userName incorrect', async () => {
+        const response = await fetchServer('/usersApi/login','post', {
+            userName: 'badUserName',
+            password: 'password1'
+        });
 
-        //bad password
-        const fieldsNames = ['userName', 'password'];
-        const fieldsValues = ['user2','badPassword'];
-        const params = createMessage('post', fieldsNames, fieldsValues);
+        expect(response.status).toBe(Constants.BAD_USERNAME);       //check status
+    });
 
-        let res = await fetch('http://localhost:3000/usersApi/login', params);
-        let converted = await res.json();
-        expect(converted.status).toBe(Constants.BAD_PASSWORD);       //check status
-
-        //bad userName
-        const fieldsValues2 = ['badUserName','password1'];
-        const params2 = createMessage('post', fieldsNames, fieldsValues2);
-
-        let res2 = await fetch('http://localhost:3000/usersApi/login', params2);
-        let converted2 = await res2.json();
-        expect(converted2.status).toBe(Constants.BAD_USERNAME);       //check status
+    it('BadLogin password incorrect', async () => {
+        const response = await  fetchServer('/usersApi/login','post', {
+            userName: 'user2',
+            password: 'badPassword'
+        });
+       
+        expect(response.status).toBe(Constants.BAD_PASSWORD);       //check status
     });
 });
 
-export function createMessage(methodType: string, namesList: string[], valuesList: string[]) {
-    let resBody = {};
-    namesList.map(function (name, i) {
-        resBody[name] = valuesList[i];
-    });
-    console.log(resBody);
-    const res = {method:methodType,
-                body:JSON.stringify(resBody),
-                headers:{'Content-Type': 'application/json'}};
-    return res;
+export async function fetchServer(route: String, methodType: string, body?:any) {
+
+    let res = await fetch(`http://localhost:3000${route}`,{
+        method:methodType,
+        body: body? JSON.stringify(body): undefined,
+        headers:{'Content-Type': 'application/json'}
+    }); 
+    let json = await res.json();
+    return json;
 }

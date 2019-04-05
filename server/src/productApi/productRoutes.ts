@@ -11,7 +11,7 @@ const productsApi = new ProductsApi();
 
 productsApiRouter.post('/productsApi/addProduct', addProduct);
 
-function addProduct(req: Request, res: express.Response) {
+async function addProduct(req: Request, res: express.Response) {
     try {
        verifyToken(req.session.token).userId;
        const storeId = req.session.storeId; 
@@ -32,7 +32,7 @@ function addProduct(req: Request, res: express.Response) {
 
         if (!amountInventory || !sellType || !price || !category )
             res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
-        const response = productsApi.addProduct(storeId, amountInventory, sellType, price, keyWords, category);
+        const response = await productsApi.addProduct(storeId, amountInventory, sellType, price, keyWords, category);
         res.send(response);
     }
     catch (err) {
@@ -42,13 +42,13 @@ function addProduct(req: Request, res: express.Response) {
 
 productsApiRouter.post('/productsApi/getProducts', getProducts);
 
-function getProducts(req: Request, res: express.Response) {
+async function getProducts(req: Request, res: express.Response) {
     try {
         verifyToken(req.session.token).userId;
         const storeID = req.session.storeID;
         const category = req.body.category;
         const keyWords = req.body.keyWords;
-        const response = productsApi.getProducts(storeID, category, keyWords);
+        const response = await productsApi.getProducts(storeID, category, keyWords);
         res.send(response);
     }
     catch (err) {
@@ -58,13 +58,13 @@ function getProducts(req: Request, res: express.Response) {
 
 productsApiRouter.post('/productsApi/removeProduct', removeProduct);
 
-function removeProduct(req: Request, res: express.Response) {
+async function removeProduct(req: Request, res: express.Response) {
     try {
         verifyToken(req.session.token).userId;
         const productId = req.session.productId;
         if (!productId)
             throw Error(ERR_GENERAL_MSG);
-        const response = productsApi.removeProduct(productId);
+        const response =await productsApi.removeProduct(productId);
         res.send(response);
     }
     catch (err) {
@@ -74,7 +74,7 @@ function removeProduct(req: Request, res: express.Response) {
 
 productsApiRouter.post('/productsApi/addReview', addReview);
 
-function addReview(req: Request, res: express.Response) {
+async function addReview(req: Request, res: express.Response) {
     try {
         const productId = req.body.productId;
         const userId = verifyToken(req.session.token).userId;
@@ -83,7 +83,7 @@ function addReview(req: Request, res: express.Response) {
 
         if (!rank)
             res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
-        const response = productsApi.addReview(productId, userId, rank, comment);
+        const response = await productsApi.addReview(productId, userId, rank, comment);
         res.send(response);
     }
     catch (err) {
