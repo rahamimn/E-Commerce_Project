@@ -11,7 +11,7 @@ import {usersApiRouter} from './usersApi/userRoutes';
 import * as Constants from "./consts";
 import cors from 'cors';
 
-require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
+require('dotenv').config({ path: path.resolve(__dirname, '../../..env') });
 const dbHost = process.env.DB_HOST;
 const dbName = process.env.DB_NAME;
 const dbUser = process.env.DB_USER;
