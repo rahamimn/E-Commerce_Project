@@ -155,7 +155,9 @@ export class StoresApi implements IStoresApi {
         return ({status: OK_STATUS, MonArray: store_curr.Message});
     }
 
-    async sendMessage(workerId, storeId, title, body, userId) {
+    async sendMessage(workerId, storeId, title, body, userName) {
+        const userId = userName;
+        //todo find the userId from username: userToDisActivate == userName
         let worker =  await RoleCollection.findOne({ofUser: workerId , store: storeId});
         const toUser = await UserCollection.findById(userId);
         const store = await StoreCollection.findById(storeId);

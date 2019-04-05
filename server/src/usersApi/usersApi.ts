@@ -24,7 +24,7 @@ export class UsersApi implements IUsersApi{
     async login(userName ,password){
         try {
             const user = await UserCollection.findOne({userName});
-            if(!user || user.isDeactivated)
+            if(user.isDeactivated)
                 return {status: Constants.BAD_REQUEST , err: "user is disActivated"};
             
             if(verifyPassword(password, user.salt, user.password)) {
@@ -229,7 +229,9 @@ export class UsersApi implements IUsersApi{
         return {status: Constants.OK_STATUS , notifications};
     }
 
-    async removeRole(userId, userIdRemove, storeId){
+    async removeRole(userId, userNameRemove, storeId){
+        const userIdRemove = userNameRemove;
+        //todo find the userId from username: userToDisActivate == userName
         const roleUserId = await RoleCollection.findOne({ ofUser: userId, store: storeId });
         const role = await RoleCollection.findOne({ ofUser: userIdRemove, store: storeId });
         if(!role || !roleUserId)
@@ -252,7 +254,9 @@ export class UsersApi implements IUsersApi{
         return ({status: Constants.OK_STATUS , messages});
     }
 
-    async deleteUser(adminId, userToDisActivate){
+    async deleteUser(adminId, userNameToDisActivate){
+        const userToDisActivate = userNameToDisActivate;
+        //todo find the userId from username: userToDisActivate == userName
         let admin = await UserCollection.findById(userToDisActivate);
         let user = await UserCollection.findById(userToDisActivate);
         let adminRole = await RoleCollection.find({ofUser: adminId, name:ADMIN});
@@ -265,8 +269,10 @@ export class UsersApi implements IUsersApi{
         return ({status: Constants.OK_STATUS , user});
     }
 
-   async sendMessage(userId, title, body, toId , toIsStore){
-        let toUser,toStore; 
+   async sendMessage(userId, title, body, toName , toIsStore){
+        const toId = toName;
+       //todo find the userId from username: userToDisActivate == userName
+       let toUser,toStore;
         let user = await UserCollection.findById(userId);
 
         if(toIsStore)
