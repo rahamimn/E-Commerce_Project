@@ -230,10 +230,11 @@ export class UsersApi implements IUsersApi{
     }
 
     async removeRole(userId, userNameRemove, storeId){
-        const userIdRemove = userNameRemove;
-        //todo find the userId from username: userToDisActivate == userName
         const roleUserId = await RoleCollection.findOne({ ofUser: userId, store: storeId });
-        const role = await RoleCollection.findOne({ ofUser: userIdRemove, store: storeId });
+        const userofRoleToDelete = await UserCollection.findOne({ userName: userNameRemove });
+        if(!userofRoleToDelete)
+            return {status: Constants.BAD_REQUEST, err: 'There is no user with this user name'};
+        const role = await RoleCollection.findOne({ ofUser: userofRoleToDelete.id, store: storeId });
         if(!role || !roleUserId)
             return {status: Constants.BAD_REQUEST, err: 'role of userId or userIdRemove not exist'};
 
@@ -255,10 +256,8 @@ export class UsersApi implements IUsersApi{
     }
 
     async deleteUser(adminId, userNameToDisActivate){
-        const userToDisActivate = userNameToDisActivate;
-        //todo find the userId from username: userToDisActivate == userName
-        let admin = await UserCollection.findById(userToDisActivate);
-        let user = await UserCollection.findById(userToDisActivate);
+        let admin = await UserCollection.findById(adminId);
+        let user = await UserCollection.findOne({userName: userNameToDisActivate});
         let adminRole = await RoleCollection.find({ofUser: adminId, name:ADMIN});
 
         if(!admin || !adminRole || !user)
@@ -270,15 +269,15 @@ export class UsersApi implements IUsersApi{
     }
 
    async sendMessage(userId, title, body, toName , toIsStore){
-        const toId = toName;
-       //todo find the userId from username: userToDisActivate == userName
-       let toUser,toStore;
+        let toUser,toStore; 
         let user = await UserCollection.findById(userId);
 
         if(toIsStore)
-            toStore = await StoreCollection.findById(toId);
+            toStore = await StoreCollection.findOne({name:toName});
+
         else
-            toUser = await UserCollection.findById(toId);
+            toUser = await UserCollection.findOne({userName:toName});
+        
         if(!user || !(toUser || toStore))
             return ({status: Constants.BAD_REQUEST});
 
@@ -288,7 +287,7 @@ export class UsersApi implements IUsersApi{
                 from:userId,
                 title,
                 body,
-                to: toId
+                to: toIsStore? toStore.id: toUser.id
             }));
 
         user.messages.push(message.id);
