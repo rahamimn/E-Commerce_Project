@@ -303,3 +303,41 @@ function getMessages(req: Request, res: express.Response) {
         res.send({status: Constants.BAD_REQUEST});
     }
 }
+
+usersApiRouter.post('/usersApi/deleteUser', deleteUser);
+
+function deleteUser(req: Request, res: express.Response) {
+    try {
+        const userId = verifyToken(req.session.token).userId;
+        const userNameToDisActivate = req.body.userNameToDisActivate;
+        if (!userNameToDisActivate)
+            res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
+
+        const response = usersApi.deleteUser(userId, userNameToDisActivate);
+        res.send(response);
+    }
+    catch (err) {
+        res.send({status: Constants.BAD_REQUEST});
+    }
+}
+
+
+usersApiRouter.post('/usersApi/sendMessage', sendMessage);
+
+function sendMessage(req: Request, res: express.Response) {
+    try {
+        const userId = verifyToken(req.session.token).userId;
+        const title = req.body.title;
+        const body = req.body.body;
+        const toName = req.body.toName;
+        const toIsStore = req.body.toIsStore;
+        if (!title || !body || !toName || !toIsStore)
+            res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
+
+        const response = usersApi.sendMessage(userId, title, body, toName, toIsStore);
+        res.send(response);
+    }
+    catch (err) {
+        res.send({status: Constants.BAD_REQUEST});
+    }
+}
