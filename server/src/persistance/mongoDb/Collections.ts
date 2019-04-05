@@ -11,7 +11,7 @@ import { Store } from "../../storeApi/models/store";
 import { StoreModel } from "./models/storeModel";
 import { ProductModel } from "./models/productModel";
 import { MessageModel } from "./models/messageModel";
-import { Message } from '../../storeApi/models/message';
+import { Message } from '../../usersApi/models/message';
 import {  Complaint } from './../../storeApi/models/complaint';
 import { ComplaintModel } from './models/complaintModel';
 import { Review } from '../../storeApi/models/review';

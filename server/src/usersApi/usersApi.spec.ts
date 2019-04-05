@@ -12,7 +12,7 @@ import { ObjectId } from "bson";
 
 
 describe('users-api-integration',() => {
-  let storeOwner, storeOwnerRole, storeManager, storeManagerRole, userWithoutRole,adminUser, roleAdmin;
+  let storeOwner, storeOwnerRole,storeOwner2, storeOwnerRole2, storeManager, storeManagerRole, userWithoutRole,adminUser, roleAdmin;
   let product, store, cart, userWithAll, message;
   const usersApi  = new UsersApi();
   const chance = new Chance();
@@ -28,11 +28,8 @@ describe('users-api-integration',() => {
 
   beforeEach(async () => { //create database to work with
       message = await MessageCollection.insert(fakeMessage({}));
-      //console.log(message);
       product = await ProductCollection.insert(fakeProduct({}));
-      //console.log(product);
       store = await StoreCollection.insert(fakeStore({}));
-      //console.log(store);
       cart = await CartCollection.insert(fakeCart({
           store: store._id,
           items:[{
@@ -43,14 +40,18 @@ describe('users-api-integration',() => {
       userWithAll = await UserCollection.insert(fakeUser({carts:[cart.id], messages:[message.id]}));
       [adminUser, roleAdmin] = await roleWithUser({},{name: ADMIN});
       [storeOwner, storeOwnerRole] = await roleWithUser({},{name: STORE_OWNER, store: store.id });
-      [storeManager, storeManagerRole] = await roleWithUser({},{name: STORE_MANAGER, store: store.id });
+      [storeOwner2, storeOwnerRole2] = await roleWithUser({},{name: STORE_OWNER, store: store.id, appointor: storeOwnerRole.id });
+      [storeManager, storeManagerRole] = await roleWithUser({},{name: STORE_MANAGER, store: store.id , appointor: storeOwnerRole2.id});
       userWithoutRole = await UserCollection.insert(fakeUser({}));
 
       cart.ofUser = userWithAll._id;
       await CartCollection.updateOne(cart);
 
-      storeOwnerRole.appointees.push(storeManagerRole._id);
+      storeOwnerRole.appointees.push(storeOwnerRole2.id);
       await RoleCollection.updateOne(storeOwnerRole);
+
+      storeOwnerRole2.appointees.push(storeManagerRole._id);
+      await RoleCollection.updateOne(storeOwnerRole2);
   });
 
   afterEach(async()=>{
@@ -75,6 +76,12 @@ describe('users-api-integration',() => {
 
       return [userOfRole,role];
   }
+  it('login to disactivate user ', async () => {
+    await usersApi.deleteUser(adminUser.id,userWithoutRole.id);
+    let response = await usersApi.login(userWithoutRole.userName, userWithoutRole.password);
+
+    expect(response.status).toEqual(constants.BAD_REQUEST);
+  });
 
   it('add product to cart of user ', async () => {
       const response = await usersApi.addProductToCart(userWithoutRole.id, store.id,product.id,5);
@@ -131,7 +138,7 @@ describe('users-api-integration',() => {
   it('update permissions', async () => {
       const permissions = [ chance.domain() ];
 
-      const response = await usersApi.updatePermissions(storeOwner.id, storeManager.userName, store.id, permissions );
+      const response = await usersApi.updatePermissions(storeOwner2.id, storeManager.userName, store.id, permissions );
       const userRole = await RoleCollection.findOne({ofUser:storeManager.id, name: STORE_MANAGER});
       expect(response).toMatchObject({status: constants.OK_STATUS});
       expect(userRole.permissions[0]).toBe(permissions[0]);
@@ -195,4 +202,83 @@ describe('users-api-integration',() => {
       expect(response.status).toEqual(constants.OK_STATUS);
       expect(updatedcart._items[0].amount).toEqual(cartDetails._items[0].amount);
   });
+
+  it('update cart details ', async () => {
+    let response = await usersApi.getCart(cart.ofUser,cart.id);
+
+    const cartDetails = response.cart;
+
+    cartDetails._items = [{product: new ObjectId(), amount: chance.integer()}];
+
+    response = await usersApi.updateCart(cartDetails);
+    const res = await usersApi.getCart(cart.ofUser,cartDetails._id);
+    const updatedcart = res.cart;
+
+    expect(response.status).toEqual(constants.OK_STATUS);
+    expect(updatedcart._items[0].amount).toEqual(cartDetails._items[0].amount);
+  });
+
+  it('sendMessage to user ', async () => {
+      let response = await usersApi.sendMessage(
+        storeOwner.id,
+        chance.sentence(),
+        chance.sentence(),
+        storeManager.id,
+        false
+      );
+
+      const users = await UserCollection.findByIds([storeOwner.id,storeManager.id]);
+      const message = await MessageCollection.findById(response.message.id);
+
+      expect(response.status).toEqual(constants.OK_STATUS);
+      expect(response.message.id).toEqual(message.id);
+      expect(users[0].messages[0].equals(response.message.id)).toBeTruthy();
+      expect(users[1].messages[0].equals(response.message.id)).toBeTruthy();
+  });
+
+  it('sendMessage to store ', async () => {
+    let response = await usersApi.sendMessage(
+      adminUser.id,
+      chance.sentence(),
+      chance.sentence(),
+      store.id,
+      true 
+    );
+
+    const user = await UserCollection.findById(adminUser.id);
+    const storeWithMessage = await StoreCollection.findById(store.id);
+    const message = await MessageCollection.findById(response.message.id);
+
+    expect(response.status).toEqual(constants.OK_STATUS);
+    expect(response.message.id).toEqual(message.id);
+    expect(user.messages[0].equals(response.message.id)).toBeTruthy();
+    expect(storeWithMessage.messages[0].equals(response.message.id)).toBeTruthy();
+  });
+
+  it('delete user ', async () => {
+    let response = await usersApi.deleteUser(adminUser.id,userWithoutRole.id);
+
+    const user = await UserCollection.findById(userWithoutRole.id);
+
+    expect(response.status).toEqual(constants.OK_STATUS);
+    expect(response.user.isDeactivated).toBeTruthy();
+    expect(user.isDeactivated).toBeTruthy();
+
+  });
+
+  it('remove role ', async () => {
+    const response = await usersApi.removeRole(storeOwner.id,storeOwner2.id ,store.id);
+
+    const roleStoreOwner  = await RoleCollection.findById(storeOwnerRole.id);
+    const roleStoreOwner2  = await RoleCollection.findById(storeOwnerRole2.id);
+    const roleStoreManager  = await RoleCollection.findById(storeManagerRole.id);
+
+    expect(response.status).toEqual(constants.OK_STATUS);
+    expect(roleStoreOwner.appointees.length).toBe(0);
+    expect(roleStoreOwner2).toBeFalsy();
+    expect(roleStoreManager).toBeFalsy();
+});
+
+
+
 });

@@ -2,6 +2,7 @@ import {
   CLOSE_STORE_BY_ADMIN,
   CLOSE_STORE_BY_OWNER,
   OPEN_STORE,
+  STORE_OWNER,
   
 } from "./../consts";
 import { fakeStore, fakeRole, fakeUser, fakeMessage } from "../../test/fakes";
@@ -12,8 +13,10 @@ import {
   UserCollection,
   RoleCollection,
   StoreCollection,
+  MessageCollection,
 } from "../persistance/mongoDb/Collections";
 import { connectDB, disconnectDB } from "../persistance/connectionDbTest";
+import { Message } from "../usersApi/models/message";
 
 describe("Store api model", () => {
   const storesApi = new StoresApi();
@@ -57,7 +60,7 @@ describe("Store api model", () => {
     var user2 = await UserCollection.insert(user1);
     var user2_id = user2.id;
     // UserCollection.insert(user1);
-    var role1 = fakeRole({ name: "store owner", ofUser: user2.id });
+    var role1 = fakeRole({ name: STORE_OWNER, ofUser: user2.id });
     await RoleCollection.insert(role1);
     var store1 = fakeStore({});
     var store2 = await StoreCollection.insert(store1);
@@ -91,7 +94,7 @@ describe("Store api model", () => {
     var user2 = await UserCollection.insert(user1);
     var user2_id = user2.id.toString();
     // UserCollection.insert(user1);
-    var role1 = fakeRole({ name: "store owner", ofUser: user2.id });
+    var role1 = fakeRole({ name: STORE_OWNER, ofUser: user2.id });
     await RoleCollection.insert(role1);
 
     var store1 = fakeStore({});
@@ -107,6 +110,28 @@ describe("Store api model", () => {
       store_after_update.id
     );
     expect(store_from_db.arrat_of_messages.length).toEqual(1);
+  });
+
+  it("test SEND MESSAGE to user (currentlly in app.ts)", async () => {
+    var store = await StoreCollection.insert(fakeStore({}));
+    var owner = await UserCollection.insert(fakeUser({}));
+    var user = await UserCollection.insert(fakeUser({}));
+    var role = await RoleCollection.insert(fakeRole({ name: STORE_OWNER, ofUser: owner.id ,store: store.id  }));
+
+    const response = await storesApi.sendMessage(
+      owner.id,
+      store.id,
+      chance.sentence(),
+      chance.sentence(),
+      user.id);
+    const message = await MessageCollection.findById(response.message.id);
+    const userWithMessage = await UserCollection.findById(user.id)
+    const storeWithMessage = await StoreCollection.findById(store.id)
+
+    expect(response.status).toEqual(OK_STATUS);
+    expect(message).toBeTruthy();
+    expect(userWithMessage.messages[0].equals(response.message.id)).toBeTruthy();
+    expect(storeWithMessage.messages[0].equals(response.message.id)).toBeTruthy();
   });
 
   it("test GET STORE WORKERS (currentlly in app.ts)", async () => {
