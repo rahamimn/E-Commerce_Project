@@ -18,12 +18,11 @@ export interface IMessageModel extends IMessage, Document{
 
 const messageScheme = new Schema({
 
-  date:   {type: String, default: ""},
-    from:   {type: Schema.Types.ObjectId, ref: 'User' || 'Store' , required: true },
-    to: {type: Schema.Types.ObjectId, ref: 'User' || 'Store' , required: true }, 
+    date:   {type: String, default: ""},
+    from:   {type: Schema.Types.ObjectId, required: true },
+    to: {type: Schema.Types.ObjectId,  required: true }, 
     title:  {type: String , default: "" },
     body:  {type: String , default: "" },
-
 });
 
 

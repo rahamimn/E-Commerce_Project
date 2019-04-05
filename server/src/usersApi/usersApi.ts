@@ -3,15 +3,16 @@ import * as Constants from "../consts";
 import bcrypt = require('bcryptjs');
 
 import {STORE_OWNER,STORE_MANAGER,ADMIN} from '../consts';
-import { UserCollection, CartCollection, ProductCollection, RoleCollection, MessageCollection } from "../persistance/mongoDb/Collections";
+import { UserCollection, CartCollection, ProductCollection, RoleCollection, MessageCollection, StoreCollection } from "../persistance/mongoDb/Collections";
 import { Cart } from "./models/cart";
 import { Role } from "./models/role";
 import { User } from "./models/user";
+import { Message } from "./models/message";
 
 
 const verifyPassword = (candidatePassword:String, salt: String, userPassword: String) => {
     const candidateHashedPassword = hashPassword(candidatePassword,salt);
-    return candidateHashedPassword == userPassword;
+    return candidateHashedPassword===userPassword;
 };
 
 const hashPassword = (password: String, salt: String) => {
@@ -23,6 +24,9 @@ export class UsersApi implements IUsersApi{
     async login(userName ,password){
         try {
             const user = await UserCollection.findOne({userName});
+            if(user.isDeactivated)
+                return {status: Constants.BAD_REQUEST , err: "user is disActivated"};
+            
             if(verifyPassword(password, user.salt, user.password)) {
                 return{status: Constants.OK_STATUS, user:user.id};
             }
@@ -225,13 +229,20 @@ export class UsersApi implements IUsersApi{
         return {status: Constants.OK_STATUS , notifications};
     }
 
-    async removeRole(userId, userIdRemove, storeId){
+    async removeRole(userId, userNameRemove, storeId){
+        const userIdRemove = userNameRemove;
+        //todo find the userId from username: userToDisActivate == userName
+        const roleUserId = await RoleCollection.findOne({ ofUser: userId, store: storeId });
         const role = await RoleCollection.findOne({ ofUser: userIdRemove, store: storeId });
-        if(!role)
-            return {status: Constants.BAD_REQUEST};
-        if(role && role.appointor === userId)
+        if(!role || !roleUserId)
+            return {status: Constants.BAD_REQUEST, err: 'role of userId or userIdRemove not exist'};
+
+        if(role.appointor.equals(roleUserId.id)){
             await role.delete(true);
-        return {status: Constants.OK_STATUS };
+            return {status: Constants.OK_STATUS };
+        }
+        else
+            return {status: Constants.BAD_REQUEST, err: 'not appointee of commiter' };
     }
 
     async getMessages(userId){
@@ -243,13 +254,54 @@ export class UsersApi implements IUsersApi{
         return ({status: Constants.OK_STATUS , messages});
     }
 
-    deleteUser(){
-        //TODO
+    async deleteUser(adminId, userNameToDisActivate){
+        const userToDisActivate = userNameToDisActivate;
+        //todo find the userId from username: userToDisActivate == userName
+        let admin = await UserCollection.findById(userToDisActivate);
+        let user = await UserCollection.findById(userToDisActivate);
+        let adminRole = await RoleCollection.find({ofUser: adminId, name:ADMIN});
+
+        if(!admin || !adminRole || !user)
+            return {status: Constants.BAD_REQUEST};
+        user.isDeactivated = true; 
+
+        user = await UserCollection.updateOne(user);
+        return ({status: Constants.OK_STATUS , user});
     }
 
-    sendMessage(){
-        //TODO
-    }
+   async sendMessage(userId, title, body, toName , toIsStore){
+        const toId = toName;
+       //todo find the userId from username: userToDisActivate == userName
+       let toUser,toStore;
+        let user = await UserCollection.findById(userId);
 
+        if(toIsStore)
+            toStore = await StoreCollection.findById(toId);
+        else
+            toUser = await UserCollection.findById(toId);
+        if(!user || !(toUser || toStore))
+            return ({status: Constants.BAD_REQUEST});
+
+        const message = await MessageCollection.insert(
+            new Message({
+                date: new Date(),
+                from:userId,
+                title,
+                body,
+                to: toId
+            }));
+
+        user.messages.push(message.id);
+        await UserCollection.updateOne(user);
+
+        if(toIsStore){
+            toStore.messages.push(message.id);
+            await StoreCollection.updateOne(toStore);
+        }else{
+            toUser.messages.push(message.id);
+            await UserCollection.updateOne(toUser);
+        }
+        return ({status: Constants.OK_STATUS , message});
+    }
 
 }

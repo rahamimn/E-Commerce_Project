@@ -1,4 +1,3 @@
-import { Message } from "./message";
 
 export class Store {
   constructor(base: any) {

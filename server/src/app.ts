@@ -10,6 +10,7 @@ import {usersApiRouter} from './usersApi/userRoutes';
 //import {productsApiRouter} from "./productApi/productRoutes";
 import * as Constants from "./consts";
 import cors from 'cors';
+import { setDefaultData } from '../test/accetpanceTestUtils';
 
 require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
 const dbHost = process.env.DB_HOST;
@@ -18,14 +19,23 @@ const dbUser = process.env.DB_USER;
 const dbPassword = process.env.DB_PASSWORD;
 
 // Conenct to DB(
-if(process.argv.some( arg => arg === 'cleanLocal')){
+
+if(process.argv.some( arg => arg === 'acceptanceTest')){
+    mongoose.connect('mongodb://localhost:27017/acceptance-test', {useNewUrlParser: true},
+    async () => {
+        console.log(`connection to :  acceptance-test (locally) after cleaning`);
+        await mongoose.connection.db.dropDatabase();
+        await setDefaultData();
+    });
+}
+else if(process.argv.some( arg => arg === 'cleanLocal')){
     mongoose.connect('mongodb://localhost:27017/' + process.env.DB_TEST_NAME, {useNewUrlParser: true},
     () => {
         console.log(`connection to :  ${process.env.DB_TEST_NAME} (locally) after cleaning`);
         mongoose.connection.db.dropDatabase();
     });
 }
-if(process.argv.some( arg => arg === 'local')) {
+else  if(process.argv.some( arg => arg === 'local')) {
     console.log(`connection to :  ${process.env.DB_TEST_NAME} (locally)`);
     mongoose.connect('mongodb://localhost:27017/' + process.env.DB_TEST_NAME, {useNewUrlParser: true});
 }

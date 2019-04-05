@@ -4,12 +4,13 @@ import {StoresApi} from "./storesApi";
 import {verifyToken} from "../jwt";
 import * as Constants from "../consts";
 import {ERR_GENERAL_MSG} from "../consts";
+import {usersApiRouter} from "../usersApi/userRoutes";
 
 export const storesApiRouter = express.Router();
 
 const storesApi = new StoresApi();
 
-storesApiRouter.get('/storesApi/addStore', addStore);
+storesApiRouter.post('/storesApi/addStore', addStore);
 
 function addStore(req: Request, res: express.Response) {
     try {
@@ -28,7 +29,7 @@ function addStore(req: Request, res: express.Response) {
 }
 
 
-storesApiRouter.get('/storesApi/disableStore', disableStore);
+storesApiRouter.post('/storesApi/disableStore', disableStore);
 
 function disableStore(req: Request, res: express.Response) {
     try {
@@ -46,7 +47,7 @@ function disableStore(req: Request, res: express.Response) {
     }
 }
 
-storesApiRouter.get('/storesApi/closeStore', closeStore);
+storesApiRouter.post('/storesApi/closeStore', closeStore);
 
 function closeStore(req: Request, res: express.Response) {
     try {
@@ -64,7 +65,7 @@ function closeStore(req: Request, res: express.Response) {
     }
 }
 
-storesApiRouter.get('/storesApi/getWorkers', getWorkers);
+storesApiRouter.post('/storesApi/getWorkers', getWorkers);
 
 function getWorkers(req: Request, res: express.Response) {
     try {
@@ -82,7 +83,7 @@ function getWorkers(req: Request, res: express.Response) {
     }
 }
 
-storesApiRouter.get('/storesApi/addReview', addReview);
+storesApiRouter.post('/storesApi/addReview', addReview);
 
 function addReview(req: Request, res: express.Response) {
     try {
@@ -106,7 +107,7 @@ function addReview(req: Request, res: express.Response) {
 }
 
 
-storesApiRouter.get('/storesApi/getStoreMessages', getStoreMessages);
+storesApiRouter.post('/storesApi/getStoreMessages', getStoreMessages);
 
 function getStoreMessages(req: Request, res: express.Response) {
     try {
@@ -125,7 +126,7 @@ function getStoreMessages(req: Request, res: express.Response) {
 }
 
 
-storesApiRouter.get('/storesApi/getStore', getStore);
+storesApiRouter.post('/storesApi/getStore', getStore);
 
 function getStore(req: Request, res: express.Response) {
     try {
@@ -143,7 +144,7 @@ function getStore(req: Request, res: express.Response) {
     }
 }
 
-storesApiRouter.get('/storesApi/RemoveStoreOwner', RemoveStoreOwner);
+storesApiRouter.post('/storesApi/RemoveStoreOwner', RemoveStoreOwner);
 
 function RemoveStoreOwner(req: Request, res: express.Response) {
     try {
@@ -155,6 +156,30 @@ function RemoveStoreOwner(req: Request, res: express.Response) {
             const response = storesApi.getStore(storeName);
             res.send(response);
         }
+    }
+    catch (err) {
+        res.send({status: Constants.BAD_REQUEST});
+    }
+}
+
+usersApiRouter.post('/storesApi/sendMessage', sendMessage);
+
+function sendMessage(req: Request, res: express.Response) {
+    try {
+        const userId = verifyToken(req.session.token).userId;
+        const title = req.body.title;
+        const body = req.body.body;
+        const toName = req.body.toName;
+        const storeId = req.session.storeId;
+
+        if (!storeId)
+            throw Error(ERR_GENERAL_MSG);
+
+        if (!title || !body || !toName)
+            res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
+
+        const response = storesApi.sendMessage(userId, storeId, title, body, toName);
+        res.send(response);
     }
     catch (err) {
         res.send({status: Constants.BAD_REQUEST});

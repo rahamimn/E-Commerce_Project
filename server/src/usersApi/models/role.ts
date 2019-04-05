@@ -128,7 +128,7 @@ export class Role {
     async delete(removeFromAppointor: Boolean){
         if(removeFromAppointor){
             const appointor = await RoleCollection.findById(this.appointor);
-            appointor.appointees = appointor.appointees.filter(appointee => appointee === this.id);
+            appointor.appointees = appointor.appointees.filter(appointee => !appointee.equals(this.id));
             await RoleCollection.updateOne(appointor);
         }
         const RolesToDelete = await RoleCollection.findByIds(this.appointees); 
