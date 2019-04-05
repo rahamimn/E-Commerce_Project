@@ -76,12 +76,14 @@ productsApiRouter.post('/productsApi/addReview', addReview);
 
 function addReview(req: Request, res: express.Response) {
     try {
+        const productId = req.body.productId;
         const userId = verifyToken(req.session.token).userId;
         const rank = req.body.rank;
         const comment = req.body.comment;
+
         if (!rank)
             res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
-        const response = productsApi.addReview(userId, rank, comment);
+        const response = productsApi.addReview(productId, userId, rank, comment);
         res.send(response);
     }
     catch (err) {

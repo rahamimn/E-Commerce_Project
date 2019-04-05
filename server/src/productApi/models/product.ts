@@ -1,5 +1,6 @@
 import { ProductCollection } from "../../persistance/mongoDb/Collections";
 import { BAD_REQUEST, OK_STATUS } from "../../consts";
+import { Review } from "../../storeApi/models/review";
 
 export class Product {
 
@@ -13,7 +14,7 @@ export class Product {
     private _acceptableDiscount: Number;
     private _discountPrice: Number;
     private _rank: Number;
-    private _reviews: String[];
+    private _reviews: Review[];
     private _keyWords: String[];
     private _category: String;
     private _isActivated: Boolean;
@@ -34,39 +35,58 @@ export class Product {
         this._isActivated = base.isActivated;
     }
 
-    // public getProductDetails (){
-    //     const {
-    //         _id,
-    //         _amountInventory,
-    //         _sellType,
-    //         _price,
-    //         _coupons,
-    //         _acceptableDiscount,
-    //         _discountPrice,
-    //         _rank,
-    //         _reviews,
-    //         _keyWords,
-    //         _category,
-    //         _isActivated,
-    //     } = this;
-    //     return ({
-    //         _id,
-    //         _amountInventory,
-    //         _sellType,
-    //         _price,
-    //         _coupons,
-    //         _acceptableDiscount,
-    //         _discountPrice,
-    //         _rank,
-    //         _reviews,
-    //         _keyWords,
-    //         _category,
-    //         _isActivated,
-    //     });
-    // }
+
+    public updateDetails (productDetails){ 
+        this.amountInventory = productDetails._amountInventory;
+        this.sellType = productDetails._sellType;
+        this.price = productDetails._price;
+        this.coupons = productDetails._coupons;
+        this.acceptableDiscount = productDetails._acceptableDiscount;
+        this.discountPrice = productDetails._discountPrice;
+        this.rank = productDetails._rank;
+        this.reviews = productDetails._reviews;
+        this.keyWords = productDetails._keyWords;
+        this.category = productDetails._category;
+        this.isActivated = productDetails._isActivated;
+     }
+
+     public getProductDetails (){
+        const {
+            _id,
+            _amountInventory,
+            _sellType,
+            _price,
+            _coupons,
+            _acceptableDiscount,
+            _discountPrice,
+            _rank,
+            _reviews,
+            _keyWords,
+            _category,
+            _isActivated,
+        } = this;
+        return ({
+            _id,
+            _amountInventory,
+            _sellType,
+            _price,
+            _coupons,
+            _acceptableDiscount,
+            _discountPrice,
+            _rank,
+            _reviews,
+            _keyWords,
+            _category,
+            _isActivated,
+        });
+    }
+
+    public pushReview (reviewToPush){
+            this.reviews.push(reviewToPush);
+    }
 
 
-
+ 
 
     /**
      * Getter id
@@ -134,9 +154,9 @@ export class Product {
 
     /**
      * Getter reviews
-     * @return {String[]}
+     * @return {Review[]}
      */
-	public get reviews(): String[] {
+	public get reviews(): Review[] {
 		return this._reviews;
 	}
 
@@ -230,9 +250,9 @@ export class Product {
 
     /**
      * Setter reviews
-     * @param {String[]} value
+     * @param {Review[]} value
      */
-	public set reviews(value: String[]) {
+	public set reviews(value: Review[]) {
 		this._reviews = value;
 	}
 
@@ -271,5 +291,8 @@ export class Product {
      */
 	public set isActivated(value: Boolean) {
 		this._isActivated = value;
-	}
+    }
+    
+
+
 };

@@ -4,11 +4,12 @@ import { ProductsApi } from './productsApi';
 import { OK_STATUS } from '../consts';
 import { ProductCollection } from '../persistance/mongoDb/Collections';
 import { connectDB, disconnectDB } from '../persistance/connectionDbTest';
+import { Review } from '../storeApi/models/review';
 
 describe('Product model',() => {
 
-  const chance = new Chance();
-  const productsApi = new ProductsApi();
+  let chance = new Chance();
+  let productsApi = new ProductsApi();
   jest.setTimeout(10000);  
 
   beforeAll(()=>{
@@ -19,9 +20,9 @@ describe('Product model',() => {
   //   await disconnectDB();
   // });
 
-  it('addProduct - Product', async () => {
-    const product = fakeProduct({});
-    const response = await productsApi.addProduct(
+  it('addProduct - Test', async () => {
+    let product = fakeProduct({});
+    let response = await productsApi.addProduct(
     product.storeId,
     product.amountInventory,
     product.sellType,
@@ -30,10 +31,77 @@ describe('Product model',() => {
     product.category
     );
 
-    const productFromDB = await ProductCollection.findById(response.product.id);
+    let productFromDB = await ProductCollection.findById(response.product.id);
 
     expect(response).toMatchObject({status: OK_STATUS});
     expect(productFromDB.id).toBeTruthy();
   });
 
+  it('removeProduct- Test', async () => {
+
+    let product = fakeProduct({});
+    let response = await productsApi.addProduct(product.storeId, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
+    let product_BeforeRemove = await ProductCollection.findById(response.product.id);
+    let product_AfterRemove = await productsApi.removeProduct(product_BeforeRemove.id);
+  
+    expect(product_BeforeRemove.isActivated).toBeTruthy;
+    expect(product_AfterRemove.product.isActivated).toBeFalsy;
+  
+  });
+
+  it('updateProduct - Test', async () => {
+    let product = fakeProduct({});
+    let productToDB = await productsApi.addProduct(product.storeId, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
+    let productFromDB = await productsApi.getProductDetails(productToDB.product.id);
+
+    let productDetails = productFromDB.product;
+    productDetails._sellType = "updated_selltype";
+    productDetails._amountInventory = 42;
+    let productAfterUpdate = await productsApi.updateProduct(productDetails._id, productDetails);
+
+    expect(productAfterUpdate.status).toEqual(OK_STATUS);
+    expect(productAfterUpdate.product.sellType).toEqual(productDetails._sellType);
+    expect(productAfterUpdate.product.amountInventory).toEqual(productDetails._amountInventory);
 });
+
+//  it('addReview - Test', async () => {
+
+//     let product = fakeProduct({});
+//     let productToDB = await productsApi.addProduct(product.storeId, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
+//     let productFromDB = await productsApi.getProductDetails(productToDB.product.id);
+
+//     let productDetails = productFromDB.product;
+//     let review = new Review({ comment: "comment", date: Date.now(), id: "productId" ,rank: 4,  registeredUser: "userId"});
+//     let productAfterReviewAdded = await productsApi.addReview(productDetails._id, review.registeredUser, review.rank, review.comment);
+
+//     expect(productAfterReviewAdded.product.reviews).toEqual(review);
+// });
+
+it('getProducts - Test', async () => {
+    //let productsApi = new ProductsApi();
+    let product = fakeProduct({});
+    let productFromDB = await productsApi.addProduct(product.storeId, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
+    // let product2 = fakeProduct({});
+    // let productFromDB2 = await productsApi.addProduct(product2.storeId, product2.amountInventory, product2.sellType, product2.price, product2.keyWords, product2.category);
+    
+    let storeId = productFromDB.product.storeId;
+    let category = productFromDB.product.category;
+    let keyWords = productFromDB.product.keyWords;
+
+    // console.log("storeId = ", productFromDB2.product.storeId)
+    // console.log("category  = ", productFromDB2.product.category);
+    // console.log("keyWords  = ", productFromDB2.product.keyWords);
+
+    let res = await productsApi.getProducts(storeId, category, keyWords)
+    // console.log("products = ", res.products)
+    // console.log("END")
+
+    expect(res.products === [productFromDB.product]);
+});
+
+
+
+
+});
+
+

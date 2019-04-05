@@ -29,7 +29,6 @@ export const createCollection = (TModel,extractT) =>
             updateMongoFields(modelDb,model);
             
             const res = await modelDb.save();
-            
             return res? extractT(res) : null
         }
 
