@@ -110,6 +110,7 @@ export const fakeProduct = (opt: any = {}) => {
     return new Product({
         
         _id: genObjectId(),
+        storeId: genObjectId(),
         amountInventory: opt.amountInventory || chance.natural(),
         sellType: opt.sellType || chance.name(),
         price: chance.natural(),
@@ -120,7 +121,7 @@ export const fakeProduct = (opt: any = {}) => {
         reviews: opt.reviews || [genObjectId(), genObjectId()],
         keyWords: opt.keyWords || [chance.name(),chance.name()],
         category: opt.category || chance.name(),
-        isActivated: opt.isActivated || chance.bool(),
+        isActivated: opt.isActivated || true,
     });
 }
 
