@@ -1,4 +1,4 @@
-import { Message } from './../src/storeApi/models/message';
+import { Message } from '../src/usersApi/models/message';
 import { ObjectID } from 'bson';
 import { UserCollection, RoleCollection } from './../src/persistance/mongoDb/Collections';
 import { Complaint } from './../src/storeApi/models/complaint';
@@ -14,7 +14,7 @@ import { Store } from '../src/storeApi/models/store';
 import { Review } from '../src/storeApi/models/review';
 import { StoresApi } from '../src/storeApi/storesApi';
 import { StoreCollection } from '../src/persistance/mongoDb/Collections';
-
+import bcrypt = require('bcryptjs');
 
 const chance = new Chance();
 var mongoose = require('mongoose');
@@ -22,7 +22,7 @@ var genObjectId = mongoose.Types.ObjectId;
 
 export const fakeRole = (opt: any = {}) => {
     return new Role({
-        _id : genObjectId(),
+        id : genObjectId(),
         name : opt.name || chance.name(),
         appointor : opt.appointor || genObjectId(),
         store: opt.store || genObjectId(),
@@ -33,12 +33,13 @@ export const fakeRole = (opt: any = {}) => {
 
 
 export const fakeUser = (opt: any = {}, isGuest = false) => {
+    const salt = bcrypt.genSaltSync(10);
         return new User({
-            _id : genObjectId(),
+            id : genObjectId(),
             notifications : opt.notifications || [],
             userName: opt.userName || chance.name() ,
             password: opt.password || chance.country(),
-            salt: opt.salt || chance.name(),
+            salt: opt.salt || bcrypt.genSaltSync(10),
             isRegisteredUser: true ,
             roles : opt.roles || [],
             carts : opt.carts || [],
@@ -49,7 +50,7 @@ export const fakeUser = (opt: any = {}, isGuest = false) => {
 
 export const fakeStore = (opt: any = {}) => {
     return new Store({
-        _id : genObjectId(),
+        id : genObjectId(),
         name: opt.userName || chance.name() ,
         workers : opt.workers || [],
         rank: opt.rank || chance.integer(),
@@ -63,7 +64,7 @@ export const fakeStore = (opt: any = {}) => {
 
 export const fakeReview = (opt: any = {}) => {
     return new Review({
-        _id : genObjectId(),
+        id : genObjectId(),
         date: opt.date || chance.date() ,
         registeredUser : opt.registeredUser || genObjectId(),
         rank: opt.rank || chance.integer(),
@@ -75,7 +76,7 @@ export const fakeReview = (opt: any = {}) => {
 
 export const fakeMessage = (opt: any = {}) => {
     return new Message({
-        _id : genObjectId(),
+        id : genObjectId(),
         date:  chance.date({string: true}), 
         from : opt.from || genObjectId(),
         to : opt.to || genObjectId(),
@@ -86,7 +87,7 @@ export const fakeMessage = (opt: any = {}) => {
 
 export const fakeComplaint = (opt: any = {}) => {
     return new Complaint({
-        _id : genObjectId(),
+        id : genObjectId(),
         date: opt.date || chance.date(), 
         user : opt.user || genObjectId(),
         order: opt.order ||chance.string(),
@@ -99,7 +100,7 @@ export const fakeComplaint = (opt: any = {}) => {
 
 export const fakeCart = (opt: any = {}) => {
     return new Cart({
-        _id: genObjectId(),
+        id: genObjectId(),
         ofUser: opt.ofUser || genObjectId(),
         store: opt.store || genObjectId(),
         items: opt.items || [],
@@ -110,6 +111,7 @@ export const fakeProduct = (opt: any = {}) => {
     return new Product({
         
         _id: genObjectId(),
+        storeId: genObjectId(),
         amountInventory: opt.amountInventory || chance.natural(),
         sellType: opt.sellType || chance.name(),
         price: chance.natural(),
@@ -120,7 +122,7 @@ export const fakeProduct = (opt: any = {}) => {
         reviews: opt.reviews || [genObjectId(), genObjectId()],
         keyWords: opt.keyWords || [chance.name(),chance.name()],
         category: opt.category || chance.name(),
-        isActivated: opt.isActivated || chance.bool(),
+        isActivated: opt.isActivated || true,
     });
 }
 

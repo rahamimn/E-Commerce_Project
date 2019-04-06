@@ -29,7 +29,6 @@ export const createCollection = (TModel,extractT) =>
             updateMongoFields(modelDb,model);
             
             const res = await modelDb.save();
-            
             return res? extractT(res) : null
         }
 
@@ -52,7 +51,7 @@ export const createCollection = (TModel,extractT) =>
     const updateMongoFields = (modelDb,model)=>{
         const keys = Object.keys(model);
         keys.forEach(key => {
-            if(key !== '_id'  && model[key]){  
+            if(key !== '_id'  && model[key] !== undefined){  
                 modelDb[key.substring(1)] = model[key];
             }
         });

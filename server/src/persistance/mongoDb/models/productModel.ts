@@ -2,6 +2,7 @@
 import { Model, Document} from 'mongoose';
 import { ObjectID, ObjectId } from 'bson';
 import { MonArray } from '../../../../types/moongooseArray';
+import { Review } from '../../../storeApi/models/review';
 var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
@@ -13,7 +14,7 @@ interface IProduct {
     acceptableDiscount: Number,
     discountPrice?: Number,
     rank?: Number,
-    reviews?: MonArray<ObjectID>,
+    reviews?: MonArray<Review>,
     keyWords?: String[],
     category?: String,
     isActivated: boolean
