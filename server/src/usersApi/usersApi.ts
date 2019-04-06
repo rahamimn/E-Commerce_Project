@@ -46,6 +46,9 @@ export class UsersApi implements IUsersApi{
 
     async register(userName,password){
         try {
+            const userExists = await UserCollection.findOne({userName});
+            if(userExists)
+                return {status:Constants.BAD_USERNAME, err:"userName exists"};
             const salt = bcrypt.genSaltSync(10);
             const hashedPassword = hashPassword(password, salt);
             const user = await UserCollection.insert(new User({
