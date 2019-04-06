@@ -78,23 +78,14 @@ describe('Product model',() => {
 // });
 
 it('getProducts - Test', async () => {
-    //let productsApi = new ProductsApi();
     let product = fakeProduct({});
     let productFromDB = await productsApi.addProduct(product.storeId, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
-    // let product2 = fakeProduct({});
-    // let productFromDB2 = await productsApi.addProduct(product2.storeId, product2.amountInventory, product2.sellType, product2.price, product2.keyWords, product2.category);
     
     let storeId = productFromDB.product.storeId;
     let category = productFromDB.product.category;
     let keyWords = productFromDB.product.keyWords;
 
-    // console.log("storeId = ", productFromDB2.product.storeId)
-    // console.log("category  = ", productFromDB2.product.category);
-    // console.log("keyWords  = ", productFromDB2.product.keyWords);
-
     let res = await productsApi.getProducts(storeId, category, keyWords)
-    // console.log("products = ", res.products)
-    // console.log("END")
 
     expect(res.products === [productFromDB.product]);
 });

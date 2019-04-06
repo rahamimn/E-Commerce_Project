@@ -15,6 +15,7 @@ import { Review } from '../src/storeApi/models/review';
 import { StoresApi } from '../src/storeApi/storesApi';
 import { StoreCollection } from '../src/persistance/mongoDb/Collections';
 import bcrypt = require('bcryptjs');
+import { Order } from '../src/orderApi/models/order';
 
 const chance = new Chance();
 var mongoose = require('mongoose');
@@ -125,5 +126,18 @@ export const fakeProduct = (opt: any = {}) => {
         isActivated: opt.isActivated || true,
     });
 }
+
+export const fakeOrder = (opt: any = {}) => {
+
+    return new Order({
+        id: genObjectId(),
+        storeId: opt.storeId ||chance.string(),
+        userId: opt.userId ||chance.string(),
+        state: opt.state || chance.word(),
+        description: opt.description ||chance.sentence({ words: 5 }),
+        totalPrice: opt.totalPrice || chance.natural({ min: 1, max: 2000 })
+    });
+}
+
 
 
