@@ -14,7 +14,7 @@ import { Store } from '../src/storeApi/models/store';
 import { Review } from '../src/storeApi/models/review';
 import { StoresApi } from '../src/storeApi/storesApi';
 import { StoreCollection } from '../src/persistance/mongoDb/Collections';
-
+import bcrypt = require('bcryptjs');
 
 const chance = new Chance();
 var mongoose = require('mongoose');
@@ -33,12 +33,13 @@ export const fakeRole = (opt: any = {}) => {
 
 
 export const fakeUser = (opt: any = {}, isGuest = false) => {
+    const salt = bcrypt.genSaltSync(10);
         return new User({
             id : genObjectId(),
             notifications : opt.notifications || [],
             userName: opt.userName || chance.name() ,
             password: opt.password || chance.country(),
-            salt: opt.salt || chance.name(),
+            salt: opt.salt || bcrypt.genSaltSync(10),
             isRegisteredUser: true ,
             roles : opt.roles || [],
             carts : opt.carts || [],
