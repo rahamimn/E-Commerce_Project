@@ -2,7 +2,6 @@ import { ProductCollection } from "../persistance/mongoDb/Collections";
 import { Product } from "./models/product";
 import { OK_STATUS, BAD_REQUEST } from "../consts";
 import { IProductApi } from "./productsApiInterface";
-import { fakeProduct, fakeReview } from "../../test/fakes";
 import { Review } from "../storeApi/models/review";
 
 
@@ -99,8 +98,6 @@ export class ProductsApi implements IProductApi{
             return ({status: BAD_REQUEST});
         }
     }
-    //NIR: We have 'removeProduct', What's the difference?
-        //disableProduct: (adminId: string, productId: String) => void; 
 
     async getProductDetails(productId){
         let product = await ProductCollection.findById(productId);
@@ -109,5 +106,7 @@ export class ProductsApi implements IProductApi{
 
         return ({status: OK_STATUS , product: product.getProductDetails()});
     }
-    
+
+    //disableProduct: (adminId: string, productId: String) => void; 
+            //  ------------ NIR: We have 'removeProduct', What's the difference? ------------ 
 }
