@@ -20,6 +20,7 @@ async function addStore(req: Request, res: express.Response) {
             res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
         else {
             const response = await storesApi.addStore(userId, storeName);
+            console.log(response);
             res.send(response);
         }
     }

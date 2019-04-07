@@ -7,7 +7,10 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 import {usersApiRouter} from './usersApi/userRoutes';
-//import {productsApiRouter} from "./productApi/productRoutes";
+import {storesApiRouter} from "./storeApi/storeRoutes";
+import {productsApiRouter} from "./productApi/productRoutes";
+//import {oredersApiRouter} from "./orederApi/orederRoutes";
+
 import * as Constants from "./consts";
 import cors from 'cors';
 import { setDefaultData } from '../test/accetpanceTestUtils';
@@ -67,9 +70,9 @@ app.use(session({
 }));
 
 app.use(usersApiRouter);
-// app.use(storesApiRouter);
-// app.use(productsApiRouter);
-// app.use(oredersApiRouter);
+app.use(storesApiRouter);
+app.use(productsApiRouter);
+//app.use(oredersApiRouter);
 const port = 3000;
 app.listen(port, () => console.log(`listening on port ${port}!`));
 

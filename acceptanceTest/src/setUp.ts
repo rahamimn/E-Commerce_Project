@@ -11,3 +11,5 @@ export async function initializeDatabase (){
         password:'password2'
     });
 }
+
+
