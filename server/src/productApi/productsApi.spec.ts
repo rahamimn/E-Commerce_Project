@@ -23,12 +23,13 @@ describe('Product model',() => {
   it('addProduct - Test', async () => {
     let product = fakeProduct({});
     let response = await productsApi.addProduct(
-    product.storeId,
-    product.amountInventory,
-    product.sellType,
-    product.price,
-    product.keyWords,
-    product.category
+        product.name,
+        product.storeId,
+        product.amountInventory,
+        product.sellType,
+        product.price,
+        product.keyWords,
+        product.category
     );
 
     let productFromDB = await ProductCollection.findById(response.product.id);
@@ -40,7 +41,7 @@ describe('Product model',() => {
   it('removeProduct- Test', async () => {
 
     let product = fakeProduct({});
-    let response = await productsApi.addProduct(product.storeId, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
+    let response = await productsApi.addProduct(product.storeId,product.name, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
     let product_BeforeRemove = await ProductCollection.findById(response.product.id);
     let product_AfterRemove = await productsApi.removeProduct(product_BeforeRemove.id);
   
@@ -51,7 +52,7 @@ describe('Product model',() => {
 
   it('updateProduct - Test', async () => {
     let product = fakeProduct({});
-    let productToDB = await productsApi.addProduct(product.storeId, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
+    let productToDB = await productsApi.addProduct(product.storeId, product.name, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
     let productFromDB = await productsApi.getProductDetails(productToDB.product.id);
 
     let productDetails = productFromDB.product;
@@ -79,7 +80,7 @@ describe('Product model',() => {
 
 it('getProducts - Test', async () => {
     let product = fakeProduct({});
-    let productFromDB = await productsApi.addProduct(product.storeId, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
+    let productFromDB = await productsApi.addProduct(product.storeId, product.name, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
     
     let storeId = productFromDB.product.storeId;
     let category = productFromDB.product.category;

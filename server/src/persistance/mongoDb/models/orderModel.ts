@@ -7,7 +7,8 @@ interface IOrder {
     userId: String,
     state: String,
     description: String,
-    totalPrice: Number,
+    totalPrice: number,
+    supplyPrice: number,
 }
 export interface IOrderModel extends IOrder, Document{
     // NIR: EXAMPLE - addRole(id: ObjectId): Model<IUserModel>,
@@ -18,7 +19,8 @@ const orderScheme = new Schema({
     userId: {type: String}, 
     state: {type: String}, 
     description: {type: String}, 
-    totalPrice: {type: Number}, 
+    totalPrice: {type: Number},
+    supplyPrice: {type: Number},  
 });
 
 export let OrderModel : Model<IOrderModel>

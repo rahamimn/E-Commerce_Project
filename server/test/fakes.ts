@@ -115,7 +115,8 @@ export const fakeProduct = (opt: any = {}) => {
         storeId: genObjectId(),
         amountInventory: opt.amountInventory || chance.natural(),
         sellType: opt.sellType || chance.name(),
-        price: chance.natural(),
+        price: opt.price || chance.natural() ,
+        name: opt.name || chance.name(),
         coupons: opt.coupons || chance.name(),
         acceptableDiscount: opt.acceptableDiscount || chance.natural(),
         discountPrice: opt.discountPrice || chance.natural(),
@@ -131,8 +132,8 @@ export const fakeOrder = (opt: any = {}) => {
 
     return new Order({
         id: genObjectId(),
-        storeId: opt.storeId ||chance.string(),
-        userId: opt.userId ||chance.string(),
+        storeId: opt.storeId ||genObjectId(),
+        userId: opt.userId || genObjectId(),
         state: opt.state || chance.word(),
         description: opt.description ||chance.sentence({ words: 5 }),
         totalPrice: opt.totalPrice || chance.natural({ min: 1, max: 2000 })

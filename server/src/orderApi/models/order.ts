@@ -1,11 +1,28 @@
 export class Order {
 
-    private _id: String;
-    private _storeId: String;
-    private _userId: String;
+    private _id: any;
+    private _storeId: any;
+    private _userId: any;
     private _state: String;
     private _description: String;
-    private _totalPrice: Number;
+    private _totalPrice: number;
+    private _supplyPrice: number;
+
+    /**
+     * Getter supplyPrice
+     * @return {number}
+     */
+	public get supplyPrice(): number {
+		return this._supplyPrice;
+	}
+
+    /**
+     * Setter supplyPrice
+     * @param {number} value
+     */
+	public set supplyPrice(value: number) {
+		this._supplyPrice = value;
+	}
 
     constructor(base:any){
         this._id = base.id;
@@ -14,6 +31,7 @@ export class Order {
         this._state = base.state;
         this._description = base.description;
         this._totalPrice = base.totalPrice;
+        this._supplyPrice = base.supplyPrice;
     }
 
     public updateDetails (orderDetails){ 
@@ -43,29 +61,54 @@ export class Order {
         });
     }
 
-        /**
+    /**
      * Getter id
-     * @return {String}
+     * @return {any}
      */
-	public get id(): String {
+	public get id(): any {
 		return this._id;
 	}
 
     /**
      * Getter storeId
-     * @return {String}
+     * @return {any}
      */
-	public get storeId(): String {
+	public get storeId(): any {
 		return this._storeId;
 	}
 
     /**
      * Getter userId
-     * @return {String}
+     * @return {any}
      */
-	public get userId(): String {
+	public get userId(): any {
 		return this._userId;
 	}
+
+    /**
+     * Setter id
+     * @param {any} value
+     */
+	public set id(value: any) {
+		this._id = value;
+	}
+
+    /**
+     * Setter storeId
+     * @param {any} value
+     */
+	public set storeId(value: any) {
+		this._storeId = value;
+	}
+
+    /**
+     * Setter userId
+     * @param {any} value
+     */
+	public set userId(value: any) {
+		this._userId = value;
+	}
+
 
     /**
      * Getter state
@@ -85,35 +128,12 @@ export class Order {
 
     /**
      * Getter totalPrice
-     * @return {Number}
+     * @return {number}
      */
-	public get totalPrice(): Number {
+	public get totalPrice(): number {
 		return this._totalPrice;
 	}
 
-    /**
-     * Setter id
-     * @param {String} value
-     */
-	public set id(value: String) {
-		this._id = value;
-	}
-
-    /**
-     * Setter storeId
-     * @param {String} value
-     */
-	public set storeId(value: String) {
-		this._storeId = value;
-	}
-
-    /**
-     * Setter userId
-     * @param {String} value
-     */
-	public set userId(value: String) {
-		this._userId = value;
-	}
 
     /**
      * Setter state
@@ -133,11 +153,10 @@ export class Order {
 
     /**
      * Setter totalPrice
-     * @param {Number} value
+     * @param {number} value
      */
-	public set totalPrice(value: Number) {
+	public set totalPrice(value: number) {
 		this._totalPrice = value;
 	}
-
 
 };

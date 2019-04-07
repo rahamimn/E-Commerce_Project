@@ -7,13 +7,14 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 interface IProduct {
-    amountInventory: Number,
+    name:String,
+    amountInventory: number,
     sellType?: String,
-    price: Number,
+    price: number,
     coupons?: String
-    acceptableDiscount: Number,
-    discountPrice?: Number,
-    rank?: Number,
+    acceptableDiscount: number,
+    discountPrice?: number,
+    rank?: number,
     reviews?: MonArray<Review>,
     keyWords?: String[],
     category?: String,
@@ -26,6 +27,7 @@ export interface IProductModel extends IProduct, Document{
 
 const productScheme = new Schema({
     storeId: {type: String}, 
+    name: {type: String, unique:true},
     amountInventory: {type: Number}, 
     sellType: {type: String},
     price: {type: Number}, 

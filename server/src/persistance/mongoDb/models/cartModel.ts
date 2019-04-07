@@ -8,7 +8,7 @@ var Schema = mongoose.Schema;
 interface ICart {
   ofUser: ObjectID;
   store: ObjectID;
-  items:  MonArray<{ product:ObjectId,amount: Number}>;
+  items:  MonArray<{ product:ObjectId,amount: number}>;
 }
 export interface ICartModel extends ICart, Document{
 	addItem(productId:ObjectID, amount:number ): Promise<void>
