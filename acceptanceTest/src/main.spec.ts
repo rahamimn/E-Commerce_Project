@@ -2,83 +2,250 @@ import nodeFetch from 'node-fetch'
 import fetchFun from 'fetch-cookie'
 import {initializeDatabase} from "./setUp";
 import * as Constants from "../../server/src/consts";
-
 const fetch = fetchFun(nodeFetch);
 
-beforeAll(() => {
-    return initializeDatabase();
-});
+export async function fetchServer(route: String, methodType: string, body?:any) {
+
+    let res = await fetch(`http://localhost:3000${route}`,{
+        method:methodType,
+        body: body? JSON.stringify(body): undefined,
+        headers:{'Content-Type': 'application/json'}
+    });
+    let json = await res.json();
+    return json;
+}
 
 describe('acceptance Test', () => {
 
-    it('register', async () => {
-        const fieldsNames = ['userName', 'password'];
-        const fieldsValues = ['user123456','Flintstone'];
-        const params = createMessage('post', fieldsNames, fieldsValues);
+    let user1Id;
+    beforeAll(() => {
+        return initializeDatabase();
+    });
 
-        let res = await fetch('http://localhost:3000/usersApi/register', params);
-        let converted = await res.json();
-        expect(converted.status).toBe(Constants.OK_STATUS);
+
+    it('register', async () => {
+        const response = await fetchServer('/usersApi/register','post', {
+            userName: 'user123456',
+            password: 'Flintstone'
+        });
+        expect(response.status).toBe(Constants.OK_STATUS);
+    });
+
+    it('register with existed userName should false', async () => {
+        const response = await fetchServer('/usersApi/register','post', {
+            userName: 'user1',
+            password: 'pass23456'
+        });
+        expect(response.status).toBe(Constants.BAD_USERNAME);
     });
 
     it('goodLogin', async () => {
-        const fieldsNames = ['userName', 'password'];
-        const fieldsValues = ['user1','password1'];
-        const params = createMessage('post', fieldsNames, fieldsValues);
-
-        let res = await fetch('http://localhost:3000/usersApi/login', params);
-        let converted = await res.json();
-        expect(converted.status).toBe(Constants.OK_STATUS);       //check status
-        expect(converted.user).toBeDefined();           //check we found userName
-
-        console.log(converted);
-        res = await fetch('http://localhost:3000/usersApi/popNotifications', {
-            method: 'post',
-            headers: {'Content-Type': 'application/json'},
+        const response = await fetchServer('/usersApi/login','post', {
+            userName: 'user1',
+            password: 'password1'
         });
-        converted = await res.json();
-        console.log(converted);
+        const responseNotifications = await fetchServer('/usersApi/popNotifications','post');
+        user1Id = response.user;
+        expect(response.status).toBe(Constants.OK_STATUS);       //check status
+        expect(response.user).toBeDefined();           //check we found userName
+        expect(responseNotifications.status).toBe(Constants.OK_STATUS);
     });
 
     it('logOut', async () => {
-        const fieldsNames = [];
-        const fieldsValues = [];
-        const params = createMessage('post', fieldsNames, fieldsValues);
+        const response = await fetchServer('/usersApi/logout','post');
 
-        let res = await fetch('http://localhost:3000/usersApi/logout', params);
-        let converted = await res.json();
-        expect(converted.status).toBe(Constants.OK_STATUS);       //check status
+        expect(response.status).toBe(Constants.OK_STATUS);       //check status
     });
 
-    it('BadLogin', async () => {
+    it('BadLogin userName incorrect', async () => {
+        const response = await fetchServer('/usersApi/login','post', {
+            userName: 'badUserName',
+            password: 'password1'
+        });
 
-        //bad password
-        const fieldsNames = ['userName', 'password'];
-        const fieldsValues = ['user2','badPassword'];
-        const params = createMessage('post', fieldsNames, fieldsValues);
-
-        let res = await fetch('http://localhost:3000/usersApi/login', params);
-        let converted = await res.json();
-        expect(converted.status).toBe(Constants.BAD_PASSWORD);       //check status
-
-        //bad userName
-        const fieldsValues2 = ['badUserName','password1'];
-        const params2 = createMessage('post', fieldsNames, fieldsValues2);
-
-        let res2 = await fetch('http://localhost:3000/usersApi/login', params2);
-        let converted2 = await res2.json();
-        expect(converted2.status).toBe(Constants.BAD_USERNAME);       //check status
+        expect(response.status).toBe(Constants.BAD_USERNAME);       //check status
     });
+
+    it('add store', async () => {
+        const responseLogin = await fetchServer('/usersApi/login','post', {
+            userName: 'user1',
+            password: 'password1'
+        });
+        const response = await  fetchServer('/storesApi/addStore','post', {
+            storeName: 'myStore1'
+        });
+
+        expect(response.status).toBe(Constants.OK_STATUS);
+    });
+
+
+
 });
+/*
+        describe('register Test', () => {
+            it.skip('good register', async () => {
+                let res = await fetch('http://localhost:3000/usersApi/register', {
+                    method: 'post',
+                    body: JSON.stringify({
+                        userName: 'user',
+                        password: '132456'
+                    }),
+                    headers: {'Content-Type': 'application/json'},
+                });
+                let converted = await res.json();
+                expect(converted.status).toBe(0);
+            })
 
-export function createMessage(methodType: string, namesList: string[], valuesList: string[]) {
-    let resBody = {};
-    namesList.map(function (name, i) {
-        resBody[name] = valuesList[i];
-    });
-    console.log(resBody);
-    const res = {method:methodType,
-                body:JSON.stringify(resBody),
-                headers:{'Content-Type': 'application/json'}};
-    return res;
-}
+            it.skip('bad password register', async () => {
+                let res = await fetch('http://localhost:3000/usersApi/register', {
+                    method: 'post',
+                    body: JSON.stringify({
+                        userName: 'user123456777ss8',
+                        password: '132456er'
+                    }),
+                    headers: {'Content-Type': 'application/json'},
+                });
+                let converted = await res.json();
+                expect(converted.status).toBe(2);
+            })
+
+            it.skip('already registered', async () => {
+                let res = await fetch('http://localhost:3000/usersApi/register', {
+                    method: 'post',
+                    body: JSON.stringify({
+                        userName: 'admin1234',
+                        password: '123456'
+                    }),
+                    headers: {'Content-Type': 'application/json'},
+                });
+                let converted = await res.json();
+                expect(converted.status).toBe(2);
+            })
+        })
+    describe('login Test', () => {
+        it.skip('good login', async () => {
+            let res = await fetch('http://localhost:3000/usersApi/login', {
+                method: 'post',
+                body: JSON.stringify({
+                    userName: 'admin1234',
+                    password: '123456'
+                }),
+                headers: {'Content-Type': 'application/json'},
+            })
+            let converted = await res.json();
+            console.log(converted);
+            expect(converted.status).toBe(0);
+        });
+
+        it.skip('bad username login', async () => {
+            let res = await fetch('http://localhost:3000/usersApi/login', {
+                method: 'post',
+                body: JSON.stringify({
+                    userName: 'adminf1234',
+                    password: '123456'
+                }),
+                headers: {'Content-Type': 'application/json'},
+            })
+            let converted = await res.json();
+            console.log(converted);
+            expect(converted.status).toBe(1);
+        });
+
+        it.skip('bad password login', async () => {
+            let res = await fetch('http://localhost:3000/usersApi/login', {
+                method: 'post',
+                body: JSON.stringify({
+                    userName: 'admin1234',
+                    password: '000000'
+                }),
+                headers: {'Content-Type': 'application/json'},
+            })
+            let converted = await res.json();
+            console.log(converted);
+            expect(converted.status).toBe(2);
+        });
+    })
+
+    describe('add store Test', () => {
+        let userId, storeId,productId;
+        beforeAll(async () => {
+            let res = await fetch('http://localhost:3000/usersApi/login', {
+                method: 'post',
+                body: JSON.stringify({
+                    userName: 'admin1234',
+                    password: '123456'
+                }),
+                headers: {'Content-Type': 'application/json'},
+            })
+            userId = res.user;
+        })
+
+        it('good add store', async () => {
+            let res = await fetch('http://localhost:3000/storesApi/addStore', {
+                method: 'get',
+                body: JSON.stringify({
+                    userId: userId,
+                    storeName: 'myStore1'
+                }),
+                headers: {'Content-Type': 'application/json'},
+            });
+            storeId = res.storeId;//waiting for change
+            let converted = await res.json();
+            expect(converted.status).toBe(0);
+        })
+
+        describe('add product', () => {
+            it('good add product', async () => {
+                let res = await fetch('http://localhost:3000/productsApi/addProduct', {
+                    method: 'post',
+                    body: JSON.stringify({
+                        storeId: storeId,
+                        amountInventory: 10,
+                        sellType: 'regular',
+                        price: 50,
+                        category: 'cars',
+                        rank: 4,
+                        keyWords: ['car', 'black']
+                    }),
+                    headers: {'Content-Type': 'application/json'},
+                });
+                productId = res.productId;
+                let converted = await res.json();
+                expect(converted.status).toBe(0);
+            })
+
+            it('remove product', async () => {
+                let res = await fetch('http://localhost:3000/productsApi/addProduct', {
+                    method: 'post',
+                    body: JSON.stringify({
+                        storeId: storeId,
+                        amountInventory: 10,
+                        sellType: 'regular',
+                        price: 50,
+                        category: 'cars',
+                        rank: 4,
+                        keyWords: ['car', 'black']
+                    }),
+                    headers: {'Content-Type': 'application/json'},
+                });
+                let converted = await res.json();
+                expect(converted.status).toBe(0);
+            })
+
+        })
+
+
+        afterAll(async () => {
+            let res = await fetch('http://localhost:3000/usersApi/logout', {
+                method: 'post',
+                body: JSON.stringify({
+                    userId: userId
+                }),
+                headers: {'Content-Type': 'application/json'},
+            })
+        })
+
+
+    })
+})
+*/

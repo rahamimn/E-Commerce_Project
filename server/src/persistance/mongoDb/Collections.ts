@@ -16,6 +16,8 @@ import {  Complaint } from './../../storeApi/models/complaint';
 import { ComplaintModel } from './models/complaintModel';
 import { Review } from '../../storeApi/models/review';
 import { ReviewModel } from './models/reviewModel';
+import { Order } from "../../orderApi/models/order";
+import { OrderModel } from "./models/orderModel";
 
 
 export const UserCollection :ICollection<User> = createCollection(
@@ -55,4 +57,8 @@ export const ComplaintCollection :ICollection<Complaint> = createCollection(
 export const ReviewCollection :ICollection<Review> = createCollection(
     ReviewModel,
     mongo => new Review(mongo));
-    
+
+
+export const OrderCollection :ICollection<Order> = createCollection(
+    OrderModel,
+    mongo => new Order(mongo));

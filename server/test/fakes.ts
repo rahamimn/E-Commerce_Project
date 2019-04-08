@@ -14,7 +14,8 @@ import { Store } from '../src/storeApi/models/store';
 import { Review } from '../src/storeApi/models/review';
 import { StoresApi } from '../src/storeApi/storesApi';
 import { StoreCollection } from '../src/persistance/mongoDb/Collections';
-
+import bcrypt = require('bcryptjs');
+import { Order } from '../src/orderApi/models/order';
 
 const chance = new Chance();
 var mongoose = require('mongoose');
@@ -33,12 +34,13 @@ export const fakeRole = (opt: any = {}) => {
 
 
 export const fakeUser = (opt: any = {}, isGuest = false) => {
+    const salt = bcrypt.genSaltSync(10);
         return new User({
             id : genObjectId(),
             notifications : opt.notifications || [],
             userName: opt.userName || chance.name() ,
             password: opt.password || chance.country(),
-            salt: opt.salt || chance.name(),
+            salt: opt.salt || bcrypt.genSaltSync(10),
             isRegisteredUser: true ,
             roles : opt.roles || [],
             carts : opt.carts || [],
@@ -113,7 +115,8 @@ export const fakeProduct = (opt: any = {}) => {
         storeId: genObjectId(),
         amountInventory: opt.amountInventory || chance.natural(),
         sellType: opt.sellType || chance.name(),
-        price: chance.natural(),
+        price: opt.price || chance.natural() ,
+        name: opt.name || chance.name(),
         coupons: opt.coupons || chance.name(),
         acceptableDiscount: opt.acceptableDiscount || chance.natural(),
         discountPrice: opt.discountPrice || chance.natural(),
@@ -124,5 +127,18 @@ export const fakeProduct = (opt: any = {}) => {
         isActivated: opt.isActivated || true,
     });
 }
+
+export const fakeOrder = (opt: any = {}) => {
+
+    return new Order({
+        id: genObjectId(),
+        storeId: opt.storeId ||genObjectId(),
+        userId: opt.userId || genObjectId(),
+        state: opt.state || chance.word(),
+        description: opt.description ||chance.sentence({ words: 5 }),
+        totalPrice: opt.totalPrice || chance.natural({ min: 1, max: 2000 })
+    });
+}
+
 
 

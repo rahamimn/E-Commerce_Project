@@ -23,12 +23,13 @@ describe('Product model',() => {
   it('addProduct - Test', async () => {
     let product = fakeProduct({});
     let response = await productsApi.addProduct(
-    product.storeId,
-    product.amountInventory,
-    product.sellType,
-    product.price,
-    product.keyWords,
-    product.category
+        product.name,
+        product.storeId,
+        product.amountInventory,
+        product.sellType,
+        product.price,
+        product.keyWords,
+        product.category
     );
 
     let productFromDB = await ProductCollection.findById(response.product.id);
@@ -40,7 +41,7 @@ describe('Product model',() => {
   it('removeProduct- Test', async () => {
 
     let product = fakeProduct({});
-    let response = await productsApi.addProduct(product.storeId, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
+    let response = await productsApi.addProduct(product.storeId,product.name, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
     let product_BeforeRemove = await ProductCollection.findById(response.product.id);
     let product_AfterRemove = await productsApi.removeProduct(product_BeforeRemove.id);
   
@@ -51,7 +52,7 @@ describe('Product model',() => {
 
   it('updateProduct - Test', async () => {
     let product = fakeProduct({});
-    let productToDB = await productsApi.addProduct(product.storeId, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
+    let productToDB = await productsApi.addProduct(product.storeId, product.name, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
     let productFromDB = await productsApi.getProductDetails(productToDB.product.id);
 
     let productDetails = productFromDB.product;
@@ -78,23 +79,14 @@ describe('Product model',() => {
 // });
 
 it('getProducts - Test', async () => {
-    //let productsApi = new ProductsApi();
     let product = fakeProduct({});
-    let productFromDB = await productsApi.addProduct(product.storeId, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
-    // let product2 = fakeProduct({});
-    // let productFromDB2 = await productsApi.addProduct(product2.storeId, product2.amountInventory, product2.sellType, product2.price, product2.keyWords, product2.category);
+    let productFromDB = await productsApi.addProduct(product.storeId, product.name, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
     
     let storeId = productFromDB.product.storeId;
     let category = productFromDB.product.category;
     let keyWords = productFromDB.product.keyWords;
 
-    // console.log("storeId = ", productFromDB2.product.storeId)
-    // console.log("category  = ", productFromDB2.product.category);
-    // console.log("keyWords  = ", productFromDB2.product.keyWords);
-
     let res = await productsApi.getProducts(storeId, category, keyWords)
-    // console.log("products = ", res.products)
-    // console.log("END")
 
     expect(res.products === [productFromDB.product]);
 });

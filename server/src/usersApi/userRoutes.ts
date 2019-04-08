@@ -67,13 +67,13 @@ function logout(req: Request, res: express.Response) {
 
 usersApiRouter.post('/usersApi/updateUser', updateUser);
 
-function updateUser(req: Request, res: express.Response) {
+async function updateUser(req: Request, res: express.Response) {
     try {
         const userId = verifyToken(req.session.token).userId;
         const user = req.body.user;
         if (!user)
             res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
-        const response = usersApi.updateUser(userId, user);
+        const response = await usersApi.updateUser(userId, user);
         res.send(response);
     }
     catch (err) {
@@ -84,10 +84,10 @@ function updateUser(req: Request, res: express.Response) {
 
 usersApiRouter.post('/usersApi/getUserDetails', getUserDetails);
 
-function getUserDetails(req: Request, res: express.Response) {
+async function getUserDetails(req: Request, res: express.Response) {
     try {
         const userId = verifyToken(req.session.token).userId;
-        const response = usersApi.getUserDetails(userId);
+        const response =await usersApi.getUserDetails(userId);
         res.send(response);
     }
     catch (err) {
@@ -97,10 +97,10 @@ function getUserDetails(req: Request, res: express.Response) {
 
 usersApiRouter.post('/usersApi/getCarts', getCarts);
 
-function getCarts(req: Request, res: express.Response) {
+async function getCarts(req: Request, res: express.Response) {
     try {
         const userId = verifyToken(req.session.token).userId;
-        const response = usersApi.getCarts(userId);
+        const response = await usersApi.getCarts(userId);
         res.send(response);
     }
     catch (err) {
@@ -110,7 +110,7 @@ function getCarts(req: Request, res: express.Response) {
 
 usersApiRouter.post('/usersApi/getCart', getCart);
 
-function getCart(req: Request, res: express.Response) {
+async function getCart(req: Request, res: express.Response) {
     try {
         const userId = verifyToken(req.session.token).userId;
         const cartId = req.body.cartId;
@@ -118,7 +118,7 @@ function getCart(req: Request, res: express.Response) {
         if (!cartId)
             res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
         else {
-            const response = usersApi.getCart(userId, cartId);
+            const response = await usersApi.getCart(userId, cartId);
             res.send(response);
         }
     }
@@ -129,7 +129,7 @@ function getCart(req: Request, res: express.Response) {
 
 usersApiRouter.post('/usersApi/updateCart', updateCart);
 
-function updateCart(req: Request, res: express.Response) {
+async function updateCart(req: Request, res: express.Response) {
     try {
         const userId = verifyToken(req.session.token).userId;
         const cartDetails = req.body.cartDetails;
@@ -137,7 +137,7 @@ function updateCart(req: Request, res: express.Response) {
         if (!cartDetails)
             res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
         else {
-            const response = usersApi.updateCart(cartDetails);
+            const response = await usersApi.updateCart(cartDetails);
             res.send(response);
         }
     }
@@ -149,7 +149,7 @@ function updateCart(req: Request, res: express.Response) {
 
 usersApiRouter.post('/usersApi/addProductToCart', addProductToCart);
 
-function addProductToCart(req: Request, res: express.Response) {
+async function addProductToCart(req: Request, res: express.Response) {
     try {
         const userId = verifyToken(req.session.token).userId;
         const storeID = req.body.storeId;
@@ -159,7 +159,7 @@ function addProductToCart(req: Request, res: express.Response) {
         if (!quantity || !productId || !storeID)
             res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
         else {
-            const response = usersApi.addProductToCart(userId, storeID, productId, quantity);
+            const response = await usersApi.addProductToCart(userId, storeID, productId, quantity);
             res.send(response);
         }
     }
@@ -170,7 +170,7 @@ function addProductToCart(req: Request, res: express.Response) {
 
 usersApiRouter.post('/usersApi/setUserAsSystemAdmin', setUserAsSystemAdmin);
 
-function setUserAsSystemAdmin(req: Request, res: express.Response) {
+async function setUserAsSystemAdmin(req: Request, res: express.Response) {
     try {
         const userId = verifyToken(req.session.token).userId;
         const appointedUserName = req.body.appointedUserName;
@@ -178,7 +178,7 @@ function setUserAsSystemAdmin(req: Request, res: express.Response) {
         if (!appointedUserName)
             res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
         else {
-            const response = usersApi.setUserAsSystemAdmin(userId, appointedUserName);
+            const response = await usersApi.setUserAsSystemAdmin(userId, appointedUserName);
             res.send(response);
         }
     }
@@ -190,7 +190,7 @@ function setUserAsSystemAdmin(req: Request, res: express.Response) {
 
 usersApiRouter.post('/usersApi/setUserAsStoreOwner', setUserAsStoreOwner);
 
-function setUserAsStoreOwner(req: Request, res: express.Response) {
+async function setUserAsStoreOwner(req: Request, res: express.Response) {
     try {
         const userId = verifyToken(req.session.token).userId;
         const storeId = req.session.storeId;
@@ -201,7 +201,7 @@ function setUserAsStoreOwner(req: Request, res: express.Response) {
         if (!appointedUserName)
             res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
         else {
-            const response = usersApi.setUserAsStoreOwner(userId, appointedUserName, storeId);
+            const response = await usersApi.setUserAsStoreOwner(userId, appointedUserName, storeId);
             res.send(response);
         }
     }
@@ -212,7 +212,7 @@ function setUserAsStoreOwner(req: Request, res: express.Response) {
 
 usersApiRouter.post('/usersApi/setUserAsStoreManager', setUserAsStoreManager);
 
-function setUserAsStoreManager(req: Request, res: express.Response) {
+async function setUserAsStoreManager(req: Request, res: express.Response) {
     try {
         const userId = verifyToken(req.session.token).userId;
         const storeId = req.session.storeId;
@@ -224,7 +224,7 @@ function setUserAsStoreManager(req: Request, res: express.Response) {
         if (!appointedUserName || !permissions)
             res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
         else {
-            const response = usersApi.setUserAsStoreManager(userId, appointedUserName, storeId, permissions);
+            const response = await usersApi.setUserAsStoreManager(userId, appointedUserName, storeId, permissions);
             res.send(response);
         }
     }
@@ -235,7 +235,7 @@ function setUserAsStoreManager(req: Request, res: express.Response) {
 
 usersApiRouter.post('/usersApi/removeRole', removeRole);
 
-function removeRole(req: Request, res: express.Response) {
+async function removeRole(req: Request, res: express.Response) {
     try {
         const userId = verifyToken(req.session.token).userId;
         const storeId = req.session.storeId;
@@ -246,7 +246,7 @@ function removeRole(req: Request, res: express.Response) {
         if (!userNameRemove)
             res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
         else {
-            const response = usersApi.removeRole(userId, userNameRemove, storeId);
+            const response = await usersApi.removeRole(userId, userNameRemove, storeId);
             res.send(response);
         }
     }
@@ -257,7 +257,7 @@ function removeRole(req: Request, res: express.Response) {
 
 usersApiRouter.post('/usersApi/updatePermissions', updatePermissions);
 
-function updatePermissions(req: Request, res: express.Response) {
+async function updatePermissions(req: Request, res: express.Response) {
     try {
         const userId = verifyToken(req.session.token).userId;
         const storeId = req.session.storeId;
@@ -269,7 +269,7 @@ function updatePermissions(req: Request, res: express.Response) {
         if (!appointedUserName || !permissions)
             res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
         else {
-            const response = usersApi.updatePermissions(userId, appointedUserName, storeId, permissions);
+            const response = await usersApi.updatePermissions(userId, appointedUserName, storeId, permissions);
             res.send(response);
         }
     }
@@ -280,10 +280,11 @@ function updatePermissions(req: Request, res: express.Response) {
 
 usersApiRouter.post('/usersApi/popNotifications', popNotifications);
 
-function popNotifications(req: Request, res: express.Response) {
+async function popNotifications(req: Request, res: express.Response) {
     try {
         const userId = verifyToken(req.session.token).userId;
-        const response = usersApi.popNotifications(userId);
+        const response = await usersApi.popNotifications(userId);
+        console.log(response);
         res.send(response);
     }
     catch (err) {
@@ -293,10 +294,10 @@ function popNotifications(req: Request, res: express.Response) {
 
 usersApiRouter.post('/usersApi/getMessages', getMessages);
 
-function getMessages(req: Request, res: express.Response) {
+async function getMessages(req: Request, res: express.Response) {
     try {
         const userId = verifyToken(req.session.token).userId;
-        const response = usersApi.getMessages(userId);
+        const response = await usersApi.getMessages(userId);
         res.send(response);
     }
     catch (err) {
@@ -306,14 +307,14 @@ function getMessages(req: Request, res: express.Response) {
 
 usersApiRouter.post('/usersApi/deleteUser', deleteUser);
 
-function deleteUser(req: Request, res: express.Response) {
+async function deleteUser(req: Request, res: express.Response) {
     try {
         const userId = verifyToken(req.session.token).userId;
         const userNameToDisActivate = req.body.userNameToDisActivate;
         if (!userNameToDisActivate)
             res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
 
-        const response = usersApi.deleteUser(userId, userNameToDisActivate);
+        const response = await usersApi.deleteUser(userId, userNameToDisActivate);
         res.send(response);
     }
     catch (err) {
@@ -324,7 +325,7 @@ function deleteUser(req: Request, res: express.Response) {
 
 usersApiRouter.post('/usersApi/sendMessage', sendMessage);
 
-function sendMessage(req: Request, res: express.Response) {
+async function sendMessage(req: Request, res: express.Response) {
     try {
         const userId = verifyToken(req.session.token).userId;
         const title = req.body.title;
@@ -334,7 +335,7 @@ function sendMessage(req: Request, res: express.Response) {
         if (!title || !body || !toName || !toIsStore)
             res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
 
-        const response = usersApi.sendMessage(userId, title, body, toName, toIsStore);
+        const response = await usersApi.sendMessage(userId, title, body, toName, toIsStore);
         res.send(response);
     }
     catch (err) {

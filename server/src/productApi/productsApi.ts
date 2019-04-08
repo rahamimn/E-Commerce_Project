@@ -2,18 +2,18 @@ import { ProductCollection } from "../persistance/mongoDb/Collections";
 import { Product } from "./models/product";
 import { OK_STATUS, BAD_REQUEST } from "../consts";
 import { IProductApi } from "./productsApiInterface";
-import { fakeProduct, fakeReview } from "../../test/fakes";
 import { Review } from "../storeApi/models/review";
 
 
 export class ProductsApi implements IProductApi{
 
 
-    async addProduct(storeId: String, amountInventory: Number, sellType: String, price: Number, keyWords: String[], category: String){
+    async addProduct(storeId: String, name:String, amountInventory: number, sellType: String, price: number, keyWords: String[], category: String){
 
         try{ 
             const productToInsert = await ProductCollection.insert(new Product({
                 storeId: storeId,
+                name,
                 amountInventory: amountInventory,
                 sellType: sellType,
                 price: price,
@@ -61,7 +61,7 @@ export class ProductsApi implements IProductApi{
     }
 
     //NIR: NOT WORKING. NEED TO FIX.
-    async addReview(productId: String, userId: String, rank: Number, comment: String){
+    async addReview(productId: String, userId: String, rank: number, comment: String){
         try{ 
             let reviewToAdd = new Review({date: Date.now(), registeredUser: userId, rank: rank, comment: comment})
             reviewToAdd.id = "tempID"; //NIR: need to generate id ???;
@@ -99,8 +99,6 @@ export class ProductsApi implements IProductApi{
             return ({status: BAD_REQUEST});
         }
     }
-    //NIR: We have 'removeProduct', What's the difference?
-        //disableProduct: (adminId: string, productId: String) => void; 
 
     async getProductDetails(productId){
         let product = await ProductCollection.findById(productId);
@@ -109,5 +107,7 @@ export class ProductsApi implements IProductApi{
 
         return ({status: OK_STATUS , product: product.getProductDetails()});
     }
-    
+
+    //disableProduct: (adminId: string, productId: String) => void; 
+            //  ------------ NIR: We have 'removeProduct', What's the difference? ------------ 
 }

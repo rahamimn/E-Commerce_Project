@@ -77,7 +77,7 @@ describe('users-api-integration',() => {
       return [userOfRole,role];
   }
   it('login to disactivate user ', async () => {
-    await usersApi.deleteUser(adminUser.id,userWithoutRole.id);
+    await usersApi.deleteUser(adminUser.id,userWithoutRole.userName);
     let response = await usersApi.login(userWithoutRole.userName, userWithoutRole.password);
 
     expect(response.status).toEqual(constants.BAD_REQUEST);
@@ -223,7 +223,7 @@ describe('users-api-integration',() => {
         storeOwner.id,
         chance.sentence(),
         chance.sentence(),
-        storeManager.id,
+        storeManager.userName,
         false
       );
 
@@ -241,7 +241,7 @@ describe('users-api-integration',() => {
       adminUser.id,
       chance.sentence(),
       chance.sentence(),
-      store.id,
+      store.name,
       true 
     );
 
@@ -256,7 +256,7 @@ describe('users-api-integration',() => {
   });
 
   it('delete user ', async () => {
-    let response = await usersApi.deleteUser(adminUser.id,userWithoutRole.id);
+    let response = await usersApi.deleteUser(adminUser.id,userWithoutRole.userName);
 
     const user = await UserCollection.findById(userWithoutRole.id);
 
@@ -267,7 +267,7 @@ describe('users-api-integration',() => {
   });
 
   it('remove role ', async () => {
-    const response = await usersApi.removeRole(storeOwner.id,storeOwner2.id ,store.id);
+    const response = await usersApi.removeRole(storeOwner.id,storeOwner2.userName ,store.id);
 
     const roleStoreOwner  = await RoleCollection.findById(storeOwnerRole.id);
     const roleStoreOwner2  = await RoleCollection.findById(storeOwnerRole2.id);
