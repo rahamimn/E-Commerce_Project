@@ -15,6 +15,24 @@ export async function fetchServer(route: String, methodType: string, body?:any) 
     return json;
 }
 
+async function loginToUser1(){
+    let response = await fetchServer('/usersApi/login','post', {
+        userName: 'user1',
+        password: 'password1'
+    });
+    return response.user;
+}
+async function loginToUser2(){
+    let response = await fetchServer('/usersApi/login','post', {
+        userName: 'user2',
+        password: 'password2'
+    });
+    return response.user;
+}
+async function logoutUser(){
+    await fetchServer('/usersApi/logout','post');
+}
+
 describe('acceptance Test', () => {
 
     let user1Id;
@@ -67,16 +85,176 @@ describe('acceptance Test', () => {
     });
 
     it('add store', async () => {
-        const responseLogin = await fetchServer('/usersApi/login','post', {
-            userName: 'user1',
-            password: 'password1'
-        });
+        let id = loginToUser1();
         const response = await  fetchServer('/storesApi/addStore','post', {
             storeName: 'myStore1'
         });
+        const response1 = await  fetchServer('/storesApi/getStore','post', {
+            storeName: 'myStore1'
+        });
+        let logout = logoutUser();
+        expect(response1.status).toBe(Constants.OK_STATUS);
+    })
 
+    it('add/get product', async () => {
+        let id = loginToUser1();
+        const response = await  fetchServer('/productsApi/addProduct','post', {
+            amountInventory: 10,
+            sellType: 'regular',
+            price: 50,
+            category: 'cars',
+            rank: 4,
+            keyWords: ['car', 'black']
+        })
+        const response1 = await  fetchServer('/productsApi/getProducts','post', {
+            category: 'cars',
+            keyWords: ['car', 'black']
+        })
+        let logout = logoutUser();
         expect(response.status).toBe(Constants.OK_STATUS);
     });
+
+    it('add product to cart and search cart', async () => {
+        const response = await  fetchServer('/storesApi/getStore','post', {
+            storeName: 'myStore1',
+        })
+        let storeId = response.store._id;
+        let id = loginToUser2();
+        const response1 = await  fetchServer('/productsApi/getProducts','post', {
+            category: 'cars',
+            keyWords: ['car', 'black']
+        })
+        let productId = response1.products[0].id;
+        const response2 = await  fetchServer('/usersApi/addProductToCart','post', {
+            storeID: storeId,
+            productId: productId,
+            quantity: 1
+        })
+        const response3 = await  fetchServer('/usersApi/getCarts','post', {})
+        let logout = logoutUser();
+        expect(response2.cart.items[0].id).toBe(productId);
+    });
+
+    it('update cart', async () => {
+        let id = loginToUser2();
+        const response = await  fetchServer('/usersApi/updateCart','post', {
+            cartDetails: {quantity: 2}
+        })
+        const response1 = await  fetchServer('/usersApi/getCarts','post', {})
+        let logout = logoutUser();
+        expect(response1.cart.items[0].amount).toBe(2);
+    });
+
+    it('remove product', async () => {
+        let id = loginToUser1();
+        const response = await  fetchServer('/productsApi/addProduct','post', {
+            amountInventory: 10,
+            sellType: 'regular',
+            price: 50,
+            category: 'cars',
+            rank: 4,
+            keyWords: ['car', 'black']
+        })
+        const response1 = await  fetchServer('/productsApi/getProducts','post', {
+            category: 'cars',
+            keyWords: ['car', 'black']
+        })
+        let logout = logoutUser();
+        expect(response1.status).toBe(Constants.OK_STATUS);
+    });
+
+    it('add user as store owner', async () => {
+        let id1 = loginToUser1();
+        const response = await  fetchServer('/usersApi/setUserAsStoreOwner','post', {
+            appointedUserName: 'user2'
+        })
+        let logout = logoutUser();
+        let id2 = loginToUser2();
+        const response1 = await  fetchServer('/usersApi/getUserDetails','post', {})
+        let logout1 = logoutUser();
+        expect(response1.user.roles.include('store-owner')).toBe(true);
+    });
+
+    it('add user as store owner when he is already exist', async () => {
+        let id1 = loginToUser1();
+        const response = await  fetchServer('/usersApi/setUserAsStoreOwner','post', {
+            appointedUserName: 'user2'
+        })
+        let logout = logoutUser();
+        expect(response.status).toBe(Constants.BAD_REQUEST);
+    });
+
+    it('add user as store owner when he is not a user', async () => {
+        let id1 = loginToUser1();
+        const response = await  fetchServer('/usersApi/setUserAsStoreOwner','post', {
+            appointedUserName: 'user65'
+        })
+        let logout = logoutUser();
+        expect(response.status).toBe(Constants.BAD_REQUEST);
+    });
+
+    it('add user as store manger', async () => {
+        let id1 = loginToUser1();
+        const response = await  fetchServer('/usersApi/setUserAsStoreManager','post', {
+            appointedUserName: 'user2',
+            permissions: ''
+        })
+        let logout = logoutUser();
+        let id2 = loginToUser2();
+        const response1 = await  fetchServer('/usersApi/getUserDetails','post', {})
+        let logout1 = logoutUser();
+        expect(response1.user.roles.include('store-manager')).toBe(true);
+    });
+
+    it('add user as store manger when he is a manger', async () => {
+        let id1 = loginToUser1();
+        const response = await  fetchServer('/usersApi/setUserAsStoreManager','post', {
+            appointedUserName: 'user2',
+            permissions: ''
+        })
+        let logout = logoutUser();
+        expect(response.status).toBe(Constants.BAD_REQUEST);
+    });
+
+    it('add user as store manger when he is not a user', async () => {
+        let id1 = loginToUser1();
+        const response = await  fetchServer('/usersApi/setUserAsStoreManager','post', {
+            appointedUserName: 'user65',
+            permissions: ''
+        })
+        let logout = logoutUser();
+        expect(response.status).toBe(Constants.BAD_REQUEST);
+    });
+
+    it('remove user as store owner', async () => {
+        let id1 = loginToUser1();
+        const response = await  fetchServer('/usersApi/removeRole','post', {
+            appointedUserName: 'user2'
+        });
+        let logout = logoutUser();
+        let id2 = loginToUser2();
+        const response1 = await  fetchServer('/usersApi/getUserDetails','post', {});
+        let logout1 = logoutUser();
+        expect(response1.user.roles.include('store-owner')).toBe(false);
+    });
+
+    it('remove user from system', async () => {
+        let id1 = loginToUser1();
+        const response = await  fetchServer('/usersApi/removeRole','post', {
+            appointedUserName: 'user2'
+        });
+        const response1 = await  fetchServer('/usersApi/setUserAsSystemAdmin','post', {
+            appointedUserName: 'user2'
+        });
+        let logout = logoutUser();
+        let id2 = loginToUser2();
+        expect(response1.status).toBe(Constants.BAD_USERNAME);
+    });
+
+
+});
+/*
+
 
 
 
