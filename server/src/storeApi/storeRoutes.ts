@@ -4,7 +4,7 @@ import {StoresApi} from "./storesApi";
 import {verifyToken} from "../jwt";
 import * as Constants from "../consts";
 import {ERR_GENERAL_MSG} from "../consts";
-import {usersApiRouter} from "../usersApi/userRoutes";
+import { usersApiRouter } from "../usersApi/userRoutes";
 
 export const storesApiRouter = express.Router();
 

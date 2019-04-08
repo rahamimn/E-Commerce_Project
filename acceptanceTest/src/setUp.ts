@@ -1,5 +1,5 @@
 
-import {fetchServer} from "./main.spec";
+import { fetchServer } from "./main.spec";
 
 export async function initializeDatabase (){
     await fetchServer('/usersApi/register','post', {
