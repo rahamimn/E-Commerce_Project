@@ -23,16 +23,14 @@ async function addProduct(req: Request, res: express.Response) {
         // const acceptableDiscount = req.body.acceptableDiscount;
         // const discountPrice = req.body.id;
         const rank = req.body.rank;
+        const name = req.body.name;
         const keyWords = req.body.keyWords;
         const id = req.body.id;
         const reviews = req.body.reviews;
 
-
-
-
         if (!amountInventory || !sellType || !price || !category )
             res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
-        const response = await productsApi.addProduct(storeId, amountInventory, sellType, price, keyWords, category);
+        const response = await productsApi.addProduct(storeId,name ,amountInventory, sellType, price, keyWords, category);
         res.send(response);
     }
     catch (err) {

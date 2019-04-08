@@ -5,15 +5,16 @@ import { Review } from "../../storeApi/models/review";
 export class Product {
 
 
-    private _id: String;
-    private _storeId: String;
-    private _amountInventory: Number;
+    private _id: any;
+    private _name: String;
+    private _storeId: any;
+    private _amountInventory: number;
     private _sellType: String;
-    private _price: Number;
+    private _price: number;
     private _coupons: String;
-    private _acceptableDiscount: Number;
-    private _discountPrice: Number;
-    private _rank: Number;
+    private _acceptableDiscount: number;
+    private _discountPrice: number;
+    private _rank: number;
     private _reviews: Review[];
     private _keyWords: String[];
     private _category: String;
@@ -21,6 +22,7 @@ export class Product {
 
     constructor(base:any){
         this._id = base.id;
+        this._name = base.name;
         this._storeId = base.storeId;
         this._amountInventory = base.amountInventory;
         this._sellType = base.sellType;
@@ -53,6 +55,7 @@ export class Product {
      public getProductDetails (){
         const {
             _id,
+            _name,
             _amountInventory,
             _sellType,
             _price,
@@ -86,7 +89,21 @@ export class Product {
     }
 
 
- 
+     /**
+     * Getter name
+     * @return {String}
+     */
+	public get name(): String {
+		return this._name;
+	}
+
+    /**
+     * Setter name
+     * @param {String} value
+     */
+	public set name(value: String) {
+		this._name = value;
+	}
 
     /**
      * Getter id
@@ -98,9 +115,9 @@ export class Product {
 
     /**
      * Getter amountInventory
-     * @return {Number}
+     * @return {number}
      */
-	public get amountInventory(): Number {
+	public get amountInventory(): number {
 		return this._amountInventory;
 	}
 
@@ -114,9 +131,9 @@ export class Product {
 
     /**
      * Getter price
-     * @return {Number}
+     * @return {number}
      */
-	public get price(): Number {
+	public get price(): number {
 		return this._price;
 	}
 
@@ -130,25 +147,25 @@ export class Product {
 
     /**
      * Getter acceptableDiscount
-     * @return {Number}
+     * @return {number}
      */
-	public get acceptableDiscount(): Number {
+	public get acceptableDiscount(): number {
 		return this._acceptableDiscount;
 	}
 
     /**
      * Getter discountPrice
-     * @return {Number}
+     * @return {number}
      */
-	public get discountPrice(): Number {
+	public get discountPrice(): number {
 		return this._discountPrice;
 	}
 
     /**
      * Getter rank
-     * @return {Number}
+     * @return {number}
      */
-	public get rank(): Number {
+	public get rank(): number {
 		return this._rank;
 	}
 
@@ -194,9 +211,9 @@ export class Product {
 
     /**
      * Setter amountInventory
-     * @param {Number} value
+     * @param {number} value
      */
-	public set amountInventory(value: Number) {
+	public set amountInventory(value: number) {
 		this._amountInventory = value;
 	}
 
@@ -210,9 +227,9 @@ export class Product {
 
     /**
      * Setter price
-     * @param {Number} value
+     * @param {number} value
      */
-	public set price(value: Number) {
+	public set price(value: number) {
 		this._price = value;
 	}
 
@@ -226,25 +243,25 @@ export class Product {
 
     /**
      * Setter acceptableDiscount
-     * @param {Number} value
+     * @param {number} value
      */
-	public set acceptableDiscount(value: Number) {
+	public set acceptableDiscount(value: number) {
 		this._acceptableDiscount = value;
 	}
 
     /**
      * Setter discountPrice
-     * @param {Number} value
+     * @param {number} value
      */
-	public set discountPrice(value: Number) {
+	public set discountPrice(value: number) {
 		this._discountPrice = value;
 	}
 
     /**
      * Setter rank
-     * @param {Number} value
+     * @param {number} value
      */
-	public set rank(value: Number) {
+	public set rank(value: number) {
 		this._rank = value;
 	}
 

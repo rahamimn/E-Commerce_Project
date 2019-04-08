@@ -1,3 +1,8 @@
+import { Order } from "../../orderApi/models/order";
+import { Product } from "../../productApi/models/product";
+import { ProductCollection } from "../../persistance/mongoDb/Collections";
+import { NEW_ORDER } from "../../consts";
+
 export class Cart{
 
     /**
@@ -26,13 +31,13 @@ export class Cart{
 
     /**
      * Setter id
-     * @param {string} value
+     * @param {product: any, amount:number}[] value
      */
-	public set items(value: {product: any, amount:Number}[]) {
+	public set items(value: {product: any, amount:number}[]) {
 		this._items = value;
   }
   
-  public get items(): {product: any, amount:Number}[] {
+  public get items(): {product: any, amount:number}[] {
 		return this._items;
 	}
 
@@ -62,13 +67,24 @@ export class Cart{
     private _id: string;
     private _ofUser: any;
     private _store: any;
-    private _items:  {product:any, amount:Number}[];
+    private _items:  {product:any, amount:number}[];
 
     constructor(opt: any){
         this._id = opt.id;
         this._items = opt.items;
         this._store = opt.store;
         this._ofUser = opt.ofUser;
+    }
+  
+    get productsIds(){
+      return this.items.map(item => item.product);
+    }
+
+    async totalPrice (){
+      const products = await ProductCollection.findByIds(this.productsIds);
+
+      return this.items.reduce((sum, item, ind) => {
+        return sum += products[ind].price * item.amount;} ,0);
     }
   
     public addItem = function (productId, amount){
@@ -86,21 +102,38 @@ export class Cart{
       }
     }
 
-    public getDetails (){
-      const {
-          _id,
-          _items,
-          _store,
-      } = this;
-      return ({
+  public getDetails (){
+    const {
         _id,
         _items,
         _store,
-      });
+    } = this;
+    return ({
+      _id,
+      _items,
+      _store,
+    });
   } 
-    public updateDetails (cartDetails){ //nothing else should update for now
-      this.items = cartDetails._items;
-   }
+
+  public async makeOrder () {
+    return new Order({
+      userId: this.ofUser,
+      storeId: this.store,
+      totalPrice: await this.totalPrice(),
+      state: NEW_ORDER,
+      description: await this.toString()
+    });
+  }
+
+  public updateDetails (cartDetails){ //nothing else should update for now
+    this.items = cartDetails._items;
+  }
+  
+  public async toString (){
+    const products = await ProductCollection.findByIds(this.productsIds);
+    return this.items.reduce((str,item,ind)=>
+      str +=`index: ${ind} product: ${products[ind].name} amount: ${item.amount} price: ${item.amount*products[ind].price} \n`,'') + await this.totalPrice()
+  }
    
 
   }
