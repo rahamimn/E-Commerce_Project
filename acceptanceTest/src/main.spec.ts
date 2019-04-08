@@ -87,14 +87,13 @@ describe('acceptance Test', () => {
     it('add store', async () => {
         let id = loginToUser1();
         const response = await  fetchServer('/storesApi/addStore','post', {
-            userId: id,
             storeName: 'myStore1'
         });
         const response1 = await  fetchServer('/storesApi/getStore','post', {
             storeName: 'myStore1'
         });
         let logout = logoutUser();
-        expect(response.status).toBe(Constants.OK_STATUS);
+        expect(response1.status).toBe(Constants.OK_STATUS);
     })
 
     it('add/get product', async () => {
@@ -113,6 +112,37 @@ describe('acceptance Test', () => {
         })
         let logout = logoutUser();
         expect(response.status).toBe(Constants.OK_STATUS);
+    });
+
+    it('add product to cart and search cart', async () => {
+        const response = await  fetchServer('/storesApi/getStore','post', {
+            storeName: 'myStore1',
+        })
+        let storeId = response.store._id;
+        let id = loginToUser2();
+        const response1 = await  fetchServer('/productsApi/getProducts','post', {
+            category: 'cars',
+            keyWords: ['car', 'black']
+        })
+        let productId = response1.products[0].id;
+        const response2 = await  fetchServer('/usersApi/addProductToCart','post', {
+            storeID: storeId,
+            productId: productId,
+            quantity: 1
+        })
+        const response3 = await  fetchServer('/usersApi/getCarts','post', {})
+        let logout = logoutUser();
+        expect(response2.cart.items[0].id).toBe(productId);
+    });
+
+    it('update cart', async () => {
+        let id = loginToUser2();
+        const response = await  fetchServer('/usersApi/updateCart','post', {
+            cartDetails: {quantity: 2}
+        })
+        const response1 = await  fetchServer('/usersApi/getCarts','post', {})
+        let logout = logoutUser();
+        expect(response1.cart.items[0].amount).toBe(2);
     });
 
     it('remove product', async () => {
@@ -198,15 +228,33 @@ describe('acceptance Test', () => {
 
     it('remove user as store owner', async () => {
         let id1 = loginToUser1();
-        const response = await  fetchServer('/usersApi/setUserAsStoreOwner','post', {
+        const response = await  fetchServer('/usersApi/removeRole','post', {
             appointedUserName: 'user2'
-        })
+        });
         let logout = logoutUser();
         let id2 = loginToUser2();
-        const response1 = await  fetchServer('/usersApi/getUserDetails','post', {})
+        const response1 = await  fetchServer('/usersApi/getUserDetails','post', {});
         let logout1 = logoutUser();
-        expect(response1.user.roles.include('store-owner')).toBe(true);
+        expect(response1.user.roles.include('store-owner')).toBe(false);
     });
+
+    it('remove user from system', async () => {
+        let id1 = loginToUser1();
+        const response = await  fetchServer('/usersApi/removeRole','post', {
+            appointedUserName: 'user2'
+        });
+        const response1 = await  fetchServer('/usersApi/setUserAsSystemAdmin','post', {
+            appointedUserName: 'user2'
+        });
+        let logout = logoutUser();
+        let id2 = loginToUser2();
+        expect(response1.status).toBe(Constants.BAD_USERNAME);
+    });
+
+
+});
+/*
+
 
 
 
