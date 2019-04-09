@@ -23,7 +23,7 @@ const cartScheme = new Schema({
   }],
 });
 
-cartScheme.index({ofUser:1/*,store:1*/ },{unique:true})
+cartScheme.index({ofUser:1,store:1 },{unique:true})
 
 export let CartModel : Model<ICartModel>
 try {

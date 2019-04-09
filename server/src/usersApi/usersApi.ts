@@ -110,14 +110,14 @@ export class UsersApi implements IUsersApi{
     }
 
     async addProductToCart(userId, storeId, productId, amount){
-        const cart = await CartCollection.findOne({ofUser:userId, store: storeId});
+        let cart = await CartCollection.findOne({ofUser:userId, store: storeId});
         const product = await ProductCollection.findById(productId);
         if(!product)
             return ({status: Constants.BAD_REQUEST});
 
 
         if(!cart){
-            await CartCollection.insert(new Cart({
+            cart = await CartCollection.insert(new Cart({
                 ofUser: userId,
                 store: storeId,
                 items:[{
@@ -126,12 +126,10 @@ export class UsersApi implements IUsersApi{
                 }]}));
         }
         else {
-
             cart.addItem(productId, amount);
             await CartCollection.updateOne(cart);
         }
-
-        return ({status: Constants.OK_STATUS});
+        return ({status: Constants.OK_STATUS , cart});
     }
 
     async setUserAsSystemAdmin(userId, appointedUserName){
@@ -180,9 +178,11 @@ export class UsersApi implements IUsersApi{
 
     async setUserAsStoreManager(userId, appointedUserName, storeId, permissions){
         const appointedUser = await UserCollection.findOne({userName: appointedUserName});
-        const appointorRole = await RoleCollection.findOne({ofUser:userId, store:storeId , name:STORE_OWNER});
+        const appointorRole = await RoleCollection.findOne({ofUser:userId, store:storeId , name:{$in: [STORE_OWNER,STORE_MANAGER]}});
         if(!appointorRole)
             return ({status: Constants.BAD_REQUEST});
+        if(appointorRole.name === STORE_MANAGER && appointorRole.permissions.filter(perm => perm === Constants.APPOINT_STORE_MANAGER).length === 0 )
+            return ({status: Constants.BAD_REQUEST, err:'dont have permission'});
         if(await RoleCollection.findOne({ofUser:appointedUser.id, store:storeId}))
             return ({status: Constants.BAD_REQUEST});
 

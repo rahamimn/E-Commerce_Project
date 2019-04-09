@@ -29,6 +29,7 @@ export const fakeRole = (opt: any = {}) => {
         store: opt.store || genObjectId(),
         appointees : opt.appointees || [],
         ofUser: opt.ofUser || genObjectId(),
+        permissions: opt.permissions || []
     });
 }
 
@@ -52,7 +53,7 @@ export const fakeUser = (opt: any = {}, isGuest = false) => {
 export const fakeStore = (opt: any = {}) => {
     return new Store({
         id : genObjectId(),
-        name: opt.userName || chance.name() ,
+        name: opt.name || chance.name() ,
         workers : opt.workers || [],
         rank: opt.rank || chance.integer(),
         review : opt.review || [],

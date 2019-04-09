@@ -137,6 +137,8 @@ async function getStore(req: Request, res: express.Response) {
             res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
         else {
             const response = await storesApi.getStore(storeName);
+      
+            req.session.storeId = response.store? response.store.id: null;
             res.send(response);
         }
     }

@@ -1,12 +1,13 @@
 import { Cart } from "./models/cart";
 import { Message } from "./models/message";
 import { User } from "./models/user";
+import { AnyCnameRecord } from "dns";
 
 export interface IUsersApi{
     login: (userName: String, password: String) => Promise<{status:number, err?: String , user?: any   }>,
     register: (userName: String, password: String) => Promise<{status:number, err?: String}>,
     logout: (userId: string) => Promise<number>,
-    addProductToCart:(userId:String,storeId: String, productId: String, amount: number) =>  Promise< {status:number, err?: String   }>,
+    addProductToCart:(userId:String,storeId: String, productId: String, amount: number) =>  Promise< {status:number, err?: String, cart?:any   }>,
     setUserAsSystemAdmin: (userId:String, appointedUserName:String) => Promise< {status:number, err?: String   }>,
     setUserAsStoreOwner: (userId:String, appointedUserName:String, storeId:String) => Promise< {status:number, err?: String   }>,
     setUserAsStoreManager: (userId:String, appointedUserName:String, storeId:String, permissions:String[]) =>Promise<{status:number, err?: String   }>,

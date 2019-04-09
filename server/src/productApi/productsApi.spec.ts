@@ -86,7 +86,7 @@ it('getProducts - Test', async () => {
     let category = productFromDB.product.category;
     let keyWords = productFromDB.product.keyWords;
 
-    let res = await productsApi.getProducts(storeId, category, keyWords)
+    let res = await productsApi.getProducts({storeId, category, keyWords});
 
     expect(res.products === [productFromDB.product]);
 });

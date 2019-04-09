@@ -26,8 +26,8 @@ export interface IProductModel extends IProduct, Document{
 }
 
 const productScheme = new Schema({
-    storeId: {type: String}, 
-    name: {type: String, unique:true},
+    storeId: {type: Schema.Types.ObjectId,ref: 'Store', required:true}, 
+    name: {type: String , required:true},
     amountInventory: {type: Number}, 
     sellType: {type: String},
     price: {type: Number}, 
@@ -36,10 +36,12 @@ const productScheme = new Schema({
     discountPrice:{type: Number}, 
     rank: {type: Number}, // NIR: Why don't we use ref?
     reviews: [{type: Schema.Types.ObjectId, ref: 'Review', default:[]}],
-    keyWords: {type: String, default: []}, //Nir: To check
+    keyWords: [{type: String, default: []}], //Nir: To check
     category: {type: String},
     isActivated: {type: Boolean},
 });
+
+productScheme.index({storeId:1,name:1},{unique:true});
 
 export let ProductModel : Model<IProductModel>
 try {
