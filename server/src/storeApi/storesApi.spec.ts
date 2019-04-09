@@ -70,23 +70,29 @@ describe("Store api model", () => {
   });
 
   it("test add store (currentlly in app.ts)", async () => {
-    var user1 = fakeUser({});
-    var user2 = await UserCollection.insert(user1);
-    const status_of_add_store = await storesApi.addStore(
-      user2.id,
-      chance.string()
-    ); //may need to change type of user2 to string not String
-    expect(status_of_add_store.store.storeState).toEqual(OPEN_STORE);
+    let user = await UserCollection.insert(fakeUser({}));
+    const storeName = chance.string();
+    const response = await storesApi.addStore(user.id,storeName);
+
+    user = await UserCollection.findById(user.id);
+    const userRole =await RoleCollection.findOne({ofUser: user.id, store: response.store.id , name: STORE_OWNER});
+    const store = await StoreCollection.findById(response.store.id);
+
+    expect(userRole).toBeTruthy;
+    expect(store).toBeTruthy;
+    expect(response.status).toEqual(OK_STATUS);
+    expect(user.roles[0].toString()).toEqual(userRole.id.toString());
+    expect(store.workers[0].toString()).toEqual(userRole.id.toString());
+    expect(response.store.storeState).toEqual(OPEN_STORE);
   });
 
   it("test GET STORE (currentlly in app.ts)", async () => {
-    var store1 = fakeStore({});
-    var store2 = await StoreCollection.insert(store1);
-    var store_name = store2.name;
+    const storeName = 'store1';
+    var store = await StoreCollection.insert(fakeStore({name: storeName}));
 
-    const store_from_db = await storesApi.getStore(store2.name);
+    const store_from_db = await storesApi.getStore(store.name);
 
-    expect(store_from_db.store.name).toEqual(store_name);
+    expect(store_from_db.store.name).toEqual(storeName);
   });
 
   it("test GET STORE MESSAGES (currentlly in app.ts)", async () => {

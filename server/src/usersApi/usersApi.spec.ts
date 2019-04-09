@@ -41,7 +41,7 @@ describe('users-api-integration',() => {
       [adminUser, roleAdmin] = await roleWithUser({},{name: ADMIN});
       [storeOwner, storeOwnerRole] = await roleWithUser({},{name: STORE_OWNER, store: store.id });
       [storeOwner2, storeOwnerRole2] = await roleWithUser({},{name: STORE_OWNER, store: store.id, appointor: storeOwnerRole.id });
-      [storeManager, storeManagerRole] = await roleWithUser({},{name: STORE_MANAGER, store: store.id , appointor: storeOwnerRole2.id});
+      [storeManager, storeManagerRole] = await roleWithUser({},{name: STORE_MANAGER, store: store.id , appointor: storeOwnerRole2.id , permissions:[constants.APPOINT_STORE_MANAGER]});
       userWithoutRole = await UserCollection.insert(fakeUser({}));
 
       cart.ofUser = userWithAll._id;
@@ -126,7 +126,7 @@ describe('users-api-integration',() => {
       expect(await RoleCollection.findOne({ofUser:userWithoutRole.id, name: STORE_OWNER})).toBeTruthy();
   });
 
-  it('set user as store manager when dont play a role in store', async () => {
+  it('storeOwner set user as store manager when dont play a role in store', async () => {
       const permissions = [ chance.name() ];
 
       const response = await usersApi.setUserAsStoreManager(storeOwner.id, userWithoutRole.userName, store.id,permissions );
@@ -134,6 +134,15 @@ describe('users-api-integration',() => {
       expect(response).toMatchObject({status: constants.OK_STATUS});
       expect(await RoleCollection.findOne({ofUser:userWithoutRole.id, name: STORE_MANAGER})).toBeTruthy();
   });
+
+  it('storeManger with permoission set user as store manager when dont play a role in store', async () => {
+    const permissions = [ chance.name() ];
+
+    const response = await usersApi.setUserAsStoreManager(storeManager.id, userWithoutRole.userName, store.id, permissions );
+
+    expect(response).toMatchObject({status: constants.OK_STATUS});
+    expect(await RoleCollection.findOne({ofUser:userWithoutRole.id, name: STORE_MANAGER})).toBeTruthy();
+    });
 
   it('update permissions', async () => {
       const permissions = [ chance.domain() ];

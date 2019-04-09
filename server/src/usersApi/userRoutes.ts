@@ -152,14 +152,14 @@ usersApiRouter.post('/usersApi/addProductToCart', addProductToCart);
 async function addProductToCart(req: Request, res: express.Response) {
     try {
         const userId = verifyToken(req.session.token).userId;
-        const storeID = req.body.storeId;
+        const storeId = req.body.storeId;
         const productId = req.body.productId;
-        const quantity = req.body.quantity;
-
-        if (!quantity || !productId || !storeID)
+        const amount = req.body.amount;
+        if (!amount || !productId || !storeId)
             res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
         else {
-            const response = await usersApi.addProductToCart(userId, storeID, productId, quantity);
+            
+            const response = await usersApi.addProductToCart(userId, storeId, productId, amount);
             res.send(response);
         }
     }

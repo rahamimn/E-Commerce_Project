@@ -6,6 +6,10 @@ export const createCollection = (TModel,extractT) =>
            
         }
         static async find(opt={}){
+            // const keys = Object.keys(opt).forEach((key) => {
+            //     if(opt[key].$in)
+                    
+            // })
             const modelsDb = await TModel.find(opt);
             return modelsDb.map(extractT);
         };

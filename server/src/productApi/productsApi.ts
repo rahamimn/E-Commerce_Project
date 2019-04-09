@@ -8,11 +8,11 @@ import { Review } from "../storeApi/models/review";
 export class ProductsApi implements IProductApi{
 
 
-    async addProduct(storeId: String, name:String, amountInventory: number, sellType: String, price: number, keyWords: String[], category: String){
+    async addProduct(storeId: String,name:String, amountInventory: Number, sellType: String, price: Number, keyWords: String[], category: String){
 
         try{ 
             const productToInsert = await ProductCollection.insert(new Product({
-                storeId: storeId,
+                storeId,
                 name,
                 amountInventory: amountInventory,
                 sellType: sellType,
@@ -53,7 +53,7 @@ export class ProductsApi implements IProductApi{
             let productToUpdate = await ProductCollection.findById(productId);
             productToUpdate.updateDetails(productDetails);
             let product_AfterUpdate = await ProductCollection.updateOne(productToUpdate);
-            return {status: OK_STATUS ,product: productToUpdate}
+            return {status: OK_STATUS ,product: product_AfterUpdate}
 
         } catch(error) {
             return ({status: BAD_REQUEST});
@@ -61,7 +61,7 @@ export class ProductsApi implements IProductApi{
     }
 
     //NIR: NOT WORKING. NEED TO FIX.
-    async addReview(productId: String, userId: String, rank: number, comment: String){
+    async addReview(productId: String, userId: String, rank: Number, comment: String){
         try{ 
             let reviewToAdd = new Review({date: Date.now(), registeredUser: userId, rank: rank, comment: comment})
             reviewToAdd.id = "tempID"; //NIR: need to generate id ???;
@@ -78,21 +78,20 @@ export class ProductsApi implements IProductApi{
         
     }
 
-    async getProducts(storeId?: String, category?: String, keyWords?: String[]){
+    async getProducts(parmas: {storeId?: String, category?: String, keyWords?: String[], name?:String}){
         try{ 
-            let productsToReturn;
-            if (keyWords === undefined && category === undefined){
-                productsToReturn = await ProductCollection.find({storeId: storeId});
-            }
-
-            else if (keyWords === undefined){
-                productsToReturn = await ProductCollection.find({storeId: storeId, category: category});
-            }
             
-            else{
-                productsToReturn = await ProductCollection.find({storeId: storeId, category: category, keyWords: keyWords});
-            }
-
+            const filter:any = {};
+            if(parmas.category)
+                filter.category = parmas.category;
+            if(parmas.storeId)
+                filter.storeId = parmas.storeId;
+            if(parmas.name)
+                filter.name = parmas.name;
+            if(parmas.keyWords && parmas.keyWords.length>0) 
+                filter.keyWords = {$in:parmas.keyWords};
+            filter.isActivated = true;
+            let productsToReturn = await ProductCollection.find(filter);
             return {status: OK_STATUS ,products: productsToReturn}
 
         } catch(error) {

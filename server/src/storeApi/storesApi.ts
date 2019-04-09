@@ -13,9 +13,10 @@ export class StoresApi implements IStoresApi {
     //works after test
     async addStore( storeNewOwnerId: String, storeName: string){
         try {
-            const role_of_owner = await RoleCollection.insert(new Role({
-                name:STORE_OWNER, ofUser: storeNewOwnerId , appointor: storeNewOwnerId
-            }));
+  
+            const user = await UserCollection.findById(storeNewOwnerId);
+            if(!user)
+                return {status: BAD_REQUEST, err:"bad store name, must be unic"};
             const new_store_added = await StoreCollection.insert(new Store({
                 name: storeName,
                 workers: [],
@@ -24,9 +25,20 @@ export class StoresApi implements IStoresApi {
                 purchasePolicy: "everyone can buy",
                 storeState: OPEN_STORE
             }));
-            new_store_added.workers.push(role_of_owner); //does not enter to DB
+
+            const role_of_owner = await RoleCollection.insert(new Role({
+                name: STORE_OWNER,
+                ofUser: storeNewOwnerId,
+                appointor: storeNewOwnerId,
+                store: new_store_added.id
+            }));
+
+  
+            new_store_added.workers.push(role_of_owner.id); //does not enter to DB
             await StoreCollection.updateOne(new_store_added);
 
+            user.roles.push(role_of_owner.id); //does not enter to DB
+            await UserCollection.updateOne(user);
 
             //AVIV: need to check with adir how to update the workers detils only
 
@@ -37,7 +49,7 @@ export class StoresApi implements IStoresApi {
         }
         catch(err){
             console.log(err);
-            return {status: BAD_USERNAME, err:"bad store name, must be unic"};
+            return {status: BAD_REQUEST, err:"bad store name, must be unic"};
         }
     }
 
