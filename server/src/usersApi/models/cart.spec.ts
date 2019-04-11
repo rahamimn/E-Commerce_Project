@@ -5,7 +5,6 @@ import { ObjectId } from 'bson';
 import { connectDB } from '../../persistance/connectionDbTest';
 import { CartCollection, ProductCollection } from '../../persistance/mongoDb/Collections';
 import { Product } from '../../productApi/models/product';
-import { NEW_ORDER } from '../../consts';
 
 
 describe('Cart model',() => {
@@ -117,7 +116,6 @@ describe('Cart model',() => {
 
     const order = await cart.makeOrder();
 
-    expect(order.state).toEqual(NEW_ORDER);
     expect(order.storeId).toEqual(cart.store);
     expect(order.userId).toEqual(cart.ofUser);
     expect(order.totalPrice).toEqual(20);
@@ -145,6 +143,82 @@ describe('Cart model',() => {
       `index: 1 product: ${productId2.name} amount: 2 price: 40 \n`+
       `index: 2 product: ${productId3.name} amount: 3 price: 90 \n`+'140'
     );
+  });
+
+  
+  it('cart update Invetory (subtract)  success',async () => {
+    const amountInventory = 20;
+    let product1 = await ProductCollection.insert(fakeProduct({
+      amountInventory
+    }));
+    let product2 = await ProductCollection.insert(fakeProduct({
+      amountInventory
+    }));
+
+    const cart = fakeCart({items:[
+      {product:product1.id, amount: 10},
+      {product:product2.id, amount: 20}]
+    });
+    const response = await cart.updateInventory(true);
+    product1 = await ProductCollection.findById(product1.id);
+    product2 = await ProductCollection.findById(product2.id);
+
+    expect(product1.amountInventory).toBe(10);
+    expect(product2.amountInventory).toBe(0);
+    expect(response).toBeTruthy();
+  });
+
+  
+
+  it('cart update Invetory (adding)  success',async () => {
+    const amountInventory = 20;
+    let product1 = await ProductCollection.insert(fakeProduct({
+      amountInventory
+    }));
+    let product2 = await ProductCollection.insert(fakeProduct({
+      amountInventory
+    }));
+
+    const cart = fakeCart({items:[
+      {product:product1.id, amount: 10},
+      {product:product2.id, amount: 20}]
+    });
+    const response = await cart.updateInventory(false);
+    product1 = await ProductCollection.findById(product1.id);
+    product2 = await ProductCollection.findById(product2.id);
+
+    expect(product1.amountInventory).toBe(30);
+    expect(product2.amountInventory).toBe(40);
+    expect(response).toBeTruthy();
+  });
+
+
+  it('cart update Invetory doesnt success',async () => {
+    const amountInventory = 20;
+    let product1 = await ProductCollection.insert(fakeProduct({
+      amountInventory
+    }));
+    let product2 = await ProductCollection.insert(fakeProduct({
+      amountInventory
+    }));
+
+    const cart = fakeCart({items:[
+      {product:product1.id, amount: 10},
+      {product:product2.id, amount: 30}]
+    });
+    const response = await cart.updateInventory(true);
+    product1 = await ProductCollection.findById(product1.id);
+    product2 = await ProductCollection.findById(product2.id);
+
+    expect(product1.amountInventory).toBe(20);
+    expect(product2.amountInventory).toBe(20);
+    expect(response).toBeFalsy();
+  });
+
+  it('cart set supply check validity', () => {
+    const cart = fakeCart({items:[]});
+    
+    expect ( ()=>{cart.supplyPrice = -2}).toThrowError();
   });
 
 });

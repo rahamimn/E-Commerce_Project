@@ -25,10 +25,9 @@ export const OPEN_STORE = "OPEN STORE";
 export const CLOSE_STORE_BY_OWNER = "CLOSE_STORE_BY_OWNER";
 export const CLOSE_STORE_BY_ADMIN = "CLOSE_STORE_BY_ADMIN";
 
-//Order state
-export const NEW_ORDER = "new-order";
+//Cart state
+export const NORMAL_CART = "normal-cart";
 export const ORDER_SUPPLY_APPROVED = "supply-system-approved";
-export const ORDER_DONE= "payment-system-approved";
 
 //Permissions 
 export const APPOINT_STORE_MANAGER = "appoint-store-manager"; //done

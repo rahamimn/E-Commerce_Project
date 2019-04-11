@@ -1,79 +1,30 @@
 import { Order } from "../../orderApi/models/order";
 import { Product } from "../../productApi/models/product";
 import { ProductCollection } from "../../persistance/mongoDb/Collections";
-import { NEW_ORDER } from "../../consts";
+import { asyncForEach } from "../../utils/utils";
 
 export class Cart{
 
-    /**
-     * Getter id
-     * @return {string}
-     */
-	public get id(): string {
-		return this._id;
+	public set supplyPrice(value: number) {
+    if(value<0)
+      throw new Error('supply price not valid');
+		this._supplyPrice = value;
 	}
 
-    /**
-     * Getter ofUser
-     * @return {any}
-     */
-	public get ofUser(): any {
-		return this._ofUser;
-	}
-
-    /**
-     * Getter store
-     * @return {any}
-     */
-	public get store(): any {
-		return this._store;
-	}
-
-    /**
-     * Setter id
-     * @param {product: any, amount:number}[] value
-     */
-	public set items(value: {product: any, amount:number}[]) {
-		this._items = value;
-  }
-  
-  public get items(): {product: any, amount:number}[] {
-		return this._items;
-	}
-
-    /**
-     * Setter id
-     * @param {string} value
-     */
-	public set id(value: string) {
-		this._id = value;
-	}
-
-    /**
-     * Setter ofUser
-     * @param {any} value
-     */
-	public set ofUser(value: any) {
-		this._ofUser = value;
-	}
-
-    /**
-     * Setter store
-     * @param {any} value
-     */
-	public set store(value: any) {
-		this._store = value;
-	}
     private _id: string;
     private _ofUser: any;
     private _store: any;
     private _items:  {product:any, amount:number}[];
+    private _state: String; 
+    private _supplyPrice: number; //in order state
 
     constructor(opt: any){
         this._id = opt.id;
         this._items = opt.items;
         this._store = opt.store;
         this._ofUser = opt.ofUser;
+        this._state = opt.state;
+        this._supplyPrice = opt.supplyPrice;
     }
   
     get productsIds(){
@@ -85,6 +36,25 @@ export class Cart{
 
       return this.items.reduce((sum, item, ind) => {
         return sum += products[ind].price * item.amount;} ,0);
+    }
+
+    async updateInventory (isDec){ //need to test
+      try{
+        const products = await ProductCollection.findByIds(this.productsIds);
+        await asyncForEach(this.items,
+          async (item, ind) => {
+            if(isDec)
+              products[ind].amountInventory -= item.amount;
+            else 
+              products[ind].amountInventory += item.amount;
+        });
+        await asyncForEach(products, async prod => await ProductCollection.updateOne(prod));
+        return true;
+      }
+      catch(error){
+        return false;
+      } 
+
     }
   
     public addItem = function (productId, amount){
@@ -120,7 +90,7 @@ export class Cart{
       userId: this.ofUser,
       storeId: this.store,
       totalPrice: await this.totalPrice(),
-      state: NEW_ORDER,
+      supplyPrice : this.supplyPrice,
       description: await this.toString()
     });
   }
@@ -135,6 +105,98 @@ export class Cart{
       str +=`index: ${ind} product: ${products[ind].name} amount: ${item.amount} price: ${item.amount*products[ind].price} \n`,'') + await this.totalPrice()
   }
    
+
+      /**
+     * Getter id
+     * @return {product:any, amount:number}[]
+     */
+	public get items(): {product:any, amount:number}[]{
+		return this._items;
+	}
+
+    /**
+     * Getter id
+     * @return {string}
+     */
+	public get id(): string {
+		return this._id;
+	}
+
+    /**
+     * Getter ofUser
+     * @return {any}
+     */
+	public get ofUser(): any {
+		return this._ofUser;
+	}
+
+    /**
+     * Getter store
+     * @return {any}
+     */
+	public get store(): any {
+		return this._store;
+	}
+
+    /**
+     * Getter state
+     * @return {String}
+     */
+	public get state(): String {
+		return this._state;
+	}
+
+    /**
+     * Getter supplyPrice
+     * @return {number}
+     */
+	public get supplyPrice(): number {
+		return this._supplyPrice;
+	}
+
+    /**
+   * Setter id
+   * @param  {product:any, amount:number} value
+   */
+public set items(value:  {product:any, amount:number}[]) {
+  this._items = value;
+}
+    /**
+     * Setter id
+     * @param {string} value
+     */
+	public set id(value: string) {
+		this._id = value;
+	}
+
+    /**
+     * Setter ofUser
+     * @param {any} value
+     */
+	public set ofUser(value: any) {
+		this._ofUser = value;
+	}
+
+    /**
+     * Setter store
+     * @param {any} value
+     */
+	public set store(value: any) {
+		this._store = value;
+	}
+
+    /**
+     * Setter state
+     * @param {String} value
+     */
+	public set state(value: String) {
+		this._state = value;
+	}
+
+    /**
+     * Setter supplyPrice
+     * @param {number} value
+     */
 
   }
   

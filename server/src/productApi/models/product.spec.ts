@@ -6,8 +6,7 @@ import { ProductCollection } from '../../persistance/mongoDb/Collections';
 
 describe('Product model',() => {
 
-  const chance = new Chance();
-  const productsApi = new ProductsApi();
+
   jest.setTimeout(1000);  
 
   
@@ -18,5 +17,10 @@ describe('Product model',() => {
     expect(product.price).toEqual(999);    
   });
 
+  it('cart set supply check validity', () => {
+    const product = fakeProduct({items:[]});
+    
+    expect ( ()=>{product.amountInventory = -2}).toThrowError();
+  });
 
 });
