@@ -81,8 +81,7 @@ describe("Store api model", () => {
     expect(userRole).toBeTruthy;
     expect(store).toBeTruthy;
     expect(response.status).toEqual(OK_STATUS);
-    expect(user.roles[0].toString()).toEqual(userRole.id.toString());
-    expect(store.workers[0].toString()).toEqual(userRole.id.toString());
+    expect(store.workers[0].toString()).toEqual(userRole.id.toString());//next to remove
     expect(response.store.storeState).toEqual(OPEN_STORE);
   });
 

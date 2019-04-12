@@ -33,9 +33,6 @@ describe('Role model',() => {
 
         role = await RoleCollection.insert(role);
   
-        userOfRole.roles.push(role.id);
-        role = await RoleCollection.updateOne(role);
-
         return [userOfRole,role];
     }
 
@@ -67,16 +64,10 @@ describe('Role model',() => {
       role2 = await RoleCollection.updateOne(role2);
 
       await role1.delete(false);
-      user1 = await UserCollection.findById(user1.id);
-      user2 = await UserCollection.findById(user2.id);
-      user3 = await UserCollection.findById(user3.id);
      
       expect(await RoleCollection.findById(role1.id)).toBeFalsy();
-      expect(user1.roles.length).toBe(0);
       expect(await RoleCollection.findById(role2.id)).toBeFalsy();
-      expect(user2.roles.length).toBe(0);
       expect(await RoleCollection.findById(role3.id)).toBeFalsy();
-      expect(user3.roles.length).toBe(0);
      });
 
   });

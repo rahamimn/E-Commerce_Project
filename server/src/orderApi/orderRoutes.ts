@@ -49,24 +49,24 @@ async function checkSupply(req: Request, res: express.Response) {
     }
 }
 
-ordersApiRouter.post('/ordersApi/cartToOrder', cartToOrder);
+// ordersApiRouter.post('/ordersApi/cartToOrder', cartToOrder);
 
-async function cartToOrder(req: Request, res: express.Response) {
-    try {
-        const userId = verifyToken(req.session.token).userId;
-        const cartId = req.body.cartId;
-        if (!cartId)
-            res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
-        else {
-            const response = await ordersApi.cartToOrder(userId, cartId);
-            console.log(response);
-            res.send(response);
-        }
-    }
-    catch (err) {
-        res.send({status: Constants.BAD_REQUEST});
-    }
-}
+// async function cartToOrder(req: Request, res: express.Response) {
+//     try {
+//         const userId = verifyToken(req.session.token).userId;
+//         const cartId = req.body.cartId;
+//         if (!cartId)
+//             res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
+//         else {
+//             const response = await ordersApi.cartToOrder(userId, cartId);
+//             console.log(response);
+//             res.send(response);
+//         }
+//     }
+//     catch (err) {
+//         res.send({status: Constants.BAD_REQUEST});
+//     }
+// }
 
 ordersApiRouter.post('/ordersApi/addComplaint', addComplaint);
 

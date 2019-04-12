@@ -37,9 +37,6 @@ export class StoresApi implements IStoresApi {
             new_store_added.workers.push(role_of_owner.id); //does not enter to DB
             await StoreCollection.updateOne(new_store_added);
 
-            user.roles.push(role_of_owner.id); //does not enter to DB
-            await UserCollection.updateOne(user);
-
             //AVIV: need to check with adir how to update the workers detils only
 
             //console.log("new_store_added : " + new_store_added.workers.length);

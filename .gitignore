@@ -4,11 +4,11 @@
 
 /server/package-lock.json
 
-/acceptanceTest/node_modules/
+/acceptanceTest-deprecated/node_modules/
 
-/acceptanceTest/dist/
+/acceptanceTest-deprecated/dist/
 
-/acceptanceTest/package-lock.json
+/acceptanceTest-deprecated/package-lock.json
 
 .env
 

@@ -14,8 +14,6 @@ interface IUser{
   email?: String,
   isRegisteredUser?: Boolean,
   isDeactivated?: Boolean,
-  roles: MonArray<ObjectID>,
-  carts : MonArray<ObjectID>,
   notifications: String[],
   messages: MonArray<ObjectID>,
 }
@@ -37,8 +35,6 @@ export const userScheme = new Schema({
   email: String,
   isRegisteredUser: {type: Boolean},
   isDeactivated: Boolean,
-  roles: [{type: Schema.Types.ObjectId, ref: 'Role', default:[] }],
-  carts : [{type: Schema.Types.ObjectId, ref: 'Cart', default:[] }],
   notifications: [{type: String}],
   messages: [{type: Schema.Types.ObjectId, ref: 'Message', default:[] }]
 });

@@ -71,9 +71,6 @@ describe('users-api-integration',() => {
 
       role = await RoleCollection.insert(role);
 
-      userOfRole.roles.push(role.id);
-      role = await RoleCollection.updateOne(role);
-
       return [userOfRole,role];
   }
   it('login to disactivate user ', async () => {

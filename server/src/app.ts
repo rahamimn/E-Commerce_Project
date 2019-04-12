@@ -23,22 +23,8 @@ const dbPassword = process.env.DB_PASSWORD;
 
 // Conenct to DB(
 
-if(process.argv.some( arg => arg === 'acceptanceTest')){
-    mongoose.connect('mongodb://localhost:27017/acceptance-test', {useNewUrlParser: true},
-    async () => {
-        console.log(`connection to :  acceptance-test (locally) after cleaning`);
-        await mongoose.connection.db.dropDatabase();
-        await setDefaultData();
-    });
-}
-else if(process.argv.some( arg => arg === 'cleanLocal')){
-    mongoose.connect('mongodb://localhost:27017/' + process.env.DB_TEST_NAME, {useNewUrlParser: true},
-    () => {
-        console.log(`connection to :  ${process.env.DB_TEST_NAME} (locally) after cleaning`);
-        mongoose.connection.db.dropDatabase();
-    });
-}
-else  if(process.argv.some( arg => arg === 'local')) {
+
+if(process.argv.some( arg => arg === 'local')) {
     console.log(`connection to :  ${process.env.DB_TEST_NAME} (locally)`);
     mongoose.connect('mongodb://localhost:27017/' + process.env.DB_TEST_NAME, {useNewUrlParser: true});
 }
@@ -46,6 +32,14 @@ else {
     console.log(`connection to : ${dbName} remote `);
     mongoose.connect('mongodb+srv://' + dbUser + ':' + dbPassword + '@' + dbHost + '/' + dbName +
         '?retryWrites=true', {useNewUrlParser: true});
+}
+
+if(process.argv.some( arg => arg === '-init')){
+    async () => {
+        console.log(`init database with admin`);
+        await mongoose.connection.db.dropDatabase();
+        await setDefaultData();
+    };
 }
 
 const app = express();

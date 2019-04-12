@@ -141,9 +141,6 @@ export class UsersApi implements IUsersApi{
         if(existRole)
             return ({status: Constants.BAD_REQUEST});
         const newRole = await RoleCollection.insert(new Role({name:ADMIN, ofUser: appointedUser.id , appointor: appointorRole.id }));
-        const user = await UserCollection.findById(appointedUser.id);
-        user.roles.push(newRole.id);
-        await UserCollection.updateOne(user);
 
         appointorRole.appointees.push(newRole.id);
         await RoleCollection.updateOne(appointorRole);
@@ -167,9 +164,6 @@ export class UsersApi implements IUsersApi{
         }
         else{
             newRole = await RoleCollection.insert(new Role({name:STORE_OWNER, ofUser: appointedUser.id, store: storeId, appointor: appointorRole.id }));
-            const user = await UserCollection.findById(appointedUser.id);
-            user.roles.push(newRole.id);
-            await UserCollection.updateOne(user);
         }
         appointorRole.appointees.push(newRole.id);
         await RoleCollection.updateOne(appointorRole);
@@ -193,9 +187,6 @@ export class UsersApi implements IUsersApi{
             appointor: appointorRole.id,
             permissions
         }));
-
-        appointedUser.roles.push(newRole.id);
-        await UserCollection.updateOne(appointedUser);
 
         appointorRole.appointees.push(newRole.id);
         await RoleCollection.updateOne(appointorRole);
