@@ -134,10 +134,7 @@ export class Role {
         const RolesToDelete = await RoleCollection.findByIds(this.appointees); 
     
         await (async () => RolesToDelete.forEach(async role => await role.delete(false))) ();
-        const user = await UserCollection.findById(this.ofUser);
-        user.roles = user.roles.filter(role => role === this.id);
-        await UserCollection.updateOne(user);
-
+        
         await RoleCollection.delete({ _id : this.id});
   };
 

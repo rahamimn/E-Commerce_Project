@@ -33,7 +33,6 @@ export const fakeRole = (opt: any = {}) => {
     });
 }
 
-
 export const fakeUser = (opt: any = {}, isGuest = false) => {
     const salt = bcrypt.genSaltSync(10);
         return new User({
@@ -43,8 +42,6 @@ export const fakeUser = (opt: any = {}, isGuest = false) => {
             password: opt.password || chance.country(),
             salt: opt.salt || bcrypt.genSaltSync(10),
             isRegisteredUser: true ,
-            roles : opt.roles || [],
-            carts : opt.carts || [],
             messages : opt.messages || [],
     })
 }

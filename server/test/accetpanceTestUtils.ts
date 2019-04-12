@@ -3,19 +3,24 @@ import { fakeUser, fakeRole } from "./fakes";
 import { RoleModel } from "../src/persistance/mongoDb/models/roleModel";
 import { ADMIN } from "../src/consts";
 import bcrypt = require('bcryptjs');
-export const setDefaultData = async () => {
+
+
+export const insertRegisterdUser = async (userName:String, password:String,isAdmin:Boolean = false) => {
     const salt = bcrypt.genSaltSync(10);
-    const password = '123456'
     const hashed =  bcrypt.hashSync(password+process.env.HASH_SECRET_KEY, salt);
     const user = await UserCollection.insert(fakeUser({
-        userName:'admin1234',
+        userName,
         password:hashed,
         salt
     }));
-    const role = await RoleCollection.insert(fakeRole({
-        name: ADMIN,
-        ofUser: user.id
-    }));
-    user.roles.push(role.id);
-    await UserCollection.updateOne(user);
+    if(isAdmin){
+        await RoleCollection.insert(fakeRole({
+            name: ADMIN,
+            ofUser: user.id
+        }));
+    }
+    return user;
+}
+export const setDefaultData= async () =>{
+    await insertRegisterdUser('admin1234','1234',true);
 }

@@ -10,8 +10,7 @@ export class User {
         this._lastName = base.lastName;
         this._email = base.email;
         this._isDeactivated = base.isDeactivated;
-        this._roles = base.roles;
-        this._carts = base.carts;
+
         this._notifications = base.notifications;
         this._messages = base.messages;
     }
@@ -73,21 +72,6 @@ export class User {
 		return this._isDeactivated;
 	}
 
-    /**
-     * Getter roles
-     * @return {any[]}
-     */
-	public get roles(): any[] {
-		return this._roles;
-	}
-
-    /**
-     * Getter carts
-     * @return {any[]}
-     */
-	public get carts(): any[] {
-		return this._carts;
-	}
 
     /**
      * Getter notifications
@@ -162,14 +146,6 @@ export class User {
 	}
 
     /**
-     * Setter roles
-     * @param {any[]} value
-     */
-	public set roles(value: any[]) {
-		this._roles = value;
-	}
-
-    /**
      * Setter carts
      * @param {any[]} value
      */
@@ -240,7 +216,6 @@ export class User {
     private _lastName:  String;
     private _email: String;
     private _isDeactivated: Boolean;
-    private _roles: any[];
     private _carts : any[];
     private _notifications: any[];
     private _messages: any[];
