@@ -3,9 +3,9 @@ export class Order {
     private _id: any;
     private _storeId: any;
     private _userId: any;
-    private _state: String;
     private _description: String;
     private _totalPrice: number;
+    private _state: String;
     private _supplyPrice: number;
 
     /**
@@ -34,30 +34,30 @@ export class Order {
         this._supplyPrice = base.supplyPrice;
     }
 
-    public updateDetails (orderDetails){ 
-        this.storeId = orderDetails._storeId;
-        this.userId = orderDetails._userId;
-        this.state = orderDetails._state;
-        this.description = orderDetails._description;
-        this.totalPrice = orderDetails._totalPrice;
-     }
+    // public updateDetails (orderDetails){ 
+    //     this.storeId = orderDetails._storeId;
+    //     this.userId = orderDetails._userId;
+    //     this.state = orderDetails._state;
+    //     this.description = orderDetails._description;
+    //     this.totalPrice = orderDetails._totalPrice;
+    //  }
 
      public getOrderDetails (){
         const {
             _id,
             _storeId,
             _userId,
-            _state,
             _description,
             _totalPrice,
+            _supplyPrice
         } = this;
         return ({
             _id,
             _storeId,
             _userId,
-            _state,
             _description,
             _totalPrice,
+            _supplyPrice
         });
     }
 

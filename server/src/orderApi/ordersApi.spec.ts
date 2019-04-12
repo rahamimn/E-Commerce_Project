@@ -1,13 +1,13 @@
-import { fakeOrder, fakeStore, fakeComplaint, fakeCart, fakeUser } from '../../test/fakes';
-import { OK_STATUS, NEW_ORDER, ORDER_SUPPLY_APPROVED, ORDER_DONE } from '../consts';
-import { OrderCollection, UserCollection, CartCollection } from '../persistance/mongoDb/Collections';
+import { fakeOrder, fakeStore, fakeComplaint, fakeCart, fakeUser, fakeProduct } from '../../test/fakes';
+import { OK_STATUS, ORDER_SUPPLY_APPROVED, BAD_REQUEST } from '../consts';
+import { OrderCollection, UserCollection, CartCollection, ProductCollection } from '../persistance/mongoDb/Collections';
 import { connectDB } from '../persistance/connectionDbTest';
 import { OrdersApi } from './ordersApi';
 import Chance from 'chance';
-import { Order } from './models/order';
+import supplySystem from "../supplySystemAdapter";
+import paymentSystem from "../paymentSystemAdapter";
 
 describe('Owner model',() => {
-  const chance = new Chance();
   let ordersApi = new OrdersApi();
 
   beforeAll(()=>{
@@ -26,15 +26,11 @@ describe('Owner model',() => {
 
   it('getStoreOrderHistory - Test', async () => {
     let store = fakeStore({});
-    
-    let orderNotDone = fakeOrder({});
-    await ordersApi.addOrder( store.id, orderNotDone.userId, orderNotDone.state, orderNotDone.description, orderNotDone.totalPrice );
-
-
-    let order1 = fakeOrder({state:ORDER_DONE});
+  
+    let order1 = fakeOrder();
     await ordersApi.addOrder( store.id, order1.userId, order1.state, order1.description, order1.totalPrice );
 
-    let order2 = fakeOrder({state:ORDER_DONE});
+    let order2 = fakeOrder();
     await ordersApi.addOrder( store.id, order2.userId, order2.state, order2.description, order2.totalPrice );
 
     let storeOrderHistory = await ordersApi.getStoreOrderHistory(store.id);
@@ -57,45 +53,97 @@ describe('Owner model',() => {
     expect(complaintRes.complaint).toBeTruthy();
   });
 
-  it('cartToOrder - Test', async () => {
-    let user = await UserCollection.insert(fakeUser({}));
-    let cart = await CartCollection.insert(fakeCart({ofUser:user.id}));
+  it('supplyCheck - Test - success', async () => {
+    supplySystem.checkForSupplyPrice = jest.fn(()=>70);
+    let user = await UserCollection.insert(fakeUser());;
+    let cart = await CartCollection.insert(fakeCart({userId: user.id}));
 
-    let response = await ordersApi.cartToOrder(user.id, cart.id);
-    let order = await OrderCollection.findById(response.order.id);
+    let response = await ordersApi.checkSupply(user.id,cart.id);
 
     expect(response).toMatchObject({status: OK_STATUS});
-
-    expect(order.totalPrice).toEqual(await cart.totalPrice());
-    expect(order.state).toEqual(NEW_ORDER);
-
-    expect(JSON.stringify(order.userId)).toEqual(JSON.stringify(user.id));
-    expect(JSON.stringify(order.storeId)).toEqual(JSON.stringify(cart.store));
-    expect(order.description).toEqual(await cart.toString());
+    expect(response.cart.state).toEqual(ORDER_SUPPLY_APPROVED);
+    expect(response.cart.supplyPrice).toEqual(70);
   });
 
-  it('supplyCheck - Test', async () => {
-    let user = await UserCollection.insert(fakeUser());
-    let order = await OrderCollection.insert(fakeOrder({userId: user.id,state: NEW_ORDER, totalPrice:chance.integer({from:0, to:200})}));
+  it('supplyCheck - Test - fail adress not supported', async () => {
+    supplySystem.checkForSupplyPrice = jest.fn(()=>-1);
+    let user = await UserCollection.insert(fakeUser());;
+    let cart = await CartCollection.insert(fakeCart({userId: user.id}));
 
-    let response = await ordersApi.checkSupply(user.id,order.id);
+    let response = await ordersApi.checkSupply(user.id,cart.id);
 
-    expect(response).toMatchObject({status: OK_STATUS});
-    expect(response.order.state).toEqual(ORDER_SUPPLY_APPROVED);
-    expect(response.order.supplyPrice).toEqual(70);
-  });
+    expect(response).toMatchObject({status: BAD_REQUEST});
 
-  it('pay - Test', async () => {
-    let user = await UserCollection.insert(fakeUser());
-    let order = await OrderCollection.insert(fakeOrder({userId: user.id,state: ORDER_SUPPLY_APPROVED,supplyPrice:20, totalPrice:70}));
-
-    let response = await ordersApi.pay(user.id,order.id);
-
-    expect(response).toMatchObject({status: OK_STATUS});
-    expect(response.order.state).toEqual(ORDER_DONE);
   });
 
 
+  describe('pay method',()=>{
+    let user,product,cart;
+
+    beforeEach(async ()=>{
+      paymentSystem.takePayment = jest.fn(()=>true);
+      paymentSystem.refund = jest.fn(()=>true);
+      supplySystem.supply = jest.fn(()=>true);
+
+      user = await UserCollection.insert(fakeUser());
+      product = await ProductCollection.insert(fakeProduct({price:70, amountInventory:1}));
+      cart = await CartCollection.insert(fakeCart({
+        ofUser: user.id,
+        state: ORDER_SUPPLY_APPROVED,
+        supplyPrice:20,
+        items:[{product:product.id, amount:1}]}));
+    });
+
+    it('pay - Test - success', async () => {
+      let response = await ordersApi.pay(user.id,cart.id);
+
+      const order = await OrderCollection.findById(response.order.id);
+      product = await ProductCollection.findById(product.id);
+  
+      expect(response).toMatchObject({status: OK_STATUS});
+      expect(product.amountInventory).toBe(0);
+  
+      expect(order.totalPrice).toEqual(await cart.totalPrice());
+      expect(JSON.stringify(order.userId)).toEqual(JSON.stringify(user.id));
+      expect(JSON.stringify(order.storeId)).toEqual(JSON.stringify(cart.store));
+      expect(order.description).toEqual(await cart.toString());
+    });
+  
+    it('pay - Test - fail - on inventory  ', async () => {
+      let cart = await CartCollection.insert(fakeCart({
+        ofUser: user.id,
+        state: ORDER_SUPPLY_APPROVED,
+        items:[{product:product.id, amount:2}]}));
+  
+      let response = await ordersApi.pay(user.id,cart.id);
+      product = await ProductCollection.findById(product.id);
+  
+      expect(response).toMatchObject({status: BAD_REQUEST});
+      expect(product.amountInventory).toBe(1);
+    });
+  
+    it('pay - Test - fail - on paymentSystem  ', async () => {
+      paymentSystem.takePayment = jest.fn(()=>false);
+
+      let response = await ordersApi.pay(user.id,cart.id);
+      product = await ProductCollection.findById(product.id);
+  
+      expect(response).toMatchObject({status: BAD_REQUEST});
+      expect(product.amountInventory).toBe(1);
+    });
+  
+    it('pay - Test - fail - on supplySystem  ', async () => {
+      supplySystem.supply = jest.fn(()=>false);
+  
+      let response = await ordersApi.pay(user.id,cart.id);
+      product = await ProductCollection.findById(product.id);
+  
+      expect(response).toMatchObject({status: BAD_REQUEST});
+      expect(product.amountInventory).toBe(1);
+    });
+  
+  })
+ 
 });
 
 

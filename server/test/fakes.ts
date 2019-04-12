@@ -2,7 +2,7 @@ import { Message } from '../src/usersApi/models/message';
 import { ObjectID } from 'bson';
 import { UserCollection, RoleCollection } from './../src/persistance/mongoDb/Collections';
 import { Complaint } from './../src/storeApi/models/complaint';
-import { OPEN_STORE, OK_STATUS, BAD_REQUEST, ADMIN } from './../src/consts';
+import { OPEN_STORE, OK_STATUS, BAD_REQUEST, ADMIN, NORMAL_CART } from './../src/consts';
 import Chance from 'chance';
 
 import { ProductModel } from '../src/persistance/mongoDb/models/productModel';
@@ -106,6 +106,8 @@ export const fakeCart = (opt: any = {}) => {
         ofUser: opt.ofUser || genObjectId(),
         store: opt.store || genObjectId(),
         items: opt.items || [],
+        state: opt.state || NORMAL_CART,
+        supplyPrice: opt.supplyPrice || chance.natural()
     });
 }
 

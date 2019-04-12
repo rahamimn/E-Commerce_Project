@@ -5,7 +5,6 @@ var Schema = mongoose.Schema;
 interface IOrder {
     storeId: String,
     userId: String,
-    state: String,
     description: String,
     totalPrice: number,
     supplyPrice: number,
@@ -17,7 +16,6 @@ export interface IOrderModel extends IOrder, Document{
 const orderScheme = new Schema({
     storeId: {type: String}, 
     userId: {type: String}, 
-    state: {type: String}, 
     description: {type: String}, 
     totalPrice: {type: Number},
     supplyPrice: {type: Number},  
