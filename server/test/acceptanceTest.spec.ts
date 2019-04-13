@@ -5,7 +5,7 @@ import { User } from "../src/usersApi/models/user";
 import { Role } from "../src/usersApi/models/role";
 import { UsersApi } from "../src/usersApi/usersApi";
 import Chance from 'chance';
-import {STORE_OWNER, STORE_MANAGER, APPOINT_STORE_MANAGER } from "../src/consts";
+import {STORE_OWNER, STORE_MANAGER, APPOINT_STORE_MANAGER, OK_STATUS } from "../src/consts";
 import { insertRegisterdUser } from "./accetpanceTestUtils";
 import { OrdersApi } from "../src/orderApi/ordersApi";
 import { ProductsApi } from "../src/productApi/productsApi";
@@ -87,13 +87,42 @@ describe('AcceptanceTest',()=>{
         await CartCollection.drop();
     });
 
-    it('uc1.1',() => {
+    it('uc1.1',async () => {
+        expect((await usersApi.login('admin','admin')).status).toBe(OK_STATUS);
+    });
+
+    it('uc2.1 - guest',() => {
         //TODO
         expect(true).toBe(true);
     });
 
-    it('uc2.1',() => {
+    it('uc2.2 - registeration (good)',() => {
         //TODO
         expect(true).toBe(true);
-    })
+    });
+
+    it('uc2.2 - registeration (user name occupy)',() => {
+        //TODO
+        expect(true).toBe(true);
+    });
+
+    it('uc2.2 - registeration (bad password)',() => {
+        //TODO
+        expect(true).toBe(true);
+    });
+
+    it('uc2.3 - login (good)',() => {
+        //TODO
+        expect(true).toBe(true);
+    });
+
+    it('uc2.3 - login (user name not correct )',() => {
+        //TODO
+        expect(true).toBe(true);
+    });
+
+    it('uc2.3 - login (password not correct',() => {
+        //TODO
+        expect(true).toBe(true);
+    });
 })
