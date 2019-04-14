@@ -1,0 +1,29 @@
+<!-- views/partials/header.ejs -->
+
+<nav class="navbar navbar-default" role="navigation">
+<div class="container-fluid">
+
+    <div class="navbar-collapse collapse">
+        <a class="navbar-brand" href="#">
+            <span class="glyphicon glyphicon glyphicon-tree-deciduous"></span>
+            E-Commerce
+        </a>
+        <ul class="nav navbar-nav">
+            <li><a href="/">Home</a></li>
+            <li><a href="/about">Stores</a></li>
+            <li><a href="/about">Products</a></li>
+        </ul>
+        <ul class="nav navbar-nav navbar-right">
+            <%if(!userId){%>
+                <li><a href="/about">Register</a></li>
+                <li><a href="/about">Login</a></li>
+            <%}else{%>
+                <li><a href="/about">Carts</a></li>
+                <li><a href="/about">User</a></li>
+                <li><a href="/about">Logout</a></li>
+            <%}%>
+        </ul>
+    </div>
+
+</div>
+</nav>

@@ -14,6 +14,7 @@ import {productsApiRouter} from "./productApi/productRoutes";
 import * as Constants from "./consts";
 import cors from 'cors';
 import { setDefaultData } from '../test/accetpanceTestUtils';
+import { webRoutes } from './viewsRoutes';
 
 require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
 const dbHost = process.env.DB_HOST;
@@ -44,7 +45,7 @@ if(process.argv.some( arg => arg === '-init')){
 
 const app = express();
 //express extensions
-
+app.set('view engine', 'ejs');
 // BodyParser Middleware
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
@@ -66,6 +67,8 @@ app.use(session({
 app.use(usersApiRouter);
 app.use(storesApiRouter);
 app.use(productsApiRouter);
+app.use(webRoutes);
+
 //app.use(oredersApiRouter);
 const port = 3000;
 app.listen(port, () => console.log(`listening on port ${port}!`));
