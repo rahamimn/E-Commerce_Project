@@ -10,7 +10,15 @@
 
 /acceptanceTest-deprecated/package-lock.json
 
+/acceptanceTest/node_modules/
+
+/acceptanceTest/dist/
+
+/acceptanceTest/package-lock.json
+
 .env
+
+.gitignore
 
 private.key
 
