@@ -80,7 +80,7 @@ describe('Product model',() => {
 //     expect(productAfterReviewAdded.product.reviews).toEqual(review);
 // });
 
-it('getProducts with {storeId, category, keyWords}', async () => {
+it('getProducts with 3 params: {storeId, category, keyWords}', async () => {
     let product = fakeProduct({});
     let productFromDB = await productsApi.addProduct(product.storeId, product.name, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
     
@@ -93,7 +93,7 @@ it('getProducts with {storeId, category, keyWords}', async () => {
     expect(res.products === [productFromDB.product]);
 });
 
-it('getProducts with {storeId, category}', async () => {
+it('getProducts with 2 params: {storeId, category}', async () => {
   let product = fakeProduct({});
   let productFromDB = await productsApi.addProduct(product.storeId, product.name, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
   
@@ -106,7 +106,7 @@ it('getProducts with {storeId, category}', async () => {
 });
 
 
-it('getProducts with {storeId}', async () => {
+it('getProducts with 1 params: {storeId}', async () => {
   let product = fakeProduct({});
   let productFromDB = await productsApi.addProduct(product.storeId, product.name, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
   
