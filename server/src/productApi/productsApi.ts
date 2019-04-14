@@ -8,7 +8,7 @@ import { Review } from "../storeApi/models/review";
 export class ProductsApi implements IProductApi{
 
 
-    async addProduct(storeId: String,name:String, amountInventory: Number, sellType: String, price: Number, keyWords: String[], category: String){
+    async addProduct(storeId: String, name:String, amountInventory: Number, sellType: String, price: Number, keyWords: String[], category: String){
 
         try{ 
             const productToInsert = await ProductCollection.insert(new Product({
@@ -107,6 +107,4 @@ export class ProductsApi implements IProductApi{
         return ({status: OK_STATUS , product: product.getProductDetails()});
     }
 
-    //disableProduct: (adminId: string, productId: String) => void; 
-            //  ------------ NIR: We have 'removeProduct', What's the difference? ------------ 
 }
