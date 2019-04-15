@@ -38,7 +38,15 @@ describe('Product model',() => {
 
     expect(response).toMatchObject({status: OK_STATUS});
     expect(productFromDB.id).toBeTruthy();
-    
+    expect(productFromDB.storeId).toEqual(product.storeId);
+    expect(productFromDB.name).toEqual(product.name);
+    expect(productFromDB.amountInventory).toEqual(product.amountInventory);
+    expect(productFromDB.sellType).toEqual(product.sellType);
+    expect(productFromDB.price).toEqual(product.price);
+    expect(productFromDB.keyWords === product.keyWords);
+    expect(productFromDB.category).toEqual(product.category);
+
+
   });
 
   it('removeProduct- Test', async () => {
@@ -91,6 +99,7 @@ it('getProducts with 3 params: {storeId, category, keyWords}', async () => {
 
     let res = await productsApi.getProducts({storeId, category, keyWords});
 
+    expect(res.status).toEqual(OK_STATUS);
     expect(res.products === [productFromDB.product]);
 });
 
@@ -103,6 +112,7 @@ it('getProducts with 2 params: {storeId, category}', async () => {
 
   let res = await productsApi.getProducts({storeId, category});
 
+  expect(res.status).toEqual(OK_STATUS);
   expect(res.products === [productFromDB.product]);
 });
 
@@ -114,11 +124,12 @@ it('getProducts with 1 params: {storeId}', async () => {
   let storeId = productFromDB.product.storeId;
 
   let res = await productsApi.getProducts({storeId});
-
+  
+  expect(res.status).toEqual(OK_STATUS);
   expect(res.products === [productFromDB.product]);
 });
 
-it('getProducts by store name: {storeName}', async () => {
+it('getProducts with store name: {storeName}', async () => {
   
   let storesApi = new StoresApi();
   let user = await UserCollection.insert(fakeUser({}));
@@ -130,7 +141,8 @@ it('getProducts by store name: {storeName}', async () => {
   let productFromDB = await productsApi.addProduct(response.store.id, product.name, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
   let store =  await StoreCollection.findById(productFromDB.product.storeId);
   let res = await productsApi.getProducts({storeName: store.name});
-  
+
+  expect(res.status).toEqual(OK_STATUS);
   expect(res.products === [productFromDB.product]);
 });
 
