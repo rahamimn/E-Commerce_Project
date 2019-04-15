@@ -1,10 +1,11 @@
 import Chance from 'chance';
-import {fakeProduct } from '../../test/fakes';
+import {fakeProduct, fakeStore, fakeUser } from '../../test/fakes';
 import { ProductsApi } from './productsApi';
 import { OK_STATUS } from '../consts';
-import { ProductCollection } from '../persistance/mongoDb/Collections';
+import { ProductCollection, StoreCollection, UserCollection } from '../persistance/mongoDb/Collections';
 import { connectDB, disconnectDB } from '../persistance/connectionDbTest';
 import { Review } from '../storeApi/models/review';
+import { StoresApi } from '../storeApi/storesApi';
 
 describe('Product model',() => {
 
@@ -116,6 +117,23 @@ it('getProducts with 1 params: {storeId}', async () => {
 
   expect(res.products === [productFromDB.product]);
 });
+
+it('getProducts by store name: {storeName}', async () => {
+  
+  let storesApi = new StoresApi();
+  let user = await UserCollection.insert(fakeUser({}));
+  const storeName = chance.animal();
+  const response = await storesApi.addStore(user.id,storeName);
+
+  let product = fakeProduct({});
+
+  let productFromDB = await productsApi.addProduct(response.store.id, product.name, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
+  let store =  await StoreCollection.findById(productFromDB.product.storeId);
+  let res = await productsApi.getProducts({storeName: store.name});
+  
+  expect(res.products === [productFromDB.product]);
+});
+
 
 
 });
