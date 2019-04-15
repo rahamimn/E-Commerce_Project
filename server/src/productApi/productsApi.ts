@@ -1,6 +1,6 @@
 import { ProductCollection, StoreCollection } from "../persistance/mongoDb/Collections";
 import { Product } from "./models/product";
-import { OK_STATUS, BAD_REQUEST } from "../consts";
+import { OK_STATUS, BAD_REQUEST, BAD_AMOUNT, BAD_PRICE } from "../consts";
 import { IProductApi } from "./productsApiInterface";
 import { Review } from "../storeApi/models/review";
 
@@ -9,6 +9,9 @@ export class ProductsApi implements IProductApi{
 
 
     async addProduct(storeId: String, name:String, amountInventory: Number, sellType: String, price: Number, keyWords: String[], category: String){
+
+        if (amountInventory < 0) return ({status: BAD_REQUEST, error: BAD_AMOUNT});
+        if (price < 0) return ({status: BAD_REQUEST, error: BAD_PRICE});
 
         try{ 
             const productToInsert = await ProductCollection.insert(new Product({
@@ -40,6 +43,7 @@ export class ProductsApi implements IProductApi{
             let productToRemove = await ProductCollection.findById(productId);
             productToRemove.isActivated = false;
             let product_AfterRemove = await ProductCollection.updateOne(productToRemove);
+
             return {status: OK_STATUS ,product: product_AfterRemove}
 
         } catch(error) {

@@ -38,3 +38,8 @@ export const REMOVE_ROLE_PERMOSSION = "remove-role";
 export const GET_STORE_MESSAGE_PERMOSSION = "get-store-message";
 export const SEND_STORE_MESSAGE_PERMOSSION = "send-store-message";
 
+//Product error messages
+export const BAD_PRICE = "Price cannot be a negative number";
+export const BAD_AMOUNT = "Amount cannot be a negative number";
+
+

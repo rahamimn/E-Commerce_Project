@@ -1,10 +1,9 @@
 import Chance from 'chance';
-import {fakeProduct, fakeStore, fakeUser } from '../../test/fakes';
+import {fakeProduct, fakeUser } from '../../test/fakes';
 import { ProductsApi } from './productsApi';
-import { OK_STATUS } from '../consts';
+import { OK_STATUS, BAD_PRICE, BAD_REQUEST, BAD_AMOUNT } from '../consts';
 import { ProductCollection, StoreCollection, UserCollection } from '../persistance/mongoDb/Collections';
-import { connectDB, disconnectDB } from '../persistance/connectionDbTest';
-import { Review } from '../storeApi/models/review';
+import { connectDB } from '../persistance/connectionDbTest';
 import { StoresApi } from '../storeApi/storesApi';
 
 describe('Product model',() => {
@@ -16,10 +15,6 @@ describe('Product model',() => {
   beforeAll(()=>{
     connectDB();
   });
-
-  // afterAll(async ()=>{
-  //   await disconnectDB();
-  // });
 
   it('addProduct - Test', async () => {
     let product = fakeProduct({});
@@ -45,8 +40,42 @@ describe('Product model',() => {
     expect(productFromDB.price).toEqual(product.price);
     expect(productFromDB.keyWords === product.keyWords);
     expect(productFromDB.category).toEqual(product.category);
+  });
 
+  it('addProduct with NEGATIVE PRICE - Test', async () => {
+    let product = fakeProduct({});
+    let negativePrice = -1*(chance.natural());
+    
+    let response = await productsApi.addProduct(
+        product.storeId,
+        product.name,
+        product.amountInventory,
+        product.sellType,
+        negativePrice,
+        product.keyWords,
+        product.category
+    );
 
+    expect(response.status).toEqual(BAD_REQUEST);
+    expect(response.error).toEqual(BAD_PRICE);
+  });
+
+  it('addProduct with NEGATIVE AMOUNT - Test', async () => {
+    let product = fakeProduct({});
+    let negativeAmountInventory = -1*(chance.natural());
+    
+    let response = await productsApi.addProduct(
+        product.storeId,
+        product.name,
+        negativeAmountInventory,
+        product.sellType,
+        product.price,
+        product.keyWords,
+        product.category
+    );
+
+    expect(response.status).toEqual(BAD_REQUEST);
+    expect(response.error).toEqual(BAD_AMOUNT);
   });
 
   it('removeProduct- Test', async () => {
@@ -56,6 +85,7 @@ describe('Product model',() => {
     let product_BeforeRemove = await ProductCollection.findById(response.product.id);
     let product_AfterRemove = await productsApi.removeProduct(product_BeforeRemove.id);
   
+    expect(response.status).toEqual(OK_STATUS);
     expect(product_BeforeRemove.isActivated).toBeTruthy;
     expect(product_AfterRemove.product.isActivated).toBeFalsy;
   
