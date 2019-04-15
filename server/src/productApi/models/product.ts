@@ -56,6 +56,7 @@ export class Product {
         const {
             _id,
             _name,
+            _storeId,
             _amountInventory,
             _sellType,
             _price,
@@ -70,6 +71,8 @@ export class Product {
         } = this;
         return ({
             _id,
+            _name,
+            _storeId,
             _amountInventory,
             _sellType,
             _price,

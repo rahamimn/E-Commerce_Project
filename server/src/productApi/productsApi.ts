@@ -1,4 +1,4 @@
-import { ProductCollection } from "../persistance/mongoDb/Collections";
+import { ProductCollection, StoreCollection } from "../persistance/mongoDb/Collections";
 import { Product } from "./models/product";
 import { OK_STATUS, BAD_REQUEST } from "../consts";
 import { IProductApi } from "./productsApiInterface";
@@ -78,10 +78,16 @@ export class ProductsApi implements IProductApi{
         
     }
 
-    async getProducts(parmas: {storeId?: String, category?: String, keyWords?: String[], name?:String}){
+    async getProducts(parmas: {storeName?: String, storeId?: String, category?: String, keyWords?: String[], name?:String}){
         try{ 
             
             const filter:any = {};
+
+            if(parmas.storeName){
+                let store =  await StoreCollection.findOne({name: parmas.storeName});
+                filter.storeId = store.id;  
+            }
+            
             if(parmas.category)
                 filter.category = parmas.category;
             if(parmas.storeId)
