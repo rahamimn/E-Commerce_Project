@@ -1,6 +1,6 @@
 import { ProductCollection, StoreCollection } from "../persistance/mongoDb/Collections";
 import { Product } from "./models/product";
-import { OK_STATUS, BAD_REQUEST, BAD_AMOUNT, BAD_PRICE } from "../consts";
+import { OK_STATUS, BAD_REQUEST, BAD_AMOUNT, BAD_PRICE, BAD_STORE_ID } from "../consts";
 import { IProductApi } from "./productsApiInterface";
 import { Review } from "../storeApi/models/review";
 
@@ -8,15 +8,22 @@ import { Review } from "../storeApi/models/review";
 export class ProductsApi implements IProductApi{
 
 
-    async addProduct(storeId: String, name:String, amountInventory: Number, sellType: String, price: Number, keyWords: String[], category: String){
+    async addProduct(storeId: String, productName:String, amountInventory: Number, sellType: String, price: Number, keyWords: String[], category: String){
 
         if (amountInventory < 0) return ({status: BAD_REQUEST, error: BAD_AMOUNT});
         if (price < 0) return ({status: BAD_REQUEST, error: BAD_PRICE});
+        // if (!isStoreVaild(storeId))
+        //     return ({status: BAD_REQUEST, error: BAD_STORE_ID});
+         if (await (this.doesStoreHaveThisProduct(storeId, productName))){
+             console.log("doesStoreHaveThisProduct returned TRUE")
+            return ({status: BAD_REQUEST, error: ("The product \"" + productName + "\" already exists in the store with Id: \"" + storeId +"\"") });
+         }
+         console.log("doesStoreHaveThisProduct returned FALSE")
 
         try{ 
             const productToInsert = await ProductCollection.insert(new Product({
                 storeId,
-                name,
+                name: productName,
                 amountInventory: amountInventory,
                 sellType: sellType,
                 price: price,
@@ -79,7 +86,6 @@ export class ProductsApi implements IProductApi{
         } catch(error) {
             return ({status: BAD_REQUEST});
         }
-        
     }
 
     async getProducts(parmas: {storeName?: String, storeId?: String, category?: String, keyWords?: String[], name?:String}){
@@ -110,11 +116,67 @@ export class ProductsApi implements IProductApi{
     }
 
     async getProductDetails(productId){
-        let product = await ProductCollection.findById(productId);
-        if(!product)
-            return ({status: BAD_REQUEST}); //inorder to remove props from object
 
-        return ({status: OK_STATUS , product: product.getProductDetails()});
+        try{ 
+
+            let product = await ProductCollection.findById(productId);
+            if(!product)
+                return ({status: BAD_REQUEST}); //inorder to remove props from object
+    
+            return ({status: OK_STATUS , product: product.getProductDetails()});
+
+               
+        } catch(error) {
+            return ({status: BAD_REQUEST});
+        }
+        
+
     }
+
+    //async isStoreVaild(storeId: String){
+    //     let ans = true;
+    //     let store = await StoreCollection.findById(storeId);
+
+    //     if(!store) // || !store.isAtcive) // NIR: SHOULD BE ADDED?
+    //         ans = false;
+
+    //     return ans;
+    // }
+
+     async isProductVaild(productId: String){
+
+        try{ 
+            console.log("isProductVaild BEGIN")
+            let ans = true;
+            let product = await ProductCollection.findById(productId);
+    
+            if( !product || !product.isActivated) ans = false;
+    
+            console.log("isProductVaild ANS = ",ans)
+            return ans;
+        } catch(error) {
+            console.log("isProductVaild BAD_REQUEST")
+            return ({status: BAD_REQUEST});
+        }      
+    }
+
+    async doesStoreHaveThisProduct(storeId: String, productName: String){
+        try{ 
+            console.log("doesStoreHaveThisProduct BEGIN")
+            //if (!ProductsApi.isStoreVaild(storeId)) return ({status: BAD_REQUEST, error: BAD_STORE_ID});
+            let product = await ProductCollection.findOne({name: productName})
+            if (this.isProductVaild(product.id)){
+                if (product.storeId === storeId){
+                    console.log("doesStoreHaveThisProduct ANS = TRUE")
+                    return true;
+                } 
+            }   
+        } catch(error) {
+            console.log("doesStoreHaveThisProduct BAD_REQUEST")
+            return ({status: BAD_REQUEST});
+        }       
+    }
+    
+    
 
 }
