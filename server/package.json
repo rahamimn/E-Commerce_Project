@@ -8,7 +8,8 @@
     "start:cleanRemoteDONOTUSE": "tsc && node dist/src/app.js -init",
     "start:local": "tsc && node dist/src/app.js local",
     "start:cleanLocal": "tsc && node dist/src/app.js local -init ",
-    "test": "tsc && jest productsApi.spec.ts",
+    "test": "tsc && jest --watchAll --runInBand spec.ts",
+    "accTest": "tsc && jest --watchAll --runInBand acceptanceTest.spec.ts",
     "cover": "tsc && jest --coverage spec.ts",
     "debug": "tsc && ndb dist/src/app.js"
   },

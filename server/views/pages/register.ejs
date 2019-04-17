@@ -1,0 +1,106 @@
+ 
+
+<%- include('../partials/header',{user}) %>
+
+ <div class="card">
+                    <div class="card-header">Register</div>
+                        <div class="card-body">
+                            <form name="my-form" onsubmit="onSubmit(event)">
+                                <div class="form-group row">
+                                    <label for="user_name" class="col-md-4 col-form-label text-md-right">Username *</label>
+                                    <div class="col-md-6">
+                                        <input type="text" id="userName" class="form-control" name="username">
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label for="password" class="col-md-4 col-form-label text-md-right">
+                                         Password *</label>
+                                    <div class="col-md-6">
+                                        <input type="password" id="password" class="form-control" name="password">
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                <label for="password" class="col-md-4 col-form-label text-md-right">
+                                         Password again *</label>
+                                    <div class="col-md-6">
+                                        <input type="password" id="passwordVerf" class="form-control" name="passwordVerf">
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label for="first_name" class="col-md-4 col-form-label text-md-right">First Name</label>
+                                    <div class="col-md-6">
+                                        <input type="text" id="first_name" class="form-control" name="first-name">
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label for="last_name" class="col-md-4 col-form-label text-md-right">Last Name</label>
+                                    <div class="col-md-6">
+                                        <input type="text" id="last_name" class="form-control" name="last-name">
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label for="email_address" class="col-md-4 col-form-label text-md-right">E-Mail Address</label>
+                                    <div class="col-md-6">
+                                        <input type="text" id="email_address" class="form-control" name="email-address">
+                                    </div>
+                                </div>
+
+
+                                <div class="form-group row">
+                                    <label for="phone_number" class="col-md-4 col-form-label text-md-right">Phone Number</label>
+                                    <div class="col-md-6">
+                                        <input type="text" id="phone_number" class="form-control">
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label for="country_address" class="col-md-4 col-form-label text-md-right">Sending Address(Country)</label>
+                                    <div class="col-md-6">
+                                        <input type="text" id="country_address" class="form-control">
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label for="address_details" class="col-md-4 col-form-label text-md-right">Sending Address</label>
+                                    <div class="col-md-6">
+                                        <input type="text" id="address_details" class="form-control">
+                                    </div>
+                                </div>
+
+
+                                    <div class="col-md-6 offset-md-4">
+                                        <button type="submit" class="btn btn-primary">
+                                        Register
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+</div>
+<script>
+
+function onSubmit(event){
+  event.preventDefault();
+  var userName = $("[type=text]").val();
+  var password = $("[type=password]").val();
+  postData(`/login`, {userName,password})
+  .then(data => {
+      if(data.status<0)
+        $("#login-error").text(data.err);
+      else
+        document.location.href = '/';
+      
+  }) // JSON-string from `response.json()` call
+  .catch(error => console.error(error));
+};
+
+</script>
+</html>
+ 
