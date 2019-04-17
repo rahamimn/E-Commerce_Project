@@ -24,11 +24,12 @@ export class UsersApi implements IUsersApi{
     async login(userName ,password){
         try {
             const user = await UserCollection.findOne({userName});
+            const isAdmin = await RoleCollection.findOne({ofUser:user.id, name:ADMIN})
             if(user.isDeactivated)
                 return {status: Constants.BAD_REQUEST , err: "user is disActivated"};
             
             if(verifyPassword(password, user.salt, user.password)) {
-                return{status: Constants.OK_STATUS, user:user.id};
+                return{status: Constants.OK_STATUS, user:user, isAdmin: !!isAdmin};
             }
             else {
                 return {status:Constants.BAD_PASSWORD, err:"bad password"}
