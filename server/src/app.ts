@@ -24,24 +24,22 @@ const dbPassword = process.env.DB_PASSWORD;
 
 // Conenct to DB(
 
-
+(async () => {
 if(process.argv.some( arg => arg === 'local')) {
     console.log(`connection to :  ${process.env.DB_TEST_NAME} (locally)`);
-    mongoose.connect('mongodb://localhost:27017/' + process.env.DB_TEST_NAME, {useNewUrlParser: true});
+    await mongoose.connect('mongodb://localhost:27017/' + process.env.DB_TEST_NAME, {useNewUrlParser: true});
 }
 else {
     console.log(`connection to : ${dbName} remote `);
-    mongoose.connect('mongodb+srv://' + dbUser + ':' + dbPassword + '@' + dbHost + '/' + dbName +
+    await mongoose.connect('mongodb+srv://' + dbUser + ':' + dbPassword + '@' + dbHost + '/' + dbName +
         '?retryWrites=true', {useNewUrlParser: true});
 }
-
 if(process.argv.some( arg => arg === '-init')){
-    async () => {
         console.log(`init database with admin`);
         await mongoose.connection.db.dropDatabase();
         await setDefaultData();
-    };
 }
+})();
 
 const app = express();
 //express extensions
