@@ -41,5 +41,8 @@ export const SEND_STORE_MESSAGE_PERMOSSION = "send-store-message";
 //Product error messages
 export const BAD_PRICE = "Price cannot be a negative number";
 export const BAD_AMOUNT = "Amount cannot be a negative number";
+export const BAD_STORE_ID = "The current ID does not match any active store";
+
+
 
 

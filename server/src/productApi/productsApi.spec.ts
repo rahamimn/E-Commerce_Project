@@ -1,10 +1,13 @@
 import Chance from 'chance';
-import {fakeProduct, fakeUser } from '../../test/fakes';
+import {fakeProduct, fakeUser, fakeRole } from '../../test/fakes';
 import { ProductsApi } from './productsApi';
-import { OK_STATUS, BAD_PRICE, BAD_REQUEST, BAD_AMOUNT } from '../consts';
-import { ProductCollection, StoreCollection, UserCollection } from '../persistance/mongoDb/Collections';
+import { OK_STATUS, BAD_PRICE, BAD_REQUEST, BAD_AMOUNT, BAD_STORE_ID } from '../consts';
+import { ProductCollection, StoreCollection, UserCollection, RoleCollection } from '../persistance/mongoDb/Collections';
 import { connectDB } from '../persistance/connectionDbTest';
 import { StoresApi } from '../storeApi/storesApi';
+
+var mongoose = require('mongoose');
+var genObjectId = mongoose.Types.ObjectId;
 
 describe('Product model',() => {
 
@@ -17,6 +20,7 @@ describe('Product model',() => {
   });
 
   it('addProduct - Test', async () => {
+
     let product = fakeProduct({});
     
     let response = await productsApi.addProduct(
@@ -78,7 +82,78 @@ describe('Product model',() => {
     expect(response.error).toEqual(BAD_AMOUNT);
   });
 
-  it('removeProduct- Test', async () => {
+//-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+//   NIR:   Store shoud have "isStoreValid" function, in order to pass the following test.
+
+//-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+  // it('addProduct with INVALID STORE ID - Test', async () => {
+
+  //   let storesApi = new StoresApi();
+  //   let user = await UserCollection.insert(fakeUser({}));
+  //   const storeName = chance.animal();
+  //   const store = await storesApi.addStore(user.id,storeName);
+
+  //   let product = fakeProduct({});
+  //   let invalidStoreId = genObjectId();
+
+  //   let response = await productsApi.addProduct(
+  //       invalidStoreId,
+  //       product.name,
+  //       product.amountInventory,
+  //       product.sellType,
+  //       product.price,
+  //       product.keyWords,
+  //       product.category
+  //   );
+
+  //   expect(response.status).toEqual(BAD_REQUEST);
+  //   expect(response.error).toEqual(BAD_STORE_ID);
+  // });
+
+
+
+  //-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+  //  NIR:    Store should have "isActive' property in order to pass the following test.
+
+  //-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+  // it('addProduct with UNACTIVATED STORE ID - Test', async () => {
+
+  //   let storesApi = new StoresApi();
+  //   let user = await UserCollection.insert(fakeUser({}));
+  //   const storeName = chance.animal();
+  //   const store = await storesApi.addStore(user.id,storeName);
+
+  //   var admin = fakeUser({});
+  //   var adminFromDB =  await UserCollection.insert(user);
+  //   var role1 = fakeRole({name: "admin" , ofUser:adminFromDB.id });
+  //   var role2 = await RoleCollection.insert(role1);
+
+  //   let adminId = adminFromDB.id;
+  //   await storesApi.disableStore(adminId, store.store.id);
+
+  //   let product = fakeProduct({});
+    
+  //   let response = await productsApi.addProduct(
+  //       store.store.id,
+  //       product.name,
+  //       product.amountInventory,
+  //       product.sellType,
+  //       product.price,
+  //       product.keyWords,
+  //       product.category
+  //   );
+
+
+  //   expect(response.status).toEqual(BAD_REQUEST);
+  //   expect(response.error).toEqual(BAD_STORE_ID);
+  // });
+
+
+  it('removeProduct - Test', async () => {
 
     let product = fakeProduct({});
     let response = await productsApi.addProduct(product.storeId,product.name, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
@@ -88,8 +163,22 @@ describe('Product model',() => {
     expect(response.status).toEqual(OK_STATUS);
     expect(product_BeforeRemove.isActivated).toBeTruthy;
     expect(product_AfterRemove.product.isActivated).toBeFalsy;
-  
+
   });
+
+  it('removeProduct with UNACTIVATED STORE ID- Test', async () => {
+
+    let product = fakeProduct({});
+    let response = await productsApi.addProduct(product.storeId,product.name, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
+    let product_BeforeRemove = await ProductCollection.findById(response.product.id);
+    let product_AfterRemove = await productsApi.removeProduct(product_BeforeRemove.id);
+  
+    expect(response.status).toEqual(OK_STATUS);
+    expect(product_BeforeRemove.isActivated).toBeTruthy;
+    expect(product_AfterRemove.product.isActivated).toBeFalsy;
+
+  });
+
 
   it('updateProduct - Test', async () => {
     let product = fakeProduct({});
