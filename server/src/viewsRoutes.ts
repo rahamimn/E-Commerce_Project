@@ -4,11 +4,14 @@ import { Response } from 'express-serve-static-core';
 import { verifyToken, createToken } from './jwt';
 import { MISSING_PARAMETERS, BAD_REQUEST } from './consts';
 import { UsersApi } from './usersApi/usersApi';
+import { ProductsApi } from './productApi/productsApi';
 
 export const webRoutes = express.Router();
 
 const usersApi = new UsersApi();
+const productApi = new ProductsApi();
 
+const categories = ["Home","Garden","Kitchen"];
 
 const loginMiddleWare = (req:Request,res:Response, next) =>{
     try{
@@ -34,11 +37,39 @@ webRoutes.get('/',loginMiddleWare ,(req:Request,res:express.Response)=>{
     });
 });
 
-webRoutes.get('/products',loginMiddleWare ,(req:Request,res:express.Response)=>{
+webRoutes.get('/products',loginMiddleWare ,async (req:Request,res:express.Response)=>{
+    const response = await productApi.getProducts({});
     res.render('pages/products', {
-        user: res.locals.user
+        user: res.locals.user,
+        categories,
+        products:response.products
     });
-})
+});
+
+webRoutes.post('/products',loginMiddleWare ,async (req:Request,res:express.Response)=>{
+    const keyWords = req.body.keywords.split(',');
+    const response = await productApi.getProducts({
+        name:req.body.name !== '' ? req.body.name : undefined,
+        keyWords:req.body.keywords !== '' ? keyWords : undefined,
+        category:req.body.category !== "Category" ? req.body.category : undefined,
+    });
+
+    res.render('pages/products', {
+        user: res.locals.user,
+        categories,
+        products:response.products
+    });
+});
+
+webRoutes.get('/products/:productId',loginMiddleWare , async (req:Request,res:express.Response)=>{
+    const response = await productApi.getProductDetails(req.params.productId);
+    if(response.status<0)
+        res.redirect("/");
+    res.render('pages/productPage', {
+        user: res.locals.user,
+        product: response.product
+    });
+});
 
 webRoutes.get('/register',loginMiddleWare, (req:Request,res:express.Response)=>{
     res.render('pages/register',{

@@ -9,8 +9,8 @@ export class User {
         this._firstName = base.firstName;
         this._lastName = base.lastName;
         this._email = base.email;
+        this._phone = base.phone;
         this._isDeactivated = base.isDeactivated;
-
         this._notifications = base.notifications;
         this._messages = base.messages;
     }
@@ -135,6 +135,10 @@ export class User {
      */
 	public set email(value: String) {
 		this._email = value;
+    }
+    
+    public set phone(value:  String) {
+		this._phone = value;
 	}
 
     /**
@@ -146,20 +150,25 @@ export class User {
 	}
 
     /**
-     * Setter carts
-     * @param {any[]} value
-     */
-	public set carts(value: any[]) {
-		this._carts = value;
-	}
-
-    /**
      * Setter notifications
      * @param {any[]} value
      */
 	public set notifications(value: any[]) {
 		this._notifications = value;
-	}
+    }
+    
+     /**
+     * Getter phone
+     * @return { String}
+     */
+	public get phone():  String {
+		return this._phone;
+    }
+    
+    /**
+     * Setter phone
+     * @param { String} value
+     */
 
     /**
      * Setter messages
@@ -192,20 +201,23 @@ export class User {
             _firstName,
             _lastName,
             _email,
+            _phone
         } = this;
         return ({
-            _id,
-            _userName,
-            _firstName,
-            _lastName,
-            _email,
+            id:_id,
+            userName:_userName,
+            firstName:_firstName,
+            lastName:_lastName,
+            email:_email,
+            phone:_phone,
         });
     }
 
     public updateDetails (userDetails){ //nothing else should update for now
-       this.firstName = userDetails._firstName;
-       this.lastName = userDetails._lastName;
-       this.email = userDetails._email;
+       this.firstName = userDetails.firstName;
+       this.lastName = userDetails.lastName;
+       this.email = userDetails.email;
+       this.phone = userDetails.phone;
     }
 
     private _id: String;
@@ -214,9 +226,9 @@ export class User {
     private _salt: String;
     private _firstName:  String;
     private _lastName:  String;
+    private _phone:  String;
     private _email: String;
     private _isDeactivated: Boolean;
-    private _carts : any[];
     private _notifications: any[];
     private _messages: any[];
 }

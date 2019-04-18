@@ -8,6 +8,7 @@ import { Cart } from "./models/cart";
 import { Role } from "./models/role";
 import { User } from "./models/user";
 import { Message } from "./models/message";
+import { asyncForEach } from "../utils/utils";
 
 
 const verifyPassword = (candidatePassword:String, salt: String, userPassword: String) => {
@@ -29,7 +30,7 @@ export class UsersApi implements IUsersApi{
                 return {status: Constants.BAD_REQUEST , err: "user is disActivated"};
             
             if(verifyPassword(password, user.salt, user.password)) {
-                return{status: Constants.OK_STATUS, user:user, isAdmin: !!isAdmin};
+                return{status: Constants.OK_STATUS, user:user.getUserDetails(), isAdmin: !!isAdmin};
             }
             else {
                 return {status:Constants.BAD_PASSWORD, err:"bad password"}
@@ -45,21 +46,29 @@ export class UsersApi implements IUsersApi{
         return Constants.OK_STATUS
     }
 
-    async register(userName,password){
+    async register(userDetails,sessionId= undefined){
         try {
-            const userExists = await UserCollection.findOne({userName});
+            const userExists = await UserCollection.findOne({userName: userDetails.userName});
             if(userExists)
                 return {status:Constants.BAD_USERNAME, err:"userName exists"};
             const salt = bcrypt.genSaltSync(10);
-            const hashedPassword = hashPassword(password, salt);
+            const hashedPassword = hashPassword(userDetails.password, salt);
             const user = await UserCollection.insert(new User({
-                userName: userName,
+                userName: userDetails.userName,
                 salt:salt,
-                firstName: "debugName",
-                email: "debugMail",
+                firstName: userDetails.firstName,
+                lastName: userDetails.lastName,
+                email: userDetails.email,
+                phone: userDetails.phone,
                 password: hashedPassword
             }));
-            return {status: Constants.OK_STATUS}
+            const carts = await CartCollection.find({ofSession:sessionId});
+            await asyncForEach(carts,async cart => {
+                cart.ofSession = null,
+                cart.ofUser = user.id
+                await CartCollection.updateOne(cart);
+            });
+            return {status: Constants.OK_STATUS, userId: user.id}
         }
         catch(err){
             console.log(err);
@@ -102,33 +111,49 @@ export class UsersApi implements IUsersApi{
         return ({status: Constants.OK_STATUS});
     }
 
-    async getCarts(userId){
-        let user = await UserCollection.findById(userId);
-        if(!user)
-            return ({status: Constants.BAD_REQUEST});
-        const carts = await CartCollection.find({ofUser:user.id});
+    async getCarts(userId, sessionId = undefined){
+        let user
+        if(!userId && !sessionId )
+            return ({status: Constants.BAD_REQUEST, err:"session nor user given"});
+        if(userId){
+            let user = await UserCollection.findById(userId);
+            if(!user)
+                return ({status: Constants.BAD_REQUEST});
+        }
+        const carts = await CartCollection.find(user? {ofUser:user.id}: {ofSession:sessionId});
         return ({status: Constants.OK_STATUS , carts});
     }
 
-    async addProductToCart(userId, storeId, productId, amount){
-        let cart = await CartCollection.findOne({ofUser:userId, store: storeId});
+    async addProductToCart(userId,productId, amount,sessionId=undefined){
+        if(!userId && !sessionId)
+            return ({status: Constants.BAD_REQUEST, err:"user notDefined nor visitor "});
         const product = await ProductCollection.findById(productId);
+
+        let cart = await CartCollection.findOne(userId?
+            {ofUser:userId, store: product.storeId}:
+            {ofSession:sessionId, store: product.storeId});
+    
         if(!product)
-            return ({status: Constants.BAD_REQUEST});
+            return ({status: Constants.BAD_REQUEST, err:"products doesn't exists"});
 
-
+        
         if(!cart){
-            cart = await CartCollection.insert(new Cart({
-                ofUser: userId,
-                store: storeId,
+            const cartDetails : any = {
+                store: product.storeId,
                 items:[{
                     product:productId,
                     amount
-                }]}));
+                }]};
+    
+            userId?
+                cartDetails.ofUser = userId:
+                cartDetails.ofSession = sessionId;
+
+            cart = await CartCollection.insert(new Cart(cartDetails));
         }
         else {
             cart.addItem(productId, amount);
-            await CartCollection.updateOne(cart);
+            cart = await CartCollection.updateOne(cart);
         }
         return ({status: Constants.OK_STATUS , cart});
     }

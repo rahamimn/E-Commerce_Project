@@ -97,13 +97,13 @@ describe('Product model',() => {
     let productFromDB = await productsApi.getProductDetails(productToDB.product.id);
 
     let productDetails = productFromDB.product;
-    productDetails._sellType = "updated_selltype";
-    productDetails._amountInventory = 42;
-    let productAfterUpdate = await productsApi.updateProduct(productDetails._id, productDetails);
+    productDetails.sellType = "updated_selltype";
+    productDetails.amountInventory = 42;
+    let productAfterUpdate = await productsApi.updateProduct(productDetails.id, productDetails);
 
     expect(productAfterUpdate.status).toEqual(OK_STATUS);
-    expect(productAfterUpdate.product.sellType).toEqual(productDetails._sellType);
-    expect(productAfterUpdate.product.amountInventory).toEqual(productDetails._amountInventory);
+    expect(productAfterUpdate.product.sellType).toEqual(productDetails.sellType);
+    expect(productAfterUpdate.product.amountInventory).toEqual(productDetails.amountInventory);
 });
 
 //  it('addReview - Test', async () => {

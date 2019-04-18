@@ -39,7 +39,8 @@ async function register(req: Request, res: express.Response) {
         if (!req.body.userName || !req.body.password)
             res.send({status: Constants.MISSING_PARAMETERS, err: 'did not received user or password'});
         else {
-            const response = await usersApi.register(req.body.userName, req.body.password);
+            const response = await usersApi.register(
+                req.body);
             res.send(response);
         }
     }
@@ -151,20 +152,19 @@ usersApiRouter.post('/usersApi/addProductToCart', addProductToCart);
 
 async function addProductToCart(req: Request, res: express.Response) {
     try {
-        const userId = verifyToken(req.session.token).userId;
-        const storeId = req.body.storeId;
+        const userId = req.session.user ? req.session.user.id: null;
         const productId = req.body.productId;
-        const amount = req.body.amount;
-        if (!amount || !productId || !storeId)
+        const amount = parseInt(req.body.amount);
+        if (!amount || !productId)
             res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
         else {
-            
-            const response = await usersApi.addProductToCart(userId, storeId, productId, amount);
+            const response = await usersApi.addProductToCart(userId, productId, amount,req.session.id);
             res.send(response);
         }
     }
     catch (err) {
-        res.send({status: Constants.BAD_REQUEST});
+        console.log(err);
+        res.send({status: Constants.BAD_REQUEST, err:"something went wrong"});
     }
 }
 
