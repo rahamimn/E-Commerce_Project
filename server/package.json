@@ -7,7 +7,7 @@
     "start": "tsc && node dist/src/app.js",
     "start:cleanRemoteDONOTUSE": "tsc && node dist/src/app.js -init",
     "start:local": "tsc && node dist/src/app.js local",
-    "start:cleanLocal": "tsc && node dist/src/app.js local -init ",
+    "start:cleanLocal": "tsc && node dist/src/app.js local -initWithSomeData ",
     "test": "tsc && jest --watchAll --runInBand spec.ts",
     "accTest": "tsc && jest --watchAll --runInBand acceptanceTest.spec.ts",
     "cover": "tsc && jest --coverage spec.ts",

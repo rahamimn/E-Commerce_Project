@@ -13,7 +13,7 @@ import {productsApiRouter} from "./productApi/productRoutes";
 
 import * as Constants from "./consts";
 import cors from 'cors';
-import { setDefaultData } from '../test/accetpanceTestUtils';
+import { setDefaultData, setData } from '../test/accetpanceTestUtils';
 import { webRoutes } from './viewsRoutes';
 
 require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
@@ -38,6 +38,11 @@ if(process.argv.some( arg => arg === '-init')){
         console.log(`init database with admin`);
         await mongoose.connection.db.dropDatabase();
         await setDefaultData();
+}
+if(process.argv.some( arg => arg === '-initWithSomeData')){
+    console.log(`init database with admin`);
+    await mongoose.connection.db.dropDatabase();
+    await setData();
 }
 })();
 

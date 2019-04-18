@@ -6,7 +6,7 @@ import { Role } from "../src/usersApi/models/role";
 import { UsersApi } from "../src/usersApi/usersApi";
 import Chance from 'chance';
 import {STORE_OWNER, STORE_MANAGER, APPOINT_STORE_MANAGER, OK_STATUS } from "../src/consts";
-import { insertRegisterdUser } from "./accetpanceTestUtils";
+import { insertRegisterdUser, setupRoleToUser } from "./accetpanceTestUtils";
 import { OrdersApi } from "../src/orderApi/ordersApi";
 import { ProductsApi } from "../src/productApi/productsApi";
 import { StoresApi } from "../src/storeApi/storesApi";
@@ -34,7 +34,7 @@ describe('AcceptanceTest',()=>{
     //names of stores, product (users,passwords) here
     beforeEach(async () => { 
         //admin and normal user
-        adminId = (await insertRegisterdUser('admin','admin',true)).id;
+        adminId = (await insertRegisterdUser('admin1234','1234',true)).id;
         userId = (await insertRegisterdUser('user','pass1')).id;
         userWithCartId = (await insertRegisterdUser('userWithCart','pass2')).id;
         //store
@@ -57,6 +57,7 @@ describe('AcceptanceTest',()=>{
             name:'prod',
             storeId: storeId,
             amountInventory:2,
+            imageUrl:"https://cdn.shopify.com/s/files/1/0396/8269/products/classic-towels-cotton-white-lp-000_2880x.jpg?v=1539717395",
             keyWords:['type1','type2'],
             category:'cat'
         }))).id;
@@ -72,12 +73,6 @@ describe('AcceptanceTest',()=>{
         }))).id;
     });
 
-    const setupRoleToUser = async (userId, roleOpt={}): Promise<Role> => {
-       return await RoleCollection.insert(fakeRole({
-            ...roleOpt,
-            ofUser: userId
-        }));
-    }
 
     afterEach(async() => { //in order two see snapshot of data in database shadow this function
         await StoreCollection.drop();
@@ -88,7 +83,7 @@ describe('AcceptanceTest',()=>{
     });
 
     it('uc1.1',async () => {
-        expect((await usersApi.login('admin','admin')).status).toBe(OK_STATUS);
+        expect((await usersApi.login('admin1234','1234')).status).toBe(OK_STATUS);
     });
 
     it('uc2.1 - guest',() => {
