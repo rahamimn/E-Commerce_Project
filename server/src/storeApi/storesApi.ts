@@ -168,7 +168,7 @@ export class StoresApi implements IStoresApi {
         const userId = userName;
         //todo find the userId from username: userToDisActivate == userName
         let worker =  await RoleCollection.findOne({ofUser: workerId , store: storeId});
-        const toUser = await UserCollection.findById(userId);
+        const toUser = await UserCollection.findById(userName);
         const store = await StoreCollection.findById(storeId);
         if(!worker || !toUser || !store)
             return ({status: BAD_REQUEST});
@@ -190,13 +190,5 @@ export class StoresApi implements IStoresApi {
    
         return ({status: OK_STATUS , message});
     } 
-        
-    
-    /*
-    disableStore: (adminId: string, storeId: string) => void;
-    CloseStore: (ownerId: string, storeId: string) => void;
-    getStoreMessages: (storeID: string) => MonArray<ObjectId>;
-    getWorkers: (storeID: string) => MonArray<ObjectId>;
-    addReview: (rank: number, comment: string) => void;*/
 }
 

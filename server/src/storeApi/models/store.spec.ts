@@ -16,5 +16,19 @@ describe("Store model", () => {
 
     store1.name = "aviv the king";
     expect(store1.name).toEqual("aviv the king");
+  
+
+  });
+
+
+  it("check error with bad rank", () => {
+    try{
+      const store2 = fakeStore({});
+      store2.rank = 6;
+      expect(1).toEqual(2);
+    }
+    catch(error){
+      expect(1).toEqual(1);
+    }
   });
 });

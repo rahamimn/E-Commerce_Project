@@ -112,7 +112,12 @@ export class Store {
    * @param { number} value
    */
   public set rank(value: number) {
-    this._rank = value;
+    if(value>5 || value<0){
+      this._rank = value;
+    }
+    else{
+      console.error("bad rank must be between 1 to 5");
+    }
   }
 
   /**
