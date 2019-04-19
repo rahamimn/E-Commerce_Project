@@ -183,14 +183,27 @@ describe('users-api-integration',() => {
       expect(userRole.permissions[0]).toBe(permissions[0]);
   });
 
-  it('pop notification', async () => {
-      userWithoutRole.notifications = [chance.name()];
+  it('pop notifications', async () => {
+      userWithoutRole.notifications = [{header:chance.animal(), message:chance.animal()}];
       await UserCollection.updateOne(userWithoutRole);
       const response = await usersApi.popNotifications(userWithoutRole.id);
 
 
       expect(response).toMatchObject({status: constants.OK_STATUS, notifications:[userWithoutRole.notifications[0]] });
   });
+
+  it('push notification', async () => {
+    const header = chance.name();
+    const message = chance.name();
+    userWithoutRole.notifications = [{header:chance.animal(), message:chance.animal()}];
+    await UserCollection.updateOne(userWithoutRole);
+    const response = await usersApi.pushNotification(userWithoutRole.id,header,message);
+
+    const user = await UserCollection.findById(userWithoutRole.id);
+
+    expect(user.notifications.length).toBe(2);
+    expect(user.notifications[1]).toMatchObject({header,message});
+});
 
   it('get all messages ', async () => {
       const response = await usersApi.getMessages(userWithAll.id);

@@ -11,10 +11,10 @@ import {storesApiRouter} from "./storeApi/storeRoutes";
 import {productsApiRouter} from "./productApi/productRoutes";
 //import {oredersApiRouter} from "./orederApi/orederRoutes";
 
-import * as Constants from "./consts";
 import cors from 'cors';
 import { setDefaultData, setData } from '../test/accetpanceTestUtils';
 import { webRoutes } from './viewsRoutes';
+import { connectWsServer } from './notificationApi/notifiactionApi';
 
 require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
 const dbHost = process.env.DB_HOST;
@@ -23,7 +23,6 @@ const dbUser = process.env.DB_USER;
 const dbPassword = process.env.DB_PASSWORD;
 
 // Conenct to DB(
-
 (async () => {
 if(process.argv.some( arg => arg === 'local')) {
     console.log(`connection to :  ${process.env.DB_TEST_NAME} (locally)`);
@@ -46,7 +45,8 @@ if(process.argv.some( arg => arg === '-initWithSomeData')){
 }
 })();
 
-const app = express();
+const app  = express();
+
 //express extensions
 app.set('view engine', 'ejs');
 // BodyParser Middleware
@@ -77,3 +77,5 @@ const port = 3000;
 app.listen(port, () => console.log(`listening on port ${port}!`));
 
 
+//connection to webSocket server
+connectWsServer();
