@@ -113,10 +113,11 @@ export class Store {
    */
   public set rank(value: number) {
     if(value>5 || value<0){
-      this._rank = value;
+      console.error("bad rank must be between 1 to 5");
     }
     else{
-      console.error("bad rank must be between 1 to 5");
+      this._rank = value;
+
     }
   }
 
