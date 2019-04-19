@@ -249,6 +249,17 @@ export class UsersApi implements IUsersApi{
         return {status: Constants.OK_STATUS , notifications};
     }
 
+    async pushNotification(userId, header, message){
+        const user = await UserCollection.findById(userId);
+        if(!user)
+            return {status: Constants.BAD_REQUEST};
+
+        user.notifications.push({header,message });
+        await UserCollection.updateOne(user);
+
+        return {status: Constants.OK_STATUS};
+    }
+
     async removeRole(userId, userNameRemove, storeId){
         const roleUserId = await RoleCollection.findOne({ ofUser: userId, store: storeId });
         const userofRoleToDelete = await UserCollection.findOne({ userName: userNameRemove });

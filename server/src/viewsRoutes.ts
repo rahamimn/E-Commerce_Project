@@ -31,7 +31,8 @@ const loginSection = (req:Request,res:Response, next) =>{
         next();
 }
 
-webRoutes.get('/',loginMiddleWare ,(req:Request,res:express.Response)=>{
+webRoutes.get('/',loginMiddleWare ,async (req:Request,res:express.Response)=>{
+    await popNotifications(res.locals.user);
     res.render('pages/home', {
         user: res.locals.user
     });
@@ -39,6 +40,7 @@ webRoutes.get('/',loginMiddleWare ,(req:Request,res:express.Response)=>{
 
 webRoutes.get('/products',loginMiddleWare ,async (req:Request,res:express.Response)=>{
     const response = await productApi.getProducts({});
+    await popNotifications(res.locals.user);
     res.render('pages/products', {
         user: res.locals.user,
         categories,
@@ -54,6 +56,7 @@ webRoutes.post('/products',loginMiddleWare ,async (req:Request,res:express.Respo
         category:req.body.category !== "Category" ? req.body.category : undefined,
     });
 
+    await popNotifications(res.locals.user);
     res.render('pages/products', {
         user: res.locals.user,
         categories,
@@ -65,21 +68,26 @@ webRoutes.get('/products/:productId',loginMiddleWare , async (req:Request,res:ex
     const response = await productApi.getProductDetails(req.params.productId);
     if(response.status<0)
         res.redirect("/");
+
+    await popNotifications(res.locals.user);
     res.render('pages/productPage', {
         user: res.locals.user,
         product: response.product
     });
 });
 
-webRoutes.get('/register',loginMiddleWare, (req:Request,res:express.Response)=>{
+webRoutes.get('/register',loginMiddleWare, async (req:Request,res:express.Response)=>{
+    await popNotifications(res.locals.user);
     res.render('pages/register',{
         user: res.locals.user
     });
 });
 
-webRoutes.get('/login',loginMiddleWare, (req:Request,res:express.Response)=>{
+webRoutes.get('/login',loginMiddleWare,async (req:Request,res:express.Response)=>{
     if(res.locals.user)
         res.redirect("/");
+
+    await popNotifications(res.locals.user);
     res.render('pages/login',{
         user: res.locals.user
     });
@@ -105,7 +113,7 @@ webRoutes.post('/login',loginMiddleWare, async (req:Request,res:express.Response
                 req.session.token = await createToken('' + response.user);
                 const user:any = response.user;
                 user.isAdmin = response.isAdmin;;
-
+              
                 req.session.user = response.user;
                 res.send(response);
             }
@@ -120,7 +128,8 @@ webRoutes.post('/login',loginMiddleWare, async (req:Request,res:express.Response
 webRoutes.get('/user-panel',loginMiddleWare, loginSection, async (req:Request,res:express.Response)=>{
     if(!res.locals.user ||!res.locals.user.isAdmin )
         res.redirect("/");
-    
+
+    await popNotifications(res.locals.user);
     res.render('pages/userPages/userHome',{
         user: res.locals.user
     });
@@ -130,8 +139,17 @@ webRoutes.get('/user-panel',loginMiddleWare, loginSection, async (req:Request,re
 webRoutes.get('/admin-panel',loginMiddleWare, loginSection, async (req:Request,res:express.Response)=>{
     if(!res.locals.user.isAdmin )
         res.redirect("/");
-    
+    await popNotifications(res.locals.user);
     res.render('pages/adminPages/adminHome',{
         user: res.locals.user
     });
 });
+
+const popNotifications  = async (user) => {
+    if(!user)
+        return;
+    const resPop = await usersApi.popNotifications(user.id);
+    console.log(resPop);
+    user.notifications = resPop.notifications;
+    //user.notifications = [{header:"dsadsad", message:"dasdasdasddasdads"}];
+}

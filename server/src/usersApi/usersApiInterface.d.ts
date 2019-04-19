@@ -14,6 +14,7 @@ export interface IUsersApi{
     removeRole: (userId:number , userNameRemove:number, storeIdRemove:number) => Promise< {status:number, err?: String}>,
     updatePermissions: (userId:String, appointedUserName:String, storeId:String, permissions: String[]) => Promise< {status:number, err?: String   }>
     popNotifications: (userId:String) => Promise< {status:number, err?: String , notifications?: String[]  }>,
+    pushNotification: (userId:String,header:String, message:String) => Promise< {status:number, err?: String }>,
     updateUser: (userId: String, user: any) => Promise< {status:number, err?: String}>,
     getUserDetails: (userId: String) => Promise< {status:number, err?: String , user?:any}>,
     updateCart:(cartDetails: any) => Promise<{status:number, err?: String}>,
