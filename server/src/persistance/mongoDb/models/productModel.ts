@@ -11,7 +11,9 @@ interface IProduct {
     amountInventory: number,
     sellType?: String,
     price: number,
-    coupons?: String
+    coupons?: String,
+    description?: String,
+    imageUrl?: String,
     acceptableDiscount: number,
     discountPrice?: number,
     rank?: number,
@@ -26,17 +28,19 @@ export interface IProductModel extends IProduct, Document{
 }
 
 const productScheme = new Schema({
-    storeId: {type: Schema.Types.ObjectId,ref: 'Store', required:true}, 
-    name: {type: String , required:true},
-    amountInventory: {type: Number}, 
+    storeId: {type: Schema.Types.ObjectId,ref: 'Store', required: true}, 
+    name: {type: String , required: true},
+    amountInventory: {type: Number, min: 0}, 
     sellType: {type: String},
-    price: {type: Number}, 
+    imageUrl: {type: String},
+    description: {type: String},
+    price: {type: Number, min: 0}, 
     coupons: {type: String},
-    acceptableDiscount: {type: Number}, 
-    discountPrice:{type: Number}, 
-    rank: {type: Number}, // NIR: Why don't we use ref?
+    acceptableDiscount: {type: Number, min: 0}, 
+    discountPrice:{type: Number, min: 0}, 
+    rank: {type: Number, min: 0, max:5}, // NIR: Why don't we use ref?
     reviews: [{type: Schema.Types.ObjectId, ref: 'Review', default:[]}],
-    keyWords: [{type: String, default: []}], //Nir: To check
+    keyWords: [{type: String , default: []}], //Nir: To check
     category: {type: String},
     isActivated: {type: Boolean},
 });

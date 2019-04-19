@@ -3,13 +3,12 @@ import { BAD_REQUEST, OK_STATUS } from "../../consts";
 import { Review } from "../../storeApi/models/review";
 
 export class Product {
-
-
     private _id: any;
     private _name: String;
     private _storeId: any;
     private _amountInventory: number;
     private _sellType: String;
+    private _description: String;
     private _price: number;
     private _coupons: String;
     private _acceptableDiscount: number;
@@ -19,6 +18,7 @@ export class Product {
     private _keyWords: String[];
     private _category: String;
     private _isActivated: Boolean;
+    private _imageUrl: String;
 
     constructor(base:any){
         this._id = base.id;
@@ -34,28 +34,33 @@ export class Product {
         this._reviews = base.reviews;
         this._keyWords = base.keyWords;
         this._category = base.category;
+        this._description = base.description;
         this._isActivated = base.isActivated;
+        this._imageUrl = base.imageUrl;
     }
 
 
     public updateDetails (productDetails){ 
-        this.amountInventory = productDetails._amountInventory;
-        this.sellType = productDetails._sellType;
-        this.price = productDetails._price;
-        this.coupons = productDetails._coupons;
-        this.acceptableDiscount = productDetails._acceptableDiscount;
-        this.discountPrice = productDetails._discountPrice;
-        this.rank = productDetails._rank;
-        this.reviews = productDetails._reviews;
-        this.keyWords = productDetails._keyWords;
-        this.category = productDetails._category;
-        this.isActivated = productDetails._isActivated;
+        this.amountInventory = productDetails.amountInventory;
+        this.sellType = productDetails.sellType;
+        this.price = productDetails.price;
+        this.coupons = productDetails.coupons;
+        this.acceptableDiscount = productDetails.acceptableDiscount;
+        this.discountPrice = productDetails.discountPrice;
+        this.rank = productDetails.rank;
+        this.reviews = productDetails.reviews;
+        this.keyWords = productDetails.keyWords;
+        this.category = productDetails.category;
+        this.imageUrl = productDetails.imageUrl;
+        this.description = productDetails.description;
+        this.isActivated = productDetails.isActivated;
      }
 
      public getProductDetails (){
         const {
             _id,
             _name,
+            _storeId,
             _amountInventory,
             _sellType,
             _price,
@@ -66,21 +71,27 @@ export class Product {
             _reviews,
             _keyWords,
             _category,
+            _description,
+            _imageUrl,
             _isActivated,
         } = this;
         return ({
-            _id,
-            _amountInventory,
-            _sellType,
-            _price,
-            _coupons,
-            _acceptableDiscount,
-            _discountPrice,
-            _rank,
-            _reviews,
-            _keyWords,
-            _category,
-            _isActivated,
+            id:_id,
+            name:_name,
+            storeId: _storeId,
+            amountInventory: _amountInventory,
+            sellType: _sellType,
+            price: _price,
+            coupons: _coupons,
+            acceptableDiscount: _acceptableDiscount,
+            discountPrice: _discountPrice,
+            rank: _rank,
+            imageUrl: _imageUrl,
+            reviews: _reviews,
+            keyWords: _keyWords,
+            category: _category,
+            description: _description,
+            isActivated: _isActivated,
         });
     }
 
@@ -88,6 +99,22 @@ export class Product {
             this.reviews.push(reviewToPush);
     }
 
+
+    /**
+     * Getter description
+     * @return {String}
+     */
+	public get description(): String {
+		return this._description;
+	}
+
+    /**
+     * Setter description
+     * @param {String} value
+     */
+	public set description(value: String) {
+		this._description = value;
+	}
 
      /**
      * Getter name
@@ -121,6 +148,21 @@ export class Product {
 		return this._amountInventory;
 	}
 
+      /**
+     * Getter imageUrl
+     * @return {String}
+     */
+	public get imageUrl(): String {
+		return this._imageUrl;
+	}
+
+    /**
+     * Setter imageUrl
+     * @param {String} value
+     */
+	public set imageUrl(value: String) {
+		this._imageUrl = value;
+	}
     /**
      * Getter sellType
      * @return {String}

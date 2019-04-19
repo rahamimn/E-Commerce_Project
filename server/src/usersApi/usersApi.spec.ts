@@ -28,12 +28,12 @@ describe('users-api-integration',() => {
 
   beforeEach(async () => { //create database to work with
       message = await MessageCollection.insert(fakeMessage({}));
-      product = await ProductCollection.insert(fakeProduct({}));
       store = await StoreCollection.insert(fakeStore({}));
+      product = await ProductCollection.insert(fakeProduct({storeId: store.id }));
       cart = await CartCollection.insert(fakeCart({
-          store: store._id,
+          store: store.id,
           items:[{
-              product: product._id,
+              product: product.id,
               amount:2
           }]
       }));
@@ -81,7 +81,7 @@ describe('users-api-integration',() => {
   });
 
   it('add product to cart of user ', async () => {
-      const response = await usersApi.addProductToCart(userWithoutRole.id, store.id,product.id,5);
+      const response = await usersApi.addProductToCart(userWithoutRole.id,product.id,5);
       const updatedCart = await CartCollection.findOne({ofUser:userWithoutRole.id});
 
       expect(response).toMatchObject({status: constants.OK_STATUS});
@@ -89,10 +89,21 @@ describe('users-api-integration',() => {
       expect(updatedCart.items[0].product.equals(product.id)).toBe(true);
   });
 
-  it('add product to cart of user with cart of specific store ', async () => {
+  it('add product to cart of guest ', async () => {
+    const sessionId = chance.first();
+    const response = await usersApi.addProductToCart(null,product.id,5,sessionId);
+    const updatedCart = await CartCollection.findOne({ofSession:sessionId});
 
-      const response = await usersApi.addProductToCart(userWithAll.id, store.id,product.id,5);
-      const updatedCart = await CartCollection.findOne({ofUser:userWithAll.id});
+    expect(response).toMatchObject({status: constants.OK_STATUS});
+    expect(updatedCart).toBeTruthy();
+    expect(updatedCart.items[0].product.equals(product.id)).toBe(true);
+  });
+
+  it('add product to cart of guest with cart of specific store ', async () => {
+      const sessionId = chance.first();
+      await usersApi.addProductToCart(null,product.id,5,sessionId);
+      const response = await usersApi.addProductToCart(null,product.id,2,sessionId);
+      const updatedCart = await CartCollection.findOne({ofSession:sessionId});
 
       expect(response).toMatchObject({status: constants.OK_STATUS});
       expect(updatedCart).toBeTruthy();
@@ -100,13 +111,35 @@ describe('users-api-integration',() => {
       expect(updatedCart.items[0].amount).toEqual(7);
   });
 
-  it('get all carts ', async () => {
-      const res = await usersApi.addProductToCart(userWithAll.id, store.id,product.id,5);
+  it('add product to cart of user with cart of specific store ', async () => {
+    const response = await usersApi.addProductToCart(userWithAll.id,product.id,5);
+    const updatedCart = await CartCollection.findOne({ofUser:userWithAll.id});
+
+    expect(response).toMatchObject({status: constants.OK_STATUS});
+    expect(updatedCart).toBeTruthy();
+    expect(updatedCart.items[0].product.equals(product.id)).toBe(true);
+    expect(updatedCart.items[0].amount).toEqual(7);
+});
+
+
+
+  it('get all carts of user', async () => {
+      const res = await usersApi.addProductToCart(userWithAll.id,product.id,5);
       const response = await usersApi.getCarts(userWithAll.id);
 
       expect(response.status).toEqual(constants.OK_STATUS);
       expect(response.carts[0]).toMatchObject({items:{}});
   });
+
+  it('get all carts of guest', async () => {
+    const sessionId = chance.first();
+    const res = await usersApi.addProductToCart(null,product.id,5,sessionId);
+
+    const response = await usersApi.getCarts(null,sessionId);
+
+    expect(response.status).toEqual(constants.OK_STATUS);
+    expect(response.carts[0]).toMatchObject({items:{}});
+});
 
   it('set user as admin when he is not admin', async () => {
       const response = await usersApi.setUserAsSystemAdmin(adminUser._id,userWithoutRole.userName);
@@ -150,14 +183,27 @@ describe('users-api-integration',() => {
       expect(userRole.permissions[0]).toBe(permissions[0]);
   });
 
-  it('pop notification', async () => {
-      userWithoutRole.notifications = [chance.name()];
+  it('pop notifications', async () => {
+      userWithoutRole.notifications = [{header:chance.animal(), message:chance.animal()}];
       await UserCollection.updateOne(userWithoutRole);
       const response = await usersApi.popNotifications(userWithoutRole.id);
 
 
       expect(response).toMatchObject({status: constants.OK_STATUS, notifications:[userWithoutRole.notifications[0]] });
   });
+
+  it('push notification', async () => {
+    const header = chance.name();
+    const message = chance.name();
+    userWithoutRole.notifications = [{header:chance.animal(), message:chance.animal()}];
+    await UserCollection.updateOne(userWithoutRole);
+    const response = await usersApi.pushNotification(userWithoutRole.id,header,message);
+
+    const user = await UserCollection.findById(userWithoutRole.id);
+
+    expect(user.notifications.length).toBe(2);
+    expect(user.notifications[1]).toMatchObject({header,message});
+});
 
   it('get all messages ', async () => {
       const response = await usersApi.getMessages(userWithAll.id);
@@ -172,20 +218,20 @@ describe('users-api-integration',() => {
       const response = await usersApi.getUserDetails(userWithAll.id);
 
       expect(response.status).toEqual(constants.OK_STATUS);
-      expect(response.user._firstName).toEqual(user.firstName);
+      expect(response.user.firstName).toEqual(user.firstName);
   });
 
   it('update  user details ', async () => {
       let response = await usersApi.getUserDetails(userWithAll.id);
 
       const userDetails = response.user;
-      userDetails._firstName= chance.first();
+      userDetails.firstName= chance.first();
 
-      response = await usersApi.updateUser(userDetails._id, userDetails);
+      response = await usersApi.updateUser(userDetails.id, userDetails);
       const {user} = await usersApi.getUserDetails(userWithAll.id);
 
       expect(response.status).toEqual(constants.OK_STATUS);
-      expect(user._firstName).toEqual(userDetails._firstName);
+      expect(user.firstName).toEqual(userDetails.firstName);
   });
 
   it('get cart details ', async () => {
@@ -285,6 +331,26 @@ describe('users-api-integration',() => {
     expect(roleStoreManager).toBeFalsy();
 });
 
+it('add product to cart of guest and than register ', async () => {
+    const sessionId = chance.first();
+    await usersApi.addProductToCart(null,product.id,5,sessionId);
+    const response = await usersApi.register({
+        userName: "user888",
+        password: "pass",
+        firstName:"first",
+        lastName:"last",
+        email:"ads@das.com",
+        phone:"09-9999999"
+    }, sessionId);
 
+    const cartsUser = await CartCollection.find({ofUser:response.userId});
+    const cartsSession = await CartCollection.find({ofSession:sessionId});
+
+
+    expect(response).toMatchObject({status: constants.OK_STATUS});
+    expect(cartsUser.length).toBe(1);
+    expect(cartsSession.length).toBe(0);
+ 
+});
 
 });

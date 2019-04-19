@@ -13,12 +13,14 @@ export class Cart{
 
     private _id: string;
     private _ofUser: any;
+    private _ofSession: String;
     private _store: any;
     private _items:  {product:any, amount:number}[];
     private _state: String; 
     private _supplyPrice: number; //in order state
 
     constructor(opt: any){
+        this._ofSession = opt.ofSession
         this._id = opt.id;
         this._items = opt.items;
         this._store = opt.store;
@@ -144,6 +146,14 @@ export class Cart{
      */
 	public get state(): String {
 		return this._state;
+  }
+  
+     /**
+     * Getter ofSession
+     * @return {String}
+     */
+	public get ofSession(): String {
+		return this._ofSession;
 	}
 
     /**
@@ -191,7 +201,18 @@ public set items(value:  {product:any, amount:number}[]) {
      */
 	public set state(value: String) {
 		this._state = value;
-	}
+  }
+
+
+  /**
+   * Setter ofSession
+   * @param {String} value
+   */
+	public set ofSession(value: String) {
+		this._ofSession = value;
+  }
+  
+
 
     /**
      * Setter supplyPrice
@@ -199,4 +220,3 @@ public set items(value:  {product:any, amount:number}[]) {
      */
 
   }
-  

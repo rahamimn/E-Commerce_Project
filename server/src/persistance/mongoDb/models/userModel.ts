@@ -11,10 +11,11 @@ interface IUser{
   salt?: String,
   firstName?:  String,
   lastName?:  String,
+  phone?:  String,
   email?: String,
   isRegisteredUser?: Boolean,
   isDeactivated?: Boolean,
-  notifications: String[],
+  notifications: {header:String, message:String}[],
   messages: MonArray<ObjectID>,
 }
 
@@ -33,9 +34,13 @@ export const userScheme = new Schema({
   firstName:  String,
   lastName:  String,
   email: String,
+  phone: String,
   isRegisteredUser: {type: Boolean},
   isDeactivated: Boolean,
-  notifications: [{type: String}],
+  notifications: [ {
+    header: {type: String, required: true },
+    message:  {type: String, required: true}
+  }],
   messages: [{type: Schema.Types.ObjectId, ref: 'Message', default:[] }]
 });
 
