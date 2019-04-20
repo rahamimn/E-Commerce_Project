@@ -12,6 +12,7 @@ var genObjectId = mongoose.Types.ObjectId;
 describe('Product model',() => {
 
   let chance = new Chance();
+  let storesApi = new StoresApi();
   let productsApi = new ProductsApi();
   jest.setTimeout(10000);  
 
@@ -20,8 +21,12 @@ describe('Product model',() => {
   });
 
   it('addProduct - Test', async () => {
+    let user = await UserCollection.insert(fakeUser({}));
+    const storeName = chance.sentence();
+    const store = await storesApi.addStore(user.id,storeName);
 
     let product = fakeProduct({});
+    product.storeId = store.store.id;
     
     let response = await productsApi.addProduct(
         product.storeId,
@@ -37,7 +42,7 @@ describe('Product model',() => {
 
     expect(response).toMatchObject({status: OK_STATUS});
     expect(productFromDB.id).toBeTruthy();
-    expect(productFromDB.storeId).toEqual(product.storeId);
+    expect(productFromDB.storeId === product.storeId);
     expect(productFromDB.name).toEqual(product.name);
     expect(productFromDB.amountInventory).toEqual(product.amountInventory);
     expect(productFromDB.sellType).toEqual(product.sellType);
@@ -47,11 +52,17 @@ describe('Product model',() => {
   });
 
   it('addProduct with NEGATIVE PRICE - Test', async () => {
+    let user = await UserCollection.insert(fakeUser({}));
+    const storeName = chance.sentence();
+    const store = await storesApi.addStore(user.id,storeName);
+    
     let product = fakeProduct({});
+    product.storeId = store.store.id;
+
     let negativePrice = -1*(chance.natural());
     
     let response = await productsApi.addProduct(
-        product.storeId,
+        store.store.id,
         product.name,
         product.amountInventory,
         product.sellType,
@@ -65,7 +76,13 @@ describe('Product model',() => {
   });
 
   it('addProduct with NEGATIVE AMOUNT - Test', async () => {
+    let user = await UserCollection.insert(fakeUser({}));
+    const storeName = chance.sentence();
+    const store = await storesApi.addStore(user.id,storeName);
+    
     let product = fakeProduct({});
+    product.storeId = store.store.id;
+        
     let negativeAmountInventory = -1*(chance.natural());
     
     let response = await productsApi.addProduct(
@@ -82,37 +99,24 @@ describe('Product model',() => {
     expect(response.error).toEqual(BAD_AMOUNT);
   });
 
-//-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+  it('addProduct with INVALID STORE ID - Test', async () => {
 
-//   NIR:   Store shoud have "isStoreValid" function, in order to pass the following test.
+    let product = fakeProduct({});
+    let invalidStoreId = genObjectId();
 
-//-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    let response = await productsApi.addProduct(
+        invalidStoreId,
+        product.name,
+        product.amountInventory,
+        product.sellType,
+        product.price,
+        product.keyWords,
+        product.category
+    );
 
-  // it('addProduct with INVALID STORE ID - Test', async () => {
-
-  //   let storesApi = new StoresApi();
-  //   let user = await UserCollection.insert(fakeUser({}));
-  //   const storeName = chance.animal();
-  //   const store = await storesApi.addStore(user.id,storeName);
-
-  //   let product = fakeProduct({});
-  //   let invalidStoreId = genObjectId();
-
-  //   let response = await productsApi.addProduct(
-  //       invalidStoreId,
-  //       product.name,
-  //       product.amountInventory,
-  //       product.sellType,
-  //       product.price,
-  //       product.keyWords,
-  //       product.category
-  //   );
-
-  //   expect(response.status).toEqual(BAD_REQUEST);
-  //   expect(response.error).toEqual(BAD_STORE_ID);
-  // });
-
-
+    expect(response.status).toEqual(BAD_REQUEST);
+    expect(response.error).toEqual(("The product \"" + product.name + "\" already exists in the store with Id: \"" + invalidStoreId +"\""));
+  });
 
   //-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 
@@ -124,7 +128,7 @@ describe('Product model',() => {
 
   //   let storesApi = new StoresApi();
   //   let user = await UserCollection.insert(fakeUser({}));
-  //   const storeName = chance.animal();
+  //   const storeName = chance.sentence();
   //   const store = await storesApi.addStore(user.id,storeName);
 
   //   var admin = fakeUser({});
@@ -155,8 +159,14 @@ describe('Product model',() => {
 
   it('removeProduct - Test', async () => {
 
+    let storesApi = new StoresApi();
+    let user = await UserCollection.insert(fakeUser({}));
+    const storeName = chance.sentence();
+    const store = await storesApi.addStore(user.id,storeName);
+
     let product = fakeProduct({});
-    let response = await productsApi.addProduct(product.storeId,product.name, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
+    
+    let response = await productsApi.addProduct(store.store.id,product.name, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
     let product_BeforeRemove = await ProductCollection.findById(response.product.id);
     let product_AfterRemove = await productsApi.removeProduct(product_BeforeRemove.id);
   
@@ -168,8 +178,14 @@ describe('Product model',() => {
 
   it('removeProduct with UNACTIVATED STORE ID- Test', async () => {
 
+    let storesApi = new StoresApi();
+    let user = await UserCollection.insert(fakeUser({}));
+    const storeName = chance.sentence();
+    const store = await storesApi.addStore(user.id,storeName);
+
     let product = fakeProduct({});
-    let response = await productsApi.addProduct(product.storeId,product.name, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
+    
+    let response = await productsApi.addProduct(store.store.id,product.name, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
     let product_BeforeRemove = await ProductCollection.findById(response.product.id);
     let product_AfterRemove = await productsApi.removeProduct(product_BeforeRemove.id);
   
@@ -181,8 +197,14 @@ describe('Product model',() => {
 
 
   it('updateProduct - Test', async () => {
+let storesApi = new StoresApi();
+    let user = await UserCollection.insert(fakeUser({}));
+    const storeName = chance.sentence();
+    const store = await storesApi.addStore(user.id,storeName);
+
     let product = fakeProduct({});
-    let productToDB = await productsApi.addProduct(product.storeId, product.name, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
+    
+    let productToDB = await productsApi.addProduct(store.store.id, product.name, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
     let productFromDB = await productsApi.getProductDetails(productToDB.product.id);
 
     let productDetails = productFromDB.product;
@@ -209,8 +231,13 @@ describe('Product model',() => {
 // });
 
 it('getProducts with 3 params: {storeId, category, keyWords}', async () => {
-    let product = fakeProduct({});
-    let productFromDB = await productsApi.addProduct(product.storeId, product.name, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
+  let user = await UserCollection.insert(fakeUser({}));
+  const storeName = chance.sentence();
+  const store = await storesApi.addStore(user.id,storeName);
+
+  let product = fakeProduct({});
+  
+  let productFromDB = await productsApi.addProduct(store.store.id, product.name, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
     
     let storeId = productFromDB.product.storeId;
     let category = productFromDB.product.category;
@@ -223,36 +250,45 @@ it('getProducts with 3 params: {storeId, category, keyWords}', async () => {
 });
 
 it('getProducts with 2 params: {storeId, category}', async () => {
+  let user = await UserCollection.insert(fakeUser({}));
+  const storeName = chance.sentence();
+  const store = await storesApi.addStore(user.id,storeName);
+
   let product = fakeProduct({});
-  let productFromDB = await productsApi.addProduct(product.storeId, product.name, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
   
-  let storeId = productFromDB.product.storeId;
-  let category = productFromDB.product.category;
+  let productFromDB = await productsApi.addProduct(store.store.id, product.name, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
+    
+    let storeId = productFromDB.product.storeId;
+    let category = productFromDB.product.category;
 
-  let res = await productsApi.getProducts({storeId, category});
+    let res = await productsApi.getProducts({storeId, category});
 
-  expect(res.status).toEqual(OK_STATUS);
-  expect(res.products === [productFromDB.product]);
+    expect(res.status).toEqual(OK_STATUS);
+    expect(res.products === [productFromDB.product]);
 });
 
 
 it('getProducts with 1 params: {storeId}', async () => {
-  let product = fakeProduct({});
-  let productFromDB = await productsApi.addProduct(product.storeId, product.name, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
-  
-  let storeId = productFromDB.product.storeId;
+  let user = await UserCollection.insert(fakeUser({}));
+  const storeName = chance.sentence();
+  const store = await storesApi.addStore(user.id,storeName);
 
-  let res = await productsApi.getProducts({storeId});
+  let product = fakeProduct({});
   
-  expect(res.status).toEqual(OK_STATUS);
-  expect(res.products === [productFromDB.product]);
+  let productFromDB = await productsApi.addProduct(store.store.id, product.name, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
+    
+    let storeId = productFromDB.product.storeId;
+    let res = await productsApi.getProducts({storeId});
+
+    expect(res.status).toEqual(OK_STATUS);
+    expect(res.products === [productFromDB.product]);
 });
 
 it('getProducts with store name: {storeName}', async () => {
   
   let storesApi = new StoresApi();
   let user = await UserCollection.insert(fakeUser({}));
-  const storeName = chance.animal();
+  const storeName = chance.sentence();
   const response = await storesApi.addStore(user.id,storeName);
 
   let product = fakeProduct({});
@@ -264,6 +300,7 @@ it('getProducts with store name: {storeName}', async () => {
   expect(res.status).toEqual(OK_STATUS);
   expect(res.products === [productFromDB.product]);
 });
+
 
 
 
