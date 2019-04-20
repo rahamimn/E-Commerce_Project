@@ -1,0 +1,46 @@
+<%- include('../partials/header',{user}) %>
+<main>
+    <div class="jumbotron">
+        <h1 class="display-4"><%=product.name%></h1>
+        <h2 class="display-6" style="color:grey"><%=product.price%>$</h2>
+        <hr class="my-4">
+        <div style="display:flex; justify-content: space-between; margin-bottom:15px">
+            <p><%=product.description%></p>
+            <img src=<%=product.imageUrl%> alt="..." class="img-thumbnail" style="height:200px; width:200px">
+        </div>
+        <hr class="my-4">
+        <form class="form-inline" onsubmit="onSubmitAdd2Cart(event)">
+            <input type="submit" class="btn btn-primary btn-lg" href="#" value="Add to Cart"/> 
+            <input type="number" class="form-control"  name="amount" id="amount" placeholder="0" style="width:70px; height:50px; margin-left: 20px" />
+            <p id="add2Cart-error"></p>
+        </form>
+    </div>
+</main>
+<footer>
+    <%# include ../partials/footer %>
+</footer>
+
+<script>
+    function onSubmitAdd2Cart(event){
+        event.preventDefault();
+        var amount = $("#amount").val();
+        var productId= "<%=product.id%>";
+        if(amount<=0){
+             $("#add2Cart-error").text("Amount is not valid");
+             return;
+        }
+        postData(`/usersApi/addProductToCart`, {amount,productId})
+        .then(data => {
+            if(data.status<0)
+                $("#add2Cart-error").text(data.err);
+            else
+                document.location.href = '/';
+            
+        }) // JSON-string from `response.json()` call
+        .catch(error => console.error(error));
+    };
+
+</script>
+
+</body>
+</html>

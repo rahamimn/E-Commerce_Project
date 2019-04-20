@@ -101,6 +101,7 @@ export const fakeCart = (opt: any = {}) => {
     return new Cart({
         id: genObjectId(),
         ofUser: opt.ofUser || genObjectId(),
+        ofSession: opt.ofSession,
         store: opt.store || genObjectId(),
         items: opt.items || [],
         state: opt.state || NORMAL_CART,
@@ -112,15 +113,17 @@ export const fakeProduct = (opt: any = {}) => {
     return new Product({
         
         id: genObjectId(),
-        storeId: genObjectId(),
+        storeId: opt.storeId|| genObjectId() ,
         amountInventory: opt.amountInventory || chance.natural(),
         sellType: opt.sellType || chance.name(),
         price: opt.price || chance.natural() ,
+        imageUrl: opt.imageUrl || "https://cdn.shopify.com/s/files/1/0396/8269/products/classic-towels-cotton-white-lp-000_2880x.jpg?v=1539717395",
         name: opt.name || chance.name(),
+        description: opt.description || chance.name(),
         coupons: opt.coupons || chance.name(),
         acceptableDiscount: opt.acceptableDiscount || chance.natural(),
         discountPrice: opt.discountPrice || chance.natural(),
-        rank: opt.rank || chance.natural(),
+        rank: opt.rank || chance.natural({min:0,max:5} ),
         reviews: opt.reviews || [genObjectId(), genObjectId()],
         keyWords: opt.keyWords || [chance.name(),chance.name()],
         category: opt.category || chance.name(),

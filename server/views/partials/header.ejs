@@ -1,29 +1,168 @@
 <!-- views/partials/header.ejs -->
 
-<nav class="navbar navbar-default" role="navigation">
-<div class="container-fluid">
-
-    <div class="navbar-collapse collapse">
-        <a class="navbar-brand" href="#">
-            <span class="glyphicon glyphicon glyphicon-tree-deciduous"></span>
-            E-Commerce
-        </a>
-        <ul class="nav navbar-nav">
-            <li><a href="/">Home</a></li>
-            <li><a href="/about">Stores</a></li>
-            <li><a href="/about">Products</a></li>
-        </ul>
-        <ul class="nav navbar-nav navbar-right">
-            <%if(!userId){%>
-                <li><a href="/about">Register</a></li>
-                <li><a href="/about">Login</a></li>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <% include ./head %>
+    <script>
+        var loginOpen = false;
+        var idToast = <%= user && user.notifications.length || 0%>;
+    </script>
+</head>
+<body class="container" style="padding-top:10px">
+<header>
+ <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div id="notifiactions" aria-live="polite" aria-atomic="true" style="position: absolute; min-height: 200px; z-index:150; top: 60px; right: 5px;"></div>
+        <a class="navbar-brand" href="#">E-commerce</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div id="navbarNavDropdown" class="navbar-collapse collapse">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/">Stores</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/products">Products</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/">Carts</a>
+                </li>
+            </ul>
+            
+            <ul class="navbar-nav">
+            <%if(!user){%>
+                <li class="nav-item">
+                    <a class="nav-link" href="/register">Register</a>
+                </li>
+                <li id="login-li" class="nav-item">
+                    <a id="login-button" class="nav-link" href="/login">Login</a>
+                </li>
             <%}else{%>
-                <li><a href="/about">Carts</a></li>
-                <li><a href="/about">User</a></li>
-                <li><a href="/about">Logout</a></li>
+          
+                <li class="nav-item">
+                    <a class="nav-link" href="/user-panel"><%=user.userName%></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/logout">Logout</a>
+                </li>
             <%}%>
-        </ul>
-    </div>
+            </ul>
+        </div>
+    </nav>
+    <script>
+        var htmlLogin =  `<div id="loginE" class="card" style="margin:0 auto; width:250px; position:absolute; z-index:200; top:46px; right:-80px ">
+        <article class="card-body">
+            <h4 class="card-title text-center mb-4 mt-1">Sign in</h4>
+            <hr>
+            <p id ="login-error" class="text-success text-center"></p>
+            <form id="form" action="destination.html" onsubmit="onSubmit(event)">
+            <div class="form-group">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text"> <i class="fa fa-user"></i> </span>
+                </div>
+                <input name="username" autofocus class="form-control" placeholder="Username" type="text">
+            </div> <!-- input-group.// -->
+            </div> <!-- form-group// -->
+            <div class="form-group">
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text"> <i class="fa fa-lock"></i> </span>
+                </div>
+                <input name="password" class="form-control" placeholder="******" type="password">
+            </div> <!-- input-group.// -->
+            </div> <!-- form-group// -->
+            <div class="form-group">
+            <button type="submit" class="btn btn-primary btn-block"> Login  </button>
+            </div> <!-- form-group// -->
+            <p class="text-center"><a href="#" class="btn">Forgot password?</a></p>
+            </form>
+        </article>
+    </div> <!-- card.// -->
+</div>`;
+    function onSubmit(event){
+        event.preventDefault();
+        var userName = $("[type=text]").val();
+        var password = $("[type=password]").val();
+        postData(`/login`, {userName,password})
+        .then(data => {
+            if(data.status<0)
+                $("#login-error").text(data.err);
+            else
+                document.location.href = '/user-panel';
+            
+        }) // JSON-string from `response.json()` call
+        .catch(error => console.error(error));
+        };
 
-</div>
-</nav>
+        $("#login-button").click(function (event) {
+            event.preventDefault();
+            if(!loginOpen)
+                $("#login-li").append(htmlLogin);
+            else
+                $("#loginE").remove();
+            loginOpen = !loginOpen;
+        });
+
+        
+        if("<%=user && user.id%>"!==""){
+
+            var socket = io('http://localhost:3002');
+            socket.emit('loginUser',"<%=user && user.id%>");
+            socket.on('notification',(header,data)=>{
+                $("#notifiactions").append(notification(header,data,idToast++));
+                console.log(data);
+            });
+        }
+    
+
+    function notification (header,msg,id){
+        return `
+            <div id="toast-${id}" class="toast" role="alert" aria-live="assertive" aria-atomic="true" style="opacity:100;width:280px">
+            <div class="toast-header">
+                <strong class="mr-auto">${header}</strong>
+                <small class="text-muted">just now</small>
+                <button id="b${id}" type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close" onClick="onCloseToast(this.id)" style="outline:none">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="toast-body">
+                ${msg}
+            </div>
+            </div>`
+    }
+
+    function onCloseToast(id){
+        var toastId = "toast-"+id.slice(1);
+        $(`#${toastId}`).remove();
+    }
+
+    function ShowNotifications(){
+       $("#notifiactions").append(
+        <%if(user){
+            user.notifications.forEach(function (noti,i){ %>
+               `<div id="toast-<%=i%>" class="toast" role="alert" aria-live="assertive" aria-atomic="true" style="opacity:100;width:280px">
+                <div class="toast-header">
+                    <strong class="mr-auto"><%=noti.header%></strong>
+                    <small class="text-muted">just now</small>
+                    <button id="b<%=i%>" type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close" onClick="onCloseToast(this.id)" style="outline:none">
+                    <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="toast-body">
+                    <%=noti.message%>
+                </div>
+                </div>`
+        <%})} 
+        else {%>
+        ""
+        <%}%>
+       )
+    }
+    ShowNotifications();
+    </script>
+</header>

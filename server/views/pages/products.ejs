@@ -1,0 +1,58 @@
+<%- include('../partials/header',{user}) %>
+<div class="jumbotron" style="min-height:600px; margin-bottom:0;">
+<main>
+    <form action="/products" method="POST">
+    <div class="form-row align-items-center" style="justify-content: center; margin: 20px 0 0 ">
+        <div class="col-sm-3 my-1">
+        <input name="name" type="text" class="form-control" id="inlineFormInputName" placeholder="Product Name">
+        </div>
+        <div class="col-sm-3 my-1">
+        <select class="custom-select" name="category">
+            <option selected>Category</option>
+            <%categories.forEach(function(cat){%>
+                <option value=<%=cat%>><%=cat%></option>
+            <%})%>
+        </select>
+        </div>
+        <div class="col-sm-3 my-1">
+        <input name="keywords" type="text" class="form-control" id="inlineFormInputName" placeholder="Keywords(seperated by comma)" >
+        </div>
+        <div class="col-auto my-1">
+        <button type="submit" class="btn btn-success">Find</button>
+        </div>
+    </div>
+    </form>
+
+    
+<div class="card-columns" style="padding:30px">
+    <%products.forEach(function (product){%>
+        <div class="card" style="width: 300px;">
+            <img src= "<%=product.imageUrl%>" class="card-img-top" alt="...">
+            <div class="card-body">
+                <div style="display:flex; justify-content: space-between"> 
+                    <h5 class="card-title"><%= product.name%></h5>
+                    <h6 class="card-title" style="color: grey"><%= product.price%>$</h6>
+                </div>
+                <div style=" margin-bottom:15px;
+                            overflow: hidden;
+                            text-overflow: ellipsis;
+                            display: -webkit-box;
+                            max-height: 80px;      /* fallback */
+                            -webkit-line-clamp: 3; /* number of lines to show */
+                            -webkit-box-orient: vertical; " ><p class="card-text" style=""><%=product.description%></p></div>
+                <a href="/products/<%=product.id%>" class="btn btn-primary">Product Page</a>
+            </div>
+        </div>
+    <%});%> 
+</div>
+
+</main>
+</div>
+<footer>
+    <%# include ../partials/footer %>
+</footer>
+
+</body>
+</html>
+
+<div></div>
