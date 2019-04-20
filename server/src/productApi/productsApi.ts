@@ -49,6 +49,10 @@ export class ProductsApi implements IProductApi{
     async removeProduct(productId: String){
 
         try{ 
+            if (!this.isProductVaild(productId)){
+                return ({status: BAD_REQUEST, error: "Product not found (Id: " + productId + ")" } );
+            }
+
             let productToRemove = await ProductCollection.findById(productId);
             productToRemove.isActivated = false;
             let product_AfterRemove = await ProductCollection.updateOne(productToRemove);
@@ -63,6 +67,11 @@ export class ProductsApi implements IProductApi{
     async updateProduct(productId: String, productDetails: any){ 
 
         try{ 
+
+            if (!this.isProductVaild(productId)){
+                return ({status: BAD_REQUEST, error: "Product not found (Id: " + productId + ")" } );
+            }
+
             let productToUpdate = await ProductCollection.findById(productId);
             productToUpdate.updateDetails(productDetails);
             let product_AfterUpdate = await ProductCollection.updateOne(productToUpdate);
@@ -92,6 +101,7 @@ export class ProductsApi implements IProductApi{
 
     async getProducts(parmas: {storeName?: String, storeId?: String, category?: String, keyWords?: String[], name?:String}){
         try{ 
+
             
             const filter:any = {};
 
@@ -121,6 +131,10 @@ export class ProductsApi implements IProductApi{
 
         try{ 
 
+            if (!this.isProductVaild(productId)){
+                return ({status: BAD_REQUEST, error: "Product not found (Id: " + productId + ")" } );
+            }
+            
             let product = await ProductCollection.findById(productId);
             if(!product)
                 return ({status: BAD_REQUEST}); //inorder to remove props from object
