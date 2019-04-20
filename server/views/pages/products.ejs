@@ -1,4 +1,5 @@
 <%- include('../partials/header',{user}) %>
+<div class="jumbotron" style="min-height:600px; margin-bottom:0;">
 <main>
     <form action="/products" method="POST">
     <div class="form-row align-items-center" style="justify-content: center; margin: 20px 0 0 ">
@@ -20,7 +21,7 @@
         <button type="submit" class="btn btn-success">Find</button>
         </div>
     </div>
-</form>
+    </form>
 
     
 <div class="card-columns" style="padding:30px">
@@ -46,6 +47,7 @@
 </div>
 
 </main>
+</div>
 <footer>
     <%# include ../partials/footer %>
 </footer>
