@@ -11,6 +11,7 @@ export const MISSING_PARAMETERS = -2;
 export const USER_EXIST = -3;
 export const BAD_PASSWORD = -4;
 export const BAD_USERNAME = -5;
+export const NO_VISITOR_ACCESS = -6;
 
 // flags
 export const CREATE_SCHEMA = false;
@@ -19,6 +20,7 @@ export const RUN_LOCAL = true;
 //error messages
 export const ERR_PARAMS_MSG ='did not received all of the params'
 export const ERR_GENERAL_MSG ='Bad request';
+export const ERR_Access_MSG ='Bad access attempt - it is a restricted zone';
 
 //Store state
 export const OPEN_STORE = "OPEN STORE";
