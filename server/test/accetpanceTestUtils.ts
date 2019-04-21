@@ -35,34 +35,58 @@ export const setDefaultData= async () =>{
 }
 
 export const setData= async () =>{
-    let adminId, userId, userWithCartId;
-    let storeId,productId;
-    let storeOwnerId,storeManagerId;
+    let adminId;
+    let adminUsername = 'admin1234';
+    let adminPassword = '123456';
+
+    let userId;
+    let userUsername = 'user';
+    let userPassword = 'pass11';
+
+    let userWithCartId;
+    let userWithCartUsername = 'userWithCart';
+    let userWithCartPassword = 'pass22';
+
+    let storeOwnerId;
+    let storeOwnerUsername = 'storeOwner';
+    let storeOwnerPassword = 'pass33';
+
+    let storeManagerId;
+    let storeManagerIdUsername = 'storeManager';
+    let storeManagerIdPassword = 'pass44';
+
+    let storeId1;
+    let storeName1= 'store1';
+
+    let storeId2;
+    let storeName2= 'store2';
+
+    let productId1,productId2,productId3;
     let cartId;
 
      //admin and normal user
-     adminId = (await insertRegisterdUser('admin1234','1234',true)).id;
-     userId = (await insertRegisterdUser('user','pass1')).id;
-     userWithCartId = (await insertRegisterdUser('userWithCart','pass2')).id;
+     adminId = (await insertRegisterdUser(adminUsername,adminPassword,true)).id;
+     userId = (await insertRegisterdUser(userUsername,userPassword)).id;
+     userWithCartId = (await insertRegisterdUser(userWithCartUsername,userWithCartPassword)).id;
      //store
-     storeId = (await StoreCollection.insert(fakeStore({name:'store'}))).id;
-
+     storeId1 = (await StoreCollection.insert(fakeStore({name:storeName1}))).id;
+     storeId2 = (await StoreCollection.insert(fakeStore({name:storeName2}))).id;
      //store owner
-     const storeOwner = await insertRegisterdUser('storeOwner','pass3');
-     const storeOwnerRole = await setupRoleToUser(storeOwnerId,{name: STORE_OWNER, store: storeId });
+     const storeOwner = await insertRegisterdUser(storeOwnerUsername,storeOwnerPassword);
+     const storeOwnerRole = await setupRoleToUser(storeOwnerId,{name: STORE_OWNER, store: storeId1 });
      storeOwnerId= storeOwner.id;
 
      //store manager which appointed by storeOwner
-     const storeManager = await insertRegisterdUser('storeManager','pass4');
-     const storeManagerRole = await setupRoleToUser(storeManagerId,{name: STORE_MANAGER, store: storeId, appointor:storeOwnerRole.id });
+     const storeManager = await insertRegisterdUser(storeManagerIdUsername,storeManagerIdPassword);
+     const storeManagerRole = await setupRoleToUser(storeManagerId,{name: STORE_MANAGER, store: storeId1, appointor:storeOwnerRole.id });
      storeOwnerRole.appointees.push(storeManagerRole.id);
      await RoleCollection.updateOne(storeOwnerRole);
      storeManagerId= storeManager.id;
 
      //create product
-      productId = (await ProductCollection.insert(fakeProduct({
+      productId1 = (await ProductCollection.insert(fakeProduct({
          name:'prod',
-         storeId: storeId,
+         storeId: storeId1,
          price: 129,
          amountInventory:2,
          description:"sadsadsadsadsdsadasdsadas dsadas dsadas dgdfg gfdgdfg dasd ",
@@ -71,9 +95,20 @@ export const setData= async () =>{
          category:'cat'
      }))).id;
 
-     productId = (await ProductCollection.insert(fakeProduct({
+     productId3 = (await ProductCollection.insert(fakeProduct({
         name:'prod2',
-        storeId: storeId,
+        storeId: storeId1,
+        price: 1000,
+        amountInventory:5,
+        description:"sadsadsadsadsdsadasdsadas dsadas dsadas dgdfg gfdgdfg dasd ",
+        imageUrl:"http://www.freeindeed36.com/wp-content/uploads/2016/05/Egg.png",
+        keyWords:['type1','type2','type3'],
+        category:'cat'
+    }))).id;
+
+     productId2 = (await ProductCollection.insert(fakeProduct({
+        name:'prod2',
+        storeId: storeId2,
         price: 1000,
         amountInventory:5,
         description:"sadsadsadsadsdsadasdsadas dsadas dsadas dgdfg gfdgdfg dasd ",
@@ -85,10 +120,23 @@ export const setData= async () =>{
      //cart
      cartId = (await CartCollection.insert(fakeCart({
          ofUser: userWithCartId,
-         store: storeId,
+         store: storeId1,
          items:[{
-             product: productId,
+             product: productId1,
              amount:2
          }]
      }))).id;
+     return {
+         admin:{id:adminId,username: adminUsername, pass: adminPassword},
+         user:{id:userId,username: userUsername, pass: userPassword},
+         storeOwner:{id:storeOwnerId,username: storeOwnerUsername, pass: storeOwnerPassword},
+         storeManager:{id:storeManagerId,username: storeManagerIdUsername, pass: storeManagerIdPassword},
+         userWithCart:{id:userWithCartId,username: userWithCartUsername, pass: userWithCartPassword},
+         cartId,
+         productId1,
+         productId3,
+         productId2,
+         store1:{id:storeId1, name: storeName1},
+         store2:{id:storeId2, name: storeName2}
+     }
 }

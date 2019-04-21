@@ -29,7 +29,7 @@ describe('users-api-integration',() => {
   beforeEach(async () => { //create database to work with
       message = await MessageCollection.insert(fakeMessage({}));
       store = await StoreCollection.insert(fakeStore({}));
-      product = await ProductCollection.insert(fakeProduct({storeId: store.id }));
+      product = await ProductCollection.insert(fakeProduct({storeId: store.id, amountInvetory:10 }));
       cart = await CartCollection.insert(fakeCart({
           store: store.id,
           items:[{
@@ -237,38 +237,37 @@ describe('users-api-integration',() => {
   it('get cart details ', async () => {
       const response = await usersApi.getCart(cart.ofUser,cart.id);
       expect(response.status).toEqual(constants.OK_STATUS);
-      expect(response.cart._id).toEqual(cart.id);
+      expect(response.cart.id).toEqual(cart.id);
   });
 
   it('update cart details ', async () => {
-      let response = await usersApi.getCart(cart.ofUser,cart.id);
+      let response = await usersApi.getCart(cart.ofUser, cart.id);
 
       const cartDetails = response.cart;
 
-      cartDetails._items = [{product: new ObjectId(), amount: chance.integer()}];
+      cartDetails.items = [{product: product.id, amount: 1}];
 
       response = await usersApi.updateCart(cartDetails);
-      const res = await usersApi.getCart(cart.ofUser,cartDetails._id);
+      const res = await usersApi.getCart(cart.ofUser,cartDetails.id);
       const updatedcart = res.cart;
 
       expect(response.status).toEqual(constants.OK_STATUS);
-      expect(updatedcart._items[0].amount).toEqual(cartDetails._items[0].amount);
+      expect(updatedcart.items[0].amount).toEqual(cartDetails.items[0].amount);
   });
 
-  it('update cart details ', async () => {
-    let response = await usersApi.getCart(cart.ofUser,cart.id);
+  it('update cart details should delete cart when empty ', async () => {
+    let response = await usersApi.getCart(cart.ofUser, cart.id);
 
     const cartDetails = response.cart;
 
-    cartDetails._items = [{product: new ObjectId(), amount: chance.integer()}];
+    cartDetails.items = [];
 
     response = await usersApi.updateCart(cartDetails);
-    const res = await usersApi.getCart(cart.ofUser,cartDetails._id);
-    const updatedcart = res.cart;
+    const cartAfter = await CartCollection.findById(cartDetails.id);
 
     expect(response.status).toEqual(constants.OK_STATUS);
-    expect(updatedcart._items[0].amount).toEqual(cartDetails._items[0].amount);
-  });
+    expect(cartAfter).toBeNull();
+});
 
   it('sendMessage to user ', async () => {
       let response = await usersApi.sendMessage(
@@ -336,7 +335,7 @@ it('add product to cart of guest and than register ', async () => {
     await usersApi.addProductToCart(null,product.id,5,sessionId);
     const response = await usersApi.register({
         userName: "user888",
-        password: "pass",
+        password: "pass66",
         firstName:"first",
         lastName:"last",
         email:"ads@das.com",

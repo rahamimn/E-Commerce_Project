@@ -30,7 +30,7 @@ const cartScheme = new Schema({
   supplyPrice:{type:Number,validation: value => value > 0 ,default:0}
 });
 
-cartScheme.index({ofUser:1,store:1 },{unique:true})
+//cartScheme.index({ofUser:1,store:1 },{unique:true})
 
 export let CartModel : Model<ICartModel>
 try {
