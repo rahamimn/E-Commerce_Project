@@ -69,9 +69,11 @@ async function removeProduct(req: Request, res: express.Response) {
             res.send({status: Constants.NO_VISITOR_ACCESS, err: Constants.ERR_Access_MSG});
             return;
         }
+        const userId = req.body.userId;
+        const storeId = req.body.storeId;
         const productId = req.body.productId;
-
-        if (!productId )
+        
+        if ( !userId || !storeId || !productId )
             throw Error(ERR_GENERAL_MSG);
         const response =await productsApi.removeProduct(user.id, productId);
         res.send(response);
