@@ -6,7 +6,7 @@
     <% include ./head %>
     <script>
         var loginOpen = false;
-        var idToast = <%= user && user.notifications.length || 0%>;
+        var idToast = 0;
     </script>
 </head>
 <body class="container" style="padding-top:10px">
@@ -108,61 +108,43 @@
             loginOpen = !loginOpen;
         });
 
-        
+        var socket;
         if("<%=user && user.id%>"!==""){
 
-            var socket = io('http://localhost:3002');
+            socket = io('http://localhost:3002');
             socket.emit('loginUser',"<%=user && user.id%>");
-            socket.on('notification',(header,data)=>{
-                $("#notifiactions").append(notification(header,data,idToast++));
-                console.log(data);
+            socket.on('notification',(header,data,id)=>{
+                $("#notifiactions").append(notification(header,data,id));
+            });
+            socket.on('savedNotifications', notifiactions =>{
+                Object.keys(notifiactions).forEach(id => {
+                    const noti = notifiactions[id];
+                    $("#notifiactions").append(notification(noti.header,noti.message,id));
+                })
             });
         }
     
-
-    function notification (header,msg,id){
-        return `
-            <div id="toast-${id}" class="toast" role="alert" aria-live="assertive" aria-atomic="true" style="opacity:100;width:280px">
-            <div class="toast-header">
-                <strong class="mr-auto">${header}</strong>
-                <small class="text-muted">just now</small>
-                <button id="b${id}" type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close" onClick="onCloseToast(this.id)" style="outline:none">
-                <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="toast-body">
-                ${msg}
-            </div>
-            </div>`
-    }
-
-    function onCloseToast(id){
-        var toastId = "toast-"+id.slice(1);
-        $(`#${toastId}`).remove();
-    }
-
-    function ShowNotifications(){
-       $("#notifiactions").append(
-        <%if(user){
-            user.notifications.forEach(function (noti,i){ %>
-               `<div id="toast-<%=i%>" class="toast" role="alert" aria-live="assertive" aria-atomic="true" style="opacity:100;width:280px">
+        function notification (header,msg,id){
+            return `
+                <div id="toast-${id}" class="toast" role="alert" aria-live="assertive" aria-atomic="true" style="opacity:100;width:280px">
                 <div class="toast-header">
-                    <strong class="mr-auto"><%=noti.header%></strong>
+                    <strong class="mr-auto">${header}</strong>
                     <small class="text-muted">just now</small>
-                    <button id="b<%=i%>" type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close" onClick="onCloseToast(this.id)" style="outline:none">
+                    <button id="b${id}" type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close" onClick="onCloseToast(this.id)" style="outline:none">
                     <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
                 <div class="toast-body">
-                    <%=noti.message%>
+                    ${msg}
                 </div>
                 </div>`
-        <%})} 
-        else {%>
-        ""
-        <%}%>
-       )
-    }
-    ShowNotifications();
+        }
+
+        function onCloseToast(b_id){
+            var id = b_id.slice(1);
+            var toastId = "toast-"+id;
+            socket.emit('removeNotification',id);
+            $(`#${toastId}`).remove();
+        }
     </script>
 </header>
