@@ -237,37 +237,22 @@ describe('users-api-integration',() => {
   it('get cart details ', async () => {
       const response = await usersApi.getCart(cart.ofUser,cart.id);
       expect(response.status).toEqual(constants.OK_STATUS);
-      expect(response.cart._id).toEqual(cart.id);
+      expect(response.cart.id).toEqual(cart.id);
   });
 
   it('update cart details ', async () => {
-      let response = await usersApi.getCart(cart.ofUser,cart.id);
+      let response = await usersApi.getCart(cart.ofUser, cart.id);
 
       const cartDetails = response.cart;
 
-      cartDetails._items = [{product: new ObjectId(), amount: chance.integer()}];
+      cartDetails.items = [{product: product.id, amount: chance.integer()}];
 
       response = await usersApi.updateCart(cartDetails);
-      const res = await usersApi.getCart(cart.ofUser,cartDetails._id);
+      const res = await usersApi.getCart(cart.ofUser,cartDetails.id);
       const updatedcart = res.cart;
 
       expect(response.status).toEqual(constants.OK_STATUS);
-      expect(updatedcart._items[0].amount).toEqual(cartDetails._items[0].amount);
-  });
-
-  it('update cart details ', async () => {
-    let response = await usersApi.getCart(cart.ofUser,cart.id);
-
-    const cartDetails = response.cart;
-
-    cartDetails._items = [{product: new ObjectId(), amount: chance.integer()}];
-
-    response = await usersApi.updateCart(cartDetails);
-    const res = await usersApi.getCart(cart.ofUser,cartDetails._id);
-    const updatedcart = res.cart;
-
-    expect(response.status).toEqual(constants.OK_STATUS);
-    expect(updatedcart._items[0].amount).toEqual(cartDetails._items[0].amount);
+      expect(updatedcart.items[0].amount).toEqual(cartDetails.items[0].amount);
   });
 
   it('sendMessage to user ', async () => {
@@ -336,7 +321,7 @@ it('add product to cart of guest and than register ', async () => {
     await usersApi.addProductToCart(null,product.id,5,sessionId);
     const response = await usersApi.register({
         userName: "user888",
-        password: "pass",
+        password: "pass66",
         firstName:"first",
         lastName:"last",
         email:"ads@das.com",

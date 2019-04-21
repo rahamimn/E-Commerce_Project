@@ -78,7 +78,7 @@ export class Product {
         return ({
             id:_id,
             name:_name,
-            storeId: _storeId,
+            storeId: _storeId.toString(),
             amountInventory: _amountInventory,
             sellType: _sellType,
             price: _price,
@@ -87,7 +87,7 @@ export class Product {
             discountPrice: _discountPrice,
             rank: _rank,
             imageUrl: _imageUrl,
-            reviews: _reviews,
+            reviews: _reviews.map(rev=> rev.toString()),
             keyWords: _keyWords,
             category: _category,
             description: _description,

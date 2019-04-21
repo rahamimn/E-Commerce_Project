@@ -42,28 +42,39 @@ describe('Cart model',() => {
     expect(cart.items[0].amount).toEqual(amount*2);
   });
 
-  it('get cart details', () => {
-    const cart = fakeCart({});
+  it('get cart details', async () => {
+    const product = await ProductCollection.insert(fakeProduct({price: 10}));
 
-    expect(cart.getDetails()).toMatchObject({
-      _id: cart.id,
-      _store: cart.store,
-      _items: cart.items,
+    const cart = fakeCart({items:[{
+      product: product.id,
+      amount:1
+    }]});
+
+    const det =  await cart.getDetails();
+    expect(det).toMatchObject({
+      id: cart.id,
+      store: cart.store,
     });
+    
+    expect(det.items[0]).toMatchObject({
+      amount: 1,
+    });
+
+    expect(JSON.stringify(det.items[0].product)).toEqual(JSON.stringify(product.getProductDetails()));
 
   });
 
   it('update relevant details onlt items should updated', () => {
     const newDetils = {
-      _items: [{product:new ObjectId(), amount:6}],
-      _store: new ObjectId(),
+      items: [{product:new ObjectId(), amount:6}],
+      store: new ObjectId(),
     };
     const cart = fakeCart({});
     
     cart.updateDetails(newDetils);
 
     expect(cart.items.length).toEqual(1);
-    expect(cart.store).not.toEqual(newDetils._store);
+    expect(cart.store).not.toEqual(newDetils.store);
   });
 
   it('getProducts should return all the products id', () => {

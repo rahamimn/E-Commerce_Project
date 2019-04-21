@@ -5,19 +5,16 @@ import { User } from "../src/usersApi/models/user";
 import { Role } from "../src/usersApi/models/role";
 import { UsersApi } from "../src/usersApi/usersApi";
 import Chance from 'chance';
-import {STORE_OWNER, STORE_MANAGER, APPOINT_STORE_MANAGER, OK_STATUS } from "../src/consts";
-import { insertRegisterdUser, setupRoleToUser } from "./accetpanceTestUtils";
+import {STORE_OWNER, STORE_MANAGER, APPOINT_STORE_MANAGER, OK_STATUS, BAD_USERNAME, BAD_PASSWORD, BAD_REQUEST } from "../src/consts";
+import {setData} from "./accetpanceTestUtils";
 import { OrdersApi } from "../src/orderApi/ordersApi";
 import { ProductsApi } from "../src/productApi/productsApi";
 import { StoresApi } from "../src/storeApi/storesApi";
 
+
 describe('AcceptanceTest',()=>{
     //ids inorder to commit acctions
-    let adminId, userId, userWithCartId;
-    let storeId,productId;
-    let storeOwnerId,storeManagerId;
-    let cartId;
-
+    let data;
     //this is the black-box for uc tests
     const usersApi  = new UsersApi();
     const ordersApi  = new OrdersApi();
@@ -33,44 +30,7 @@ describe('AcceptanceTest',()=>{
     
     //names of stores, product (users,passwords) here
     beforeEach(async () => { 
-        //admin and normal user
-        adminId = (await insertRegisterdUser('admin1234','1234',true)).id;
-        userId = (await insertRegisterdUser('user','pass1')).id;
-        userWithCartId = (await insertRegisterdUser('userWithCart','pass2')).id;
-        //store
-        storeId = (await StoreCollection.insert(fakeStore({name:'store'}))).id;
-
-        //store owner
-        const storeOwner = await insertRegisterdUser('storeOwner','pass3');
-        const storeOwnerRole = await setupRoleToUser(storeOwnerId,{name: STORE_OWNER, store: storeId });
-        storeOwnerId= storeOwner.id;
-
-        //store manager which appointed by storeOwner
-        const storeManager = await insertRegisterdUser('storeManager','pass4');
-        const storeManagerRole = await setupRoleToUser(storeManagerId,{name: STORE_MANAGER, store: storeId, appointor:storeOwnerRole.id });
-        storeOwnerRole.appointees.push(storeManagerRole.id);
-        await RoleCollection.updateOne(storeOwnerRole);
-        storeManagerId= storeManager.id;
-
-        //create product
-         productId = (await ProductCollection.insert(fakeProduct({
-            name:'prod',
-            storeId: storeId,
-            amountInventory:2,
-            imageUrl:"https://cdn.shopify.com/s/files/1/0396/8269/products/classic-towels-cotton-white-lp-000_2880x.jpg?v=1539717395",
-            keyWords:['type1','type2'],
-            category:'cat'
-        }))).id;
-
-        //cart
-        cartId = (await CartCollection.insert(fakeCart({
-            ofUser: userWithCartId,
-            store: storeId,
-            items:[{
-                product: productId,
-                amount:2
-            }]
-        }))).id;
+        data = await setData();
     });
 
 
@@ -83,7 +43,7 @@ describe('AcceptanceTest',()=>{
     });
 
     it('uc1.1',async () => {
-        expect((await usersApi.login('admin1234','1234')).status).toBe(OK_STATUS);
+        expect((await usersApi.login(data.admin.username,data.admin.pass)).status).toBe(OK_STATUS);
     });
 
     it('uc2.1 - guest',() => {
@@ -91,19 +51,20 @@ describe('AcceptanceTest',()=>{
         expect(true).toBe(true);
     });
 
-    it('uc2.2 - registeration (good)',() => {
-        //TODO
-        expect(true).toBe(true);
+    it('uc2.2 - registeration (good)',async () => {
+        const res = await usersApi.register({userName:'someUserName',password: 'somePassword'},chance.guid());
+        expect((await usersApi.login('someUserName','somePassword')).status).toBe(OK_STATUS);
+        expect(res.status).toBe(OK_STATUS);
     });
 
-    it('uc2.2 - registeration (user name occupy)',() => {
-        //TODO
-        expect(true).toBe(true);
+    it('uc2.2 - registeration (user name occupy)',async () => {
+        const res = await usersApi.register({userName:data.admin.username,password: 'somePassword'},chance.guid());
+        expect(res.status).toBe(BAD_USERNAME);
     });
 
-    it('uc2.2 - registeration (bad password)',() => {
-        //TODO
-        expect(true).toBe(true);
+    it('uc2.2 - registeration (bad password)', async() => {
+        const res = await usersApi.register({userName:"someUserName",password: 'somep'},chance.guid());
+        expect(res.status).toBe(BAD_PASSWORD);
     });
 
     it('uc2.3 - login (good)',() => {
@@ -119,5 +80,20 @@ describe('AcceptanceTest',()=>{
     it('uc2.3 - login (password not correct',() => {
         //TODO
         expect(true).toBe(true);
+    });
+
+    it('uc2.6 - add product to cart (good)',async () => {
+        const res = await usersApi.addProductToCart(data.user.id,data.productId1,2);
+        expect(res.status).toBe(OK_STATUS);
+    });
+
+    it('uc2.6 - add product to cart (negative amount)',async () => {
+        const res = await usersApi.addProductToCart(data.user.id,data.productId1,-1);
+        expect(res.status).toBe(BAD_REQUEST);
+    });
+
+    it('uc2.6 - add product to cart (amount too big)',async () => {
+        const res = await usersApi.addProductToCart(data.user.id,data.productId1,3);
+        expect(res.status).toBe(BAD_REQUEST);
     });
 })

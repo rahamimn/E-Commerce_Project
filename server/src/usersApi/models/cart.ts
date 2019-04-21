@@ -74,16 +74,24 @@ export class Cart{
       }
     }
 
-  public getDetails (){
+  public async getDetails (){
+
     const {
         _id,
         _items,
         _store,
     } = this;
+    let newItems=[];
+
+    await asyncForEach(_items, async item => {
+      const prod = await ProductCollection.findById(item.product);
+      newItems.push({amount: item.amount,product:prod.getProductDetails() });
+    });   
+
     return ({
-      _id,
-      _items,
-      _store,
+      id:_id,
+      items: newItems,
+      store:_store,
     });
   } 
 
@@ -98,7 +106,7 @@ export class Cart{
   }
 
   public updateDetails (cartDetails){ //nothing else should update for now
-    this.items = cartDetails._items;
+    this.items = cartDetails.items;
   }
   
   public async toString (){

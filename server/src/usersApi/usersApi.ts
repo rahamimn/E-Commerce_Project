@@ -51,8 +51,11 @@ export class UsersApi implements IUsersApi{
             const userExists = await UserCollection.findOne({userName: userDetails.userName});
             if(userExists)
                 return {status:Constants.BAD_USERNAME, err:"userName exists"};
+            if(userDetails.password.length < 6)
+                return {status:Constants.BAD_PASSWORD, err:"password too short"};
             const salt = bcrypt.genSaltSync(10);
             const hashedPassword = hashPassword(userDetails.password, salt);
+
             const user = await UserCollection.insert(new User({
                 userName: userDetails.userName,
                 salt:salt,
@@ -100,11 +103,11 @@ export class UsersApi implements IUsersApi{
         {
             return ({status: Constants.BAD_REQUEST});
         }
-        return ({status: Constants.OK_STATUS ,cart: cart.getDetails()});
+        return ({status: Constants.OK_STATUS ,cart: await cart.getDetails()});
     }
 
     async updateCart(cartDetails){
-        let cartToUpdate = await CartCollection.findById(cartDetails._id);
+        let cartToUpdate = await CartCollection.findById(cartDetails.id);
         if(!cartToUpdate)
             return ({status: Constants.BAD_REQUEST});
         cartToUpdate.updateDetails(cartDetails);
@@ -117,17 +120,20 @@ export class UsersApi implements IUsersApi{
         if(!userId && !sessionId )
             return ({status: Constants.BAD_REQUEST, err:"session nor user given"});
         if(userId){
-            let user = await UserCollection.findById(userId);
+            user = await UserCollection.findById(userId);
             if(!user)
                 return ({status: Constants.BAD_REQUEST});
         }
-        const carts = await CartCollection.find(user? {ofUser:user.id}: {ofSession:sessionId});
-        return ({status: Constants.OK_STATUS , carts});
+        const carts = await CartCollection.find(user? {ofUser:user.id, ofSession:null }: {ofSession:sessionId});
+
+
+        const cartsWithProducts = await Promise.all(carts.map( cart => cart.getDetails()));
+        return ({status: Constants.OK_STATUS , carts:cartsWithProducts});
     }
 
-    async addProductToCart(userId,productId, amount,sessionId=undefined){
+    async addProductToCart(userId,productId, amount,sessionId = undefined){
         if(!userId && !sessionId)
-            return ({status: Constants.BAD_REQUEST, err:"user notDefined nor visitor "});
+            return ({status: Constants.BAD_REQUEST, err:"user notDefined nor visitor "});        
         const product = await ProductCollection.findById(productId);
 
         let cart = await CartCollection.findOne(userId?
@@ -136,6 +142,8 @@ export class UsersApi implements IUsersApi{
     
         if(!product)
             return ({status: Constants.BAD_REQUEST, err:"products doesn't exists"});
+        if(amount<0 || amount > product.amountInventory)
+            return ({status: Constants.BAD_REQUEST, err:"amount not valid"});
 
         
         if(!cart){

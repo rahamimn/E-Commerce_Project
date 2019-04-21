@@ -1,0 +1,168 @@
+<%- include('../partials/header',{user}) %>
+<main>
+    <div class="jumbotron" style="min-height:600px; margin-bottom:0;">
+    <%carts.forEach((cart,cartIndex)=>{%>
+        <div class="container">
+   <div class="card shopping-cart">
+            <div class="card-header bg-dark text-light">
+                <i class="fa fa-shopping-cart" aria-hidden="true"></i>
+                Shipping cart
+                <div class="clearfix"></div>
+            </div>
+            <div class="card-body">
+                    <!-- PRODUCT -->
+                    <%cart.items.forEach((item,itemIndex)=>{%>
+                    <div class="row">
+                        <div class="col-12 col-sm-12 col-md-2 text-center">
+                                <img class="img-responsive" src="<%=item.product.imageUrl%>" alt="prewiew" width="120" height="80">
+                        </div>
+                        <div class="col-12 text-sm-center col-sm-12 text-md-left col-md-6">
+                            <h4 class="product-name"><strong><%=item.product.name%>&nbsp;&nbsp;&nbsp;&nbsp;</strong><span id="d<%=cartIndex%>--<%=itemIndex%>" class="badge badge-pill badge-danger hide">Deleted</span></h4>
+                        </div>
+                        <div class="col-12 col-sm-12 text-sm-center col-md-4 text-md-right row">
+                            <div class="col-3 col-sm-3 col-md-6 text-md-right" style="padding-top: 5px">
+                                <h6><strong><%=item.product.price%><span class="text-muted">x</span></strong></h6>
+                            </div>
+                            <div class="col-4 col-sm-4 col-md-4">
+                                <div class="quantity">
+                                    <input type="button" id="+<%=cartIndex%>--<%=itemIndex%>" value="+" class="plus" onclick="onClickPlus(this.id)">
+                                    <input type="number" id="<%=cartIndex%>--<%=itemIndex%>" step="1" max="99" min="1" value="<%=item.amount%>" title="Qty" class="qty"
+                                           size="4">
+                                    <input type="button" id="-<%=cartIndex%>--<%=itemIndex%>" value="-" class="minus" onclick="onClickMinus(this.id)" >
+                                </div>
+                            </div>
+                            <div class="col-2 col-sm-2 col-md-2 text-right">
+                                <button  type="button" id="db<%=cartIndex%>--<%=itemIndex%>" class="btn btn-outline-danger btn-xs" onclick="onClickRemove(this.id)">
+                                    <i class="fa fa-trash" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <% });%>
+                    <!-- END PRODUCT -->
+                <div class="pull-right" style="float:right">
+                    <a href="" id="u<%=cartIndex%>" class="btn btn-outline-secondary pull-right" onclick="updateCart(this.id)">
+                        Update shopping cart
+                    </a>
+                </div>
+            </div>
+            <div class="card-footer" >
+                <div class="pull-right" style="margin: 10px ; display:flex ; justify-content:flex-end" >
+                     <div class="pull-right" style="margin: 5px">
+                        Total price: <b>50.00$</b>
+                    </div>
+                    <a href="" class="btn btn-success pull-right">Checkout</a>
+               
+                </div>
+            </div>
+        </div>   
+    </div>  
+<%})%>
+    </div>
+</main>
+<footer>
+    <%# include ../partials/footer %>
+</footer>
+
+<script>
+    function onClickPlus(plusId){
+        const id = plusId.slice(1);
+        $('#'+id).val(parseInt($('#'+id).val())+1);
+    }
+
+    function onClickMinus(minusId){
+        const id = minusId.slice(1);
+        if(parseInt($('#'+id).val())>1)
+            $('#'+id).val(parseInt($('#'+id).val())-1);
+    }
+
+    function onClickRemove(removeId){
+        const id = removeId.slice(2);
+        $("#d"+id).toggleClass('show');
+    }
+
+    function updateCart(buttonId){
+        event.preventDefault();
+        const id = buttonId.slice(1);
+        console.log(id);
+    }
+
+</script>
+<style>
+
+.quantity {
+    float: left;
+    margin-right: 15px;
+    background-color: #eee;
+    position: relative;
+    width: 80px;
+    overflow: hidden
+}
+
+.quantity input {
+    margin: 0;
+    text-align: center;
+    width: 15px;
+    height: 15px;
+    padding: 0;
+    float: right;
+    color: #000;
+    font-size: 20px;
+    border: 0;
+    outline: 0;
+    background-color: #F6F6F6
+}
+
+.quantity input.qty {
+    position: relative;
+    border: 0;
+    width: 100%;
+    height: 40px;
+    padding: 10px 25px 10px 10px;
+    text-align: center;
+    font-weight: 400;
+    font-size: 15px;
+    border-radius: 0;
+    background-clip: padding-box
+}
+
+.quantity .minus, .quantity .plus {
+    line-height: 0;
+    background-clip: padding-box;
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    border-radius: 0;
+    -webkit-background-size: 6px 30px;
+    -moz-background-size: 6px 30px;
+    color: #bbb;
+    font-size: 20px;
+    position: absolute;
+    height: 50%;
+    border: 0;
+    right: 0;
+    padding: 0;
+    width: 25px;
+    z-index: 3
+}
+
+.quantity .minus:hover, .quantity .plus:hover {
+    background-color: #dad8da
+}
+
+.quantity .minus {
+    bottom: 0
+}
+.shopping-cart {
+    margin-top: 20px;
+}
+.hide {
+    display:none
+}
+.show {
+    display:inline                       
+}
+
+</style>
+</body>
+</html>
