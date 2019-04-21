@@ -26,15 +26,16 @@ async function addProduct(req: Request, res: express.Response) {
         // const coupons = req.body.coupons;
         // const acceptableDiscount = req.body.acceptableDiscount;
         // const discountPrice = req.body.id;
+        const productId = req.body.productId;
         const rank = req.body.rank;
         const name = req.body.name;
         const keyWords = req.body.keyWords;
         const id = req.body.id;
         const reviews = req.body.reviews;
 
-        if (!name || !amountInventory || !sellType || !price || !category )
+        if (!productId || !name || !amountInventory || !sellType || !price || !category )
             res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
-        const response = await productsApi.addProduct(storeId,name ,amountInventory, sellType, price, keyWords, category);
+        const response = await productsApi.addProduct(productId,storeId, name ,amountInventory, sellType, price, keyWords, category);
         res.send(response);
     }
     catch (err) {
@@ -69,9 +70,10 @@ async function removeProduct(req: Request, res: express.Response) {
             return;
         }
         const productId = req.body.productId;
-        if (!productId)
+
+        if ( !userId || !storeId || !productId )
             throw Error(ERR_GENERAL_MSG);
-        const response =await productsApi.removeProduct(productId);
+        const response =await productsApi.removeProduct(userId, storeId, productId);
         res.send(response);
     }
     catch (err) {

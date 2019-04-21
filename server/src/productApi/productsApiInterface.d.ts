@@ -4,10 +4,9 @@ import { Product } from './models/product';
 
 export interface IProductApi{
 
-    addProduct: (storeId: String,name:String, amountInventory: number, sellType: String, price: number, keyWords: String[], category: String) =>  Promise< {status:number , err?: String, product?:Product   }>, //amount-in the shop, selltype- regular auction lottery
-    removeProduct: (productId: String) => void //Promise< {status:number, err?: String}>,
-    updateProduct: (productId: String, newPrice: number) => void //Promise< {status:number, err?: String}>, //need to be changed to the productModel
-    getProducts: (filter:{storeId?:String, category?: String, keyWords?: String[], name?:String}) => Promise< {status:number, err?: String, products?:Product[]   }>, 
-    addReview: (productId: String, userId: String, rank: number, comment: String) =>  Promise< {status:number, err?: String, product?:Product   }>,
-    //disableProduct: (adminId: String,productId: String) =>  void //NIR: We have 'removeProduct', What's the difference?
+    addProduct: (userId: String, storeId: String,name:String, amountInventory: number, sellType: String, price: number, keyWords: String[], category: String) =>  Promise< { status: number ,error?: String, product?:Product   }>,
+    removeProduct: (userId: String, storeId: String, productId: String) => Promise< { status: number ,error?: String, product?:Product   }>,
+    updateProduct: (userId: String, storeId: String, productId: String, newPrice: number) => Promise< { status: number ,error?: String, product?:Product   }>,
+    getProducts: (filter:{storeId?:String, category?: String, keyWords?: String[], name?:String}) => Promise< {status:number, error?: String, products?:Product[]   }>, 
+    addReview: (productId: String, userId: String, rank: number, comment: String) =>  Promise< {status:number, error?: String, product?:Product   }>,
 }

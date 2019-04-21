@@ -29,6 +29,7 @@ describe('Product model',() => {
     product.storeId = store.store.id;
     
     let response = await productsApi.addProduct(
+        user.id,
         product.storeId,
         product.name,
         product.amountInventory,
@@ -62,6 +63,7 @@ describe('Product model',() => {
     let negativePrice = -1*(chance.natural());
     
     let response = await productsApi.addProduct(
+        user.id,
         store.store.id,
         product.name,
         product.amountInventory,
@@ -86,6 +88,7 @@ describe('Product model',() => {
     let negativeAmountInventory = -1*(chance.natural());
     
     let response = await productsApi.addProduct(
+        user.id,
         product.storeId,
         product.name,
         negativeAmountInventory,
@@ -100,11 +103,15 @@ describe('Product model',() => {
   });
 
   it('addProduct with INVALID STORE ID - Test', async () => {
-
+    let user = await UserCollection.insert(fakeUser({}));
+    const storeName = chance.sentence();
+    const store = await storesApi.addStore(user.id, storeName);
+    
     let product = fakeProduct({});
     let invalidStoreId = genObjectId();
 
     let response = await productsApi.addProduct(
+        user.id,
         invalidStoreId,
         product.name,
         product.amountInventory,
@@ -115,7 +122,32 @@ describe('Product model',() => {
     );
 
     expect(response.status).toEqual(BAD_REQUEST);
-    expect(response.error).toEqual(("The product \"" + product.name + "\" already exists in the store with Id: \"" + invalidStoreId +"\""));
+    expect((response.error).startsWith("You have no permission for this action"));
+  });
+
+  it('addProduct - WITH NO PERMISSION - Test', async () => {
+    let user = await UserCollection.insert(fakeUser({}));
+    const storeName = chance.sentence();
+    const store = await storesApi.addStore(user.id,storeName);
+    
+    let product = fakeProduct({});
+    product.storeId = store.store.id;
+    let negativePrice = -1*(chance.natural());
+    let userWithNoPermission = await UserCollection.insert(fakeUser({}));
+
+    let response = await productsApi.addProduct(
+        userWithNoPermission.id,
+        store.store.id,
+        product.name,
+        product.amountInventory,
+        product.sellType,
+        negativePrice,
+        product.keyWords,
+        product.category
+    );
+
+    expect(response.status).toEqual(BAD_REQUEST);
+    expect((response.error).startsWith("You have no permission for this action"));
   });
 
   //-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -166,9 +198,9 @@ describe('Product model',() => {
 
     let product = fakeProduct({});
     
-    let response = await productsApi.addProduct(store.store.id,product.name, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
+    let response = await productsApi.addProduct(user.id, store.store.id,product.name, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
     let product_BeforeRemove = await ProductCollection.findById(response.product.id);
-    let product_AfterRemove = await productsApi.removeProduct(product_BeforeRemove.id);
+    let product_AfterRemove = await productsApi.removeProduct(user.id, store.store.id, product_BeforeRemove.id);
   
     expect(response.status).toEqual(OK_STATUS);
     expect(product_BeforeRemove.isActivated).toBeTruthy;
@@ -176,6 +208,7 @@ describe('Product model',() => {
 
   });
 
+  
   it('removeProduct with UNACTIVATED STORE ID- Test', async () => {
 
     let storesApi = new StoresApi();
@@ -185,10 +218,11 @@ describe('Product model',() => {
 
     let product = fakeProduct({});
     
-    let response = await productsApi.addProduct(store.store.id,product.name, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
+    let response = await productsApi.addProduct(user.id, store.store.id,product.name, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
     let product_BeforeRemove = await ProductCollection.findById(response.product.id);
-    let product_AfterRemove = await productsApi.removeProduct(product_BeforeRemove.id);
+    let product_AfterRemove = await productsApi.removeProduct(user.id, store.store.id, product_BeforeRemove.id);
   
+    //NIR: need to fix
     expect(response.status).toEqual(OK_STATUS);
     expect(product_BeforeRemove.isActivated).toBeTruthy;
     expect(product_AfterRemove.product.isActivated).toBeFalsy;
@@ -196,25 +230,72 @@ describe('Product model',() => {
   });
 
 
+  it('removeProduct WITH NO PERMISSION - Test', async () => {
+
+    let storesApi = new StoresApi();
+    let user = await UserCollection.insert(fakeUser({}));
+    const storeName = chance.sentence();
+    const store = await storesApi.addStore(user.id, storeName);
+
+    let product = fakeProduct({});
+    
+    let response = await productsApi.addProduct(user.id, store.store.id,product.name, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
+    let product_BeforeRemove = await ProductCollection.findById(response.product.id);
+
+    let userWithNoPermission = await UserCollection.insert(fakeUser({}));
+    let product_AfterRemove = await productsApi.removeProduct(userWithNoPermission.id, store.store.id, product_BeforeRemove.id);
+  
+    expect(product_AfterRemove.status).toEqual(BAD_REQUEST);
+    expect((product_AfterRemove.error).startsWith("You have no permission for this action"));
+    
+
+  });
+
+
+  
   it('updateProduct - Test', async () => {
-let storesApi = new StoresApi();
+        let storesApi = new StoresApi();
+        let user = await UserCollection.insert(fakeUser({}));
+        const storeName = chance.sentence();
+        const store = await storesApi.addStore(user.id,storeName);
+    
+        let product = fakeProduct({});
+        
+        let productToDB = await productsApi.addProduct(user.id, store.store.id, product.name, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
+        let productFromDB = await productsApi.getProductDetails(productToDB.product.id);
+    
+        let productDetails = productFromDB.product;
+        productDetails.sellType = "updated_selltype";
+        productDetails.amountInventory = 42;
+    
+        let productAfterUpdate = await productsApi.updateProduct(user.id, store.store.id, productDetails.id, productDetails);
+    
+        expect(productAfterUpdate.status).toEqual(OK_STATUS);
+        expect(productAfterUpdate.product.sellType).toEqual(productDetails.sellType);
+        expect(productAfterUpdate.product.amountInventory).toEqual(productDetails.amountInventory);
+    });
+    
+
+  it('updateProduct - Test', async () => {
+    let storesApi = new StoresApi();
     let user = await UserCollection.insert(fakeUser({}));
     const storeName = chance.sentence();
     const store = await storesApi.addStore(user.id,storeName);
 
     let product = fakeProduct({});
     
-    let productToDB = await productsApi.addProduct(store.store.id, product.name, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
+    let productToDB = await productsApi.addProduct(user.id, store.store.id, product.name, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
     let productFromDB = await productsApi.getProductDetails(productToDB.product.id);
 
     let productDetails = productFromDB.product;
     productDetails.sellType = "updated_selltype";
     productDetails.amountInventory = 42;
-    let productAfterUpdate = await productsApi.updateProduct(productDetails.id, productDetails);
 
-    expect(productAfterUpdate.status).toEqual(OK_STATUS);
-    expect(productAfterUpdate.product.sellType).toEqual(productDetails.sellType);
-    expect(productAfterUpdate.product.amountInventory).toEqual(productDetails.amountInventory);
+    let userWithNoPermission = await UserCollection.insert(fakeUser({}));
+    let productAfterUpdate = await productsApi.updateProduct(userWithNoPermission.id, store.store.id, productDetails.id, productDetails);
+
+    expect(productAfterUpdate.status).toEqual(BAD_REQUEST);
+    expect((productAfterUpdate.error).startsWith("You have no permission for this action"));
 });
 
 //  it('addReview - Test', async () => {
@@ -237,7 +318,7 @@ it('getProducts with 3 params: {storeId, category, keyWords}', async () => {
 
   let product = fakeProduct({});
   
-  let productFromDB = await productsApi.addProduct(store.store.id, product.name, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
+  let productFromDB = await productsApi.addProduct(user.id, store.store.id, product.name, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
     
     let storeId = productFromDB.product.storeId;
     let category = productFromDB.product.category;
@@ -256,7 +337,7 @@ it('getProducts with 2 params: {storeId, category}', async () => {
 
   let product = fakeProduct({});
   
-  let productFromDB = await productsApi.addProduct(store.store.id, product.name, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
+  let productFromDB = await productsApi.addProduct(user.id, store.store.id, product.name, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
     
     let storeId = productFromDB.product.storeId;
     let category = productFromDB.product.category;
@@ -275,7 +356,7 @@ it('getProducts with 1 params: {storeId}', async () => {
 
   let product = fakeProduct({});
   
-  let productFromDB = await productsApi.addProduct(store.store.id, product.name, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
+  let productFromDB = await productsApi.addProduct(user.id, store.store.id, product.name, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
     
     let storeId = productFromDB.product.storeId;
     let res = await productsApi.getProducts({storeId});
@@ -293,7 +374,7 @@ it('getProducts with store name: {storeName}', async () => {
 
   let product = fakeProduct({});
 
-  let productFromDB = await productsApi.addProduct(response.store.id, product.name, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
+  let productFromDB = await productsApi.addProduct(user.id, response.store.id, product.name, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
   let store =  await StoreCollection.findById(productFromDB.product.storeId);
   let res = await productsApi.getProducts({storeName: store.name});
 
