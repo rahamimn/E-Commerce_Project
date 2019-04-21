@@ -13,36 +13,31 @@ const productApi = new ProductsApi();
 
 const categories = ["Home","Garden","Kitchen"];
 
-const loginMiddleWare = (req:Request,res:Response, next) =>{
-    res.locals.user = req.session.user;
-    next();
-}
 
 const loginSection = (req:Request,res:Response, next) =>{
-    if(!res.locals.user)
+    if(!req.session.user)
         res.redirect("/");
     else
         next();
 }
 
-webRoutes.get('/',loginMiddleWare ,async (req:Request,res:express.Response)=>{
-    await popNotifications(res.locals.user);
+webRoutes.get('/' ,async (req:Request,res:express.Response)=>{
+
     res.render('pages/home', {
-        user: res.locals.user
+        user: req.session.user
     });
 });
 
-webRoutes.get('/products',loginMiddleWare ,async (req:Request,res:express.Response)=>{
+webRoutes.get('/products' ,async (req:Request,res:express.Response)=>{
     const response = await productApi.getProducts({});
-    await popNotifications(res.locals.user);
     res.render('pages/products', {
-        user: res.locals.user,
+        user: req.session.user,
         categories,
         products:response.products
     });
 });
 
-webRoutes.post('/products',loginMiddleWare ,async (req:Request,res:express.Response)=>{
+webRoutes.post('/products' ,async (req:Request,res:express.Response)=>{
     const keyWords = req.body.keywords.split(',');
     const response = await productApi.getProducts({
         name:req.body.name !== '' ? req.body.name : undefined,
@@ -50,40 +45,36 @@ webRoutes.post('/products',loginMiddleWare ,async (req:Request,res:express.Respo
         category:req.body.category !== "Category" ? req.body.category : undefined,
     });
 
-    await popNotifications(res.locals.user);
     res.render('pages/products', {
-        user: res.locals.user,
+        user: req.session.user,
         categories,
         products:response.products
     });
 });
 
-webRoutes.get('/products/:productId',loginMiddleWare , async (req:Request,res:express.Response)=>{
+webRoutes.get('/products/:productId' , async (req:Request,res:express.Response)=>{
     const response = await productApi.getProductDetails(req.params.productId);
     if(response.status<0)
         res.redirect("/");
 
-    await popNotifications(res.locals.user);
     res.render('pages/productPage', {
-        user: res.locals.user,
+        user: req.session.user,
         product: response.product
     });
 });
 
-webRoutes.get('/register',loginMiddleWare, async (req:Request,res:express.Response)=>{
-    await popNotifications(res.locals.user);
+webRoutes.get('/register', async (req:Request,res:express.Response)=>{
     res.render('pages/register',{
-        user: res.locals.user
+        user: req.session.user
     });
 });
 
-webRoutes.get('/login',loginMiddleWare,async (req:Request,res:express.Response)=>{
+webRoutes.get('/login',async (req:Request,res:express.Response)=>{
     if(res.locals.user)
         res.redirect("/");
 
-    await popNotifications(res.locals.user);
     res.render('pages/login',{
-        user: res.locals.user
+        user: req.session.user
     });
 });
 
@@ -92,8 +83,8 @@ webRoutes.get('/logout', (req:Request,res:express.Response)=>{
     res.redirect("/");
 });
 
-webRoutes.post('/login',loginMiddleWare, async (req:Request,res:express.Response)=>{
-    if(res.locals.user)
+webRoutes.post('/login', async (req:Request,res:express.Response)=>{
+    if(req.session.user)
         res.redirect("/");
     try {
         if (!req.body.userName || !req.body.password)
@@ -117,31 +108,17 @@ webRoutes.post('/login',loginMiddleWare, async (req:Request,res:express.Response
 });
 
 
-webRoutes.get('/user-panel',loginMiddleWare, loginSection, async (req:Request,res:express.Response)=>{
-    if(!res.locals.user ||!res.locals.user.isAdmin )
-        res.redirect("/");
-
-    await popNotifications(res.locals.user);
+webRoutes.get('/user-panel', loginSection, async (req:Request,res:express.Response)=>{
     res.render('pages/userPages/userHome',{
-        user: res.locals.user
+        user: req.session.user
     });
 });
 
 
-webRoutes.get('/admin-panel',loginMiddleWare, loginSection, async (req:Request,res:express.Response)=>{
+webRoutes.get('/admin-panel', loginSection, async (req:Request,res:express.Response)=>{
     if(!res.locals.user.isAdmin )
         res.redirect("/");
-    await popNotifications(res.locals.user);
     res.render('pages/adminPages/adminHome',{
-        user: res.locals.user
+        user: req.session.user
     });
 });
-
-const popNotifications  = async (user) => {
-    if(!user)
-        return;
-    const resPop = await usersApi.popNotifications(user.id);
-    console.log(resPop);
-    user.notifications = resPop.notifications;
-    //user.notifications = [{header:"dsadsad", message:"dasdasdasddasdads"}];
-}
