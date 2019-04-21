@@ -71,9 +71,9 @@ async function removeProduct(req: Request, res: express.Response) {
         }
         const productId = req.body.productId;
 
-        if ( !userId || !storeId || !productId )
+        if (!productId )
             throw Error(ERR_GENERAL_MSG);
-        const response =await productsApi.removeProduct(userId, storeId, productId);
+        const response =await productsApi.removeProduct(user.id, productId);
         res.send(response);
     }
     catch (err) {

@@ -59,29 +59,24 @@ export class ProductsApi implements IProductApi{
     }
 
     
-    async removeProduct(userId: String, storeId: String, productId: String){
+    async removeProduct(userId: String, productId: String){
 
         try{ 
 
-            if (!userId){
+            if (!userId || !productId){
                 return ({status: BAD_REQUEST, error: BAD_USER_ID});
             }
-    
-            if (!this.isStoreVaild(storeId)){
-                return ({status: BAD_REQUEST, error: BAD_STORE_ID});
-           }
+            let product = await ProductCollection.findById(productId);
+            if(!product)
+                return ({status: BAD_REQUEST, error: "Product not found (Id: " + productId + ")."});
     
            const isUserAdmin = await RoleCollection.findOne({ofUser:userId, name:ADMIN})
-           const isUserPermitted = await RoleCollection.findOne({ofUser:userId, store:storeId , name:{$in: [STORE_OWNER,STORE_MANAGER]}});
+           const isUserPermitted = await RoleCollection.findOne({ofUser:userId, store:product.storeId , name:{$in: [STORE_OWNER,STORE_MANAGER]}});
     
            if(!isUserPermitted && !isUserAdmin){
                 return ({status: BAD_REQUEST, error: "You have no permission for this action (User ID: " + userId + ")."});
             }
-
-            if (!this.isProductVaild(productId)){
-                return ({status: BAD_REQUEST, error: "Product not found (Id: " + productId + ")." } );
-            }
-
+            
             let productToRemove = await ProductCollection.findById(productId);
             productToRemove.isActivated = false;
             let product_AfterRemove = await ProductCollection.updateOne(productToRemove);
