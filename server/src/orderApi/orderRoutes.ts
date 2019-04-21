@@ -14,12 +14,16 @@ ordersApiRouter.post('/ordersApi/pay', pay);
 
 async function pay(req: Request, res: express.Response) {
     try {
-        const userId = verifyToken(req.session.token).userId;
+        const user = req.session.user;
+        if (!user) {
+            res.send({status: Constants.NO_VISITOR_ACCESS, err: Constants.ERR_Access_MSG});
+            return;
+        }
         const orderId = req.body.orderId;
         if (!orderId)
             res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
         else {
-            const response = await ordersApi.pay(userId, orderId);
+            const response = await ordersApi.pay(user.id, orderId);
             console.log(response);
             res.send(response);
         }
@@ -34,12 +38,16 @@ ordersApiRouter.post('/ordersApi/checkSupply', checkSupply);
 
 async function checkSupply(req: Request, res: express.Response) {
     try {
-        const userId = verifyToken(req.session.token).userId;
+        const user = req.session.user;
+        if (!user) {
+            res.send({status: Constants.NO_VISITOR_ACCESS, err: Constants.ERR_Access_MSG});
+            return;
+        }
         const orderId = req.body.orderId;
         if (!orderId)
             res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
         else {
-            const response = await ordersApi.checkSupply(userId, orderId);
+            const response = await ordersApi.checkSupply(user.id, orderId);
             console.log(response);
             res.send(response);
         }
@@ -72,7 +80,11 @@ ordersApiRouter.post('/ordersApi/addComplaint', addComplaint);
 
 async function addComplaint(req: Request, res: express.Response) {
     try {
-        verifyToken(req.session.token).userId;
+        const user = req.session.user;
+        if (!user) {
+            res.send({status: Constants.NO_VISITOR_ACCESS, err: Constants.ERR_Access_MSG});
+            return;
+        }
         const orderId = req.body.orderId;
         const complaint = req.body.complaint;
         if (!orderId || !complaint)
@@ -92,7 +104,11 @@ ordersApiRouter.post('/ordersApi/getStoreOrderHistory', getStoreOrderHistory);
 
 async function getStoreOrderHistory(req: Request, res: express.Response) {
     try {
-        verifyToken(req.session.token).userId;
+        const user = req.session.user;
+        if (!user) {
+            res.send({status: Constants.NO_VISITOR_ACCESS, err: Constants.ERR_Access_MSG});
+            return;
+        }
         const storeId = req.body.storeId;
         if (!storeId)
             res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
@@ -111,7 +127,11 @@ ordersApiRouter.post('/ordersApi/addOrder', addOrder);
 
 async function addOrder(req: Request, res: express.Response) {
     try {
-        const userId = verifyToken(req.session.token).userId;
+        const user = req.session.user;
+        if (!user) {
+            res.send({status: Constants.NO_VISITOR_ACCESS, err: Constants.ERR_Access_MSG});
+            return;
+        }
         const storeId = req.body.storeId;
         const state = req.body.state;
         const description = req.body.description;
@@ -119,7 +139,7 @@ async function addOrder(req: Request, res: express.Response) {
         if (!storeId || !state || !description || !totalPrice)
             res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
         else {
-            const response = await ordersApi.addOrder(storeId, userId, state, description, totalPrice);
+            const response = await ordersApi.addOrder(storeId, user.id, state, description, totalPrice);
             console.log(response);
             res.send(response);
         }

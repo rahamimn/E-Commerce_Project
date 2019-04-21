@@ -1,7 +1,7 @@
 import express = require('express');
 import { Request } from '../types/moongooseArray';
 import { Response } from 'express-serve-static-core';
-import { verifyToken, createToken } from './jwt';
+// import { verifyToken, createToken } from './jwt';
 import { MISSING_PARAMETERS, BAD_REQUEST } from './consts';
 import { UsersApi } from './usersApi/usersApi';
 import { ProductsApi } from './productApi/productsApi';
@@ -14,13 +14,7 @@ const productApi = new ProductsApi();
 const categories = ["Home","Garden","Kitchen"];
 
 const loginMiddleWare = (req:Request,res:Response, next) =>{
-    try{
-        const userId = verifyToken(req.session.token).userId;
-        res.locals.user = req.session.user;
-    }
-    catch(e){
-        res.locals.user = null;
-    }
+    res.locals.user = req.session.user;
     next();
 }
 
@@ -95,7 +89,6 @@ webRoutes.get('/login',loginMiddleWare,async (req:Request,res:express.Response)=
 
 webRoutes.get('/logout', (req:Request,res:express.Response)=>{
     req.session.user=null;
-    req.session.token=null;
     res.redirect("/");
 });
 
@@ -110,7 +103,6 @@ webRoutes.post('/login',loginMiddleWare, async (req:Request,res:express.Response
             if (response.err)
                 res.send(response);
             else {
-                req.session.token = await createToken('' + response.user);
                 const user:any = response.user;
                 user.isAdmin = response.isAdmin;;
               

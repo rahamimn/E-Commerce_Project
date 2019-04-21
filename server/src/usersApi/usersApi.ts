@@ -93,7 +93,8 @@ export class UsersApi implements IUsersApi{
         return ({status: Constants.OK_STATUS});
     }
 
-    async getCart(userId, cartId){
+    async getCart(userId, cartId, sessionId=undefined){
+        //todo use the sessionId - support for guests
         let cart = await CartCollection.findById(cartId);
         if(!cart || !cart.ofUser.equals(userId))
         {
