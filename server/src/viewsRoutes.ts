@@ -123,6 +123,13 @@ webRoutes.get('/user-panel', loginSection, async (req:Request,res:express.Respon
     });
 });
 
+webRoutes.get('/store-panel/:storeId/addProduct', loginSection, async (req:Request,res:express.Response)=>{
+    res.render('pages/adminPages/addProduct1',{
+        user: req.session.user,
+        storeId: req.params.storeId,
+        categories
+    });
+});
 
 webRoutes.get('/admin-panel', loginSection, async (req:Request,res:express.Response)=>{
     if(!req.session.user.isAdmin )
