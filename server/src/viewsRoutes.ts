@@ -107,6 +107,15 @@ webRoutes.post('/login', async (req:Request,res:express.Response)=>{
     }
 });
 
+webRoutes.get('/carts', async (req:Request,res:express.Response)=>{
+    let carts = req.session.user? 
+        (await usersApi.getCarts(req.session.user.id)).carts:
+        (await usersApi.getCarts(null,req.session.id)).carts;
+    res.render('pages/carts',{
+        user: req.session.user,
+        carts,
+    });
+});
 
 webRoutes.get('/user-panel', loginSection, async (req:Request,res:express.Response)=>{
     res.render('pages/userPages/userHome',{
@@ -116,7 +125,7 @@ webRoutes.get('/user-panel', loginSection, async (req:Request,res:express.Respon
 
 
 webRoutes.get('/admin-panel', loginSection, async (req:Request,res:express.Response)=>{
-    if(!res.locals.user.isAdmin )
+    if(!req.session.user.isAdmin )
         res.redirect("/");
     res.render('pages/adminPages/adminHome',{
         user: req.session.user

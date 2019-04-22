@@ -1,6 +1,6 @@
 <%- include('../partials/header',{user}) %>
 <main>
-    <div class="jumbotron">
+    <div class="jumbotron" style="min-height:600px; margin-bottom:0;">
         <h1 class="display-4"><%=product.name%></h1>
         <h2 class="display-6" style="color:grey"><%=product.price%>$</h2>
         <hr class="my-4">
@@ -34,7 +34,7 @@
             if(data.status<0)
                 $("#add2Cart-error").text(data.err);
             else
-                document.location.href = '/';
+                document.location.href = '/carts';
             
         }) // JSON-string from `response.json()` call
         .catch(error => console.error(error));

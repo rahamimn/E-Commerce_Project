@@ -1,6 +1,6 @@
 import { Order } from "../../orderApi/models/order";
 import { Product } from "../../productApi/models/product";
-import { ProductCollection } from "../../persistance/mongoDb/Collections";
+import { ProductCollection, CartCollection } from "../../persistance/mongoDb/Collections";
 import { asyncForEach } from "../../utils/utils";
 
 export class Cart{
@@ -34,10 +34,14 @@ export class Cart{
     }
 
     async totalPrice (){
-      const products = await ProductCollection.findByIds(this.productsIds);
+      let sum = 0;
 
-      return this.items.reduce((sum, item, ind) => {
-        return sum += products[ind].price * item.amount;} ,0);
+      await asyncForEach(this.items, async item =>{
+        const prod = await ProductCollection.findById(item.product);
+        sum += prod.price * item.amount; 
+      });
+
+      return sum;
     }
 
     async updateInventory (isDec){ //need to test
@@ -74,16 +78,25 @@ export class Cart{
       }
     }
 
-  public getDetails (){
+  public async getDetails (){
+
     const {
         _id,
         _items,
         _store,
     } = this;
+    let newItems=[];
+
+    await asyncForEach(_items, async item => {
+      const prod = await ProductCollection.findById(item.product);
+      newItems.push({amount: item.amount,product:prod.getProductDetails() });
+    });   
+
     return ({
-      _id,
-      _items,
-      _store,
+      id:_id,
+      items: newItems,
+      store:_store,
+      totalPrice: await this.totalPrice()
     });
   } 
 
@@ -97,8 +110,12 @@ export class Cart{
     });
   }
 
-  public updateDetails (cartDetails){ //nothing else should update for now
-    this.items = cartDetails._items;
+  public async updateDetails (cartDetails){ //nothing else should update for now
+    if(await this.validItems(cartDetails.items)){
+      this.items = cartDetails.items;
+      return true;
+    }
+    return false;
   }
   
   public async toString (){
@@ -218,5 +235,15 @@ public set items(value:  {product:any, amount:number}[]) {
      * Setter supplyPrice
      * @param {number} value
      */
+
+
+     private async validItems(itemsToCheck){
+      let isValid = true;
+      await asyncForEach(itemsToCheck, async item =>{
+        const prod = await ProductCollection.findById(item.product);
+        isValid = isValid && item.amount>0 && item.amount <= prod.amountInventory;
+      });
+      return isValid;
+     }
 
   }

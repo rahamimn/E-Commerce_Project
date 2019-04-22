@@ -42,29 +42,56 @@ describe('Cart model',() => {
     expect(cart.items[0].amount).toEqual(amount*2);
   });
 
-  it('get cart details', () => {
-    const cart = fakeCart({});
+  it('get cart details', async () => {
+    const product = await ProductCollection.insert(fakeProduct({price: 10}));
 
-    expect(cart.getDetails()).toMatchObject({
-      _id: cart.id,
-      _store: cart.store,
-      _items: cart.items,
+    const cart = fakeCart({items:[{
+      product: product.id,
+      amount:1
+    }]});
+
+    const det =  await cart.getDetails();
+    expect(det).toMatchObject({
+      id: cart.id,
+      store: cart.store,
+    });
+    
+    expect(det.items[0]).toMatchObject({
+      amount: 1,
     });
 
+    expect(JSON.stringify(det.items[0].product)).toEqual(JSON.stringify(product.getProductDetails()));
+
   });
 
-  it('update relevant details onlt items should updated', () => {
+  it('update relevant details onlt items should updated', async  () => {
+    const product = await ProductCollection.insert(fakeProduct({price: 10, amountInventory:7}));
+    const cart = await CartCollection.insert(fakeCart({}));
     const newDetils = {
-      _items: [{product:new ObjectId(), amount:6}],
-      _store: new ObjectId(),
+      id:cart.id,
+      items: [{product:product.id, amount:6}],
+      store: new ObjectId(),
     };
-    const cart = fakeCart({});
     
-    cart.updateDetails(newDetils);
+    expect(await  cart.updateDetails(newDetils)).toBe(true);
 
     expect(cart.items.length).toEqual(1);
-    expect(cart.store).not.toEqual(newDetils._store);
+    expect(cart.store).not.toEqual(newDetils.store);
   });
+
+  it('update relevant details onlt items should updated', async  () => {
+    const product = await ProductCollection.insert(fakeProduct({price: 10, amountInventory:7}));
+    const cart = await CartCollection.insert(fakeCart({}));
+    const newDetils = {
+      id:cart.id,
+      items: [{product:product.id, amount:8}],
+      store: new ObjectId(),
+    };
+    
+    expect(await  cart.updateDetails(newDetils)).toBe(false);
+
+  });
+
 
   it('getProducts should return all the products id', () => {
     const productId3 = new ObjectId();
