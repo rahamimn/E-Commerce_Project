@@ -73,15 +73,17 @@ export const setData= async () =>{
      storeId2 = (await StoreCollection.insert(fakeStore({name:storeName2}))).id;
      //store owner
      const storeOwner = await insertRegisterdUser(storeOwnerUsername,storeOwnerPassword);
-     const storeOwnerRole = await setupRoleToUser(storeOwnerId,{name: STORE_OWNER, store: storeId1 });
      storeOwnerId= storeOwner.id;
+     const storeOwnerRole = await setupRoleToUser(storeOwnerId,{name: STORE_OWNER, store: storeId1 });
+   
 
      //store manager which appointed by storeOwner
      const storeManager = await insertRegisterdUser(storeManagerIdUsername,storeManagerIdPassword);
+     storeManagerId= storeManager.id;
      const storeManagerRole = await setupRoleToUser(storeManagerId,{name: STORE_MANAGER, store: storeId1, appointor:storeOwnerRole.id });
      storeOwnerRole.appointees.push(storeManagerRole.id);
      await RoleCollection.updateOne(storeOwnerRole);
-     storeManagerId= storeManager.id;
+ 
 
      //create product
       productId1 = (await ProductCollection.insert(fakeProduct({

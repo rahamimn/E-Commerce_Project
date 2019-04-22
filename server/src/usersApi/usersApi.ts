@@ -317,6 +317,23 @@ export class UsersApi implements IUsersApi{
         return ({status: Constants.OK_STATUS , user});
     }
 
+    async getUserStores(userId){
+
+        let roles:any = await RoleCollection.find({ofUser: userId, name:{$in:[STORE_MANAGER,STORE_OWNER]}});;
+
+        await asyncForEach(roles,async role =>{
+            const store = await StoreCollection.findById(role.store);
+            if(store)
+                role.storeName = store.name;
+            else 
+                throw Error(`store ${role.store} not found`);
+        });
+
+        const stores = roles.map(role => ({id: role.store, name: role.storeName }));
+
+        return ({status: Constants.OK_STATUS , stores});
+    }
+
    async sendMessage(userId, title, body, toName , toIsStore){
         let toUser,toStore; 
         let user = await UserCollection.findById(userId);
