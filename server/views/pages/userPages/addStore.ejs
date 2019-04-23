@@ -1,0 +1,51 @@
+ <%- include('./userHeader',{user})%>
+                <h2 class="display-6" style="color:grey">Create your new store here!!</h2>
+                <div class="card">
+               
+
+                    <div class="card-header">Add Store</div>
+                        <div class="card-body">
+                            <form name="register-form" onsubmit="onSubmitAddStore(event)">
+                                <div class="form-group row">
+                                    <label for="store_name" class="col-md-4 col-form-label text-md-right">Store Name *</label>
+                                    <div class="col-md-6">
+                                        <input type="text" id="StoreName" class="form-control" name="Storename">
+                                    </div>
+                                </div>
+                                    <div class="col-md-6 offset-md-4">
+                                        <button type="submit" class="btn btn-primary">
+                                        new store
+                                        </button>
+                                        <p id="new-store-error"> </p>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+ 
+ </div>
+    </div>
+
+    </main>
+</div>  
+<script>
+
+    function onSubmitAddStore(event){
+     event.preventDefault();
+     var storeName = $("#StoreName").val();
+     postData(`/storesApi/addStore`, {
+       storeName
+       })
+     .then(data => {
+         if(data.status<0)
+           $("#new-store-error").text(data.err);
+         else
+           document.location.href = '/user-panel/my-stores';
+         
+     }) 
+     .catch(error => console.error(error));
+    };
+    
+    </script>
+
+<%- include ../../partials/pageWithSideFooter %>
