@@ -74,7 +74,6 @@ export class UsersApi implements IUsersApi{
             return {status: Constants.OK_STATUS, userId: user.id}
         }
         catch(err){
-            console.log(err);
             return {status:Constants.BAD_USERNAME, err:"bad username"};
         }
     }
@@ -180,10 +179,10 @@ export class UsersApi implements IUsersApi{
         const appointedUser = await UserCollection.findOne({userName: appointedUserName});
         const appointorRole = await RoleCollection.findOne({ofUser:userId , name:ADMIN});
         if(!appointorRole)
-            return ({status: Constants.BAD_REQUEST});
+            return ({status: Constants.BAD_REQUEST, err: "bad role for appointor"});
         const existRole = await RoleCollection.findOne({ofUser:appointedUser.id, name:ADMIN});
         if(existRole)
-            return ({status: Constants.BAD_REQUEST});
+            return ({status: Constants.BAD_REQUEST, err: "tole does not exist for admin"});
         const newRole = await RoleCollection.insert(new Role({name:ADMIN, ofUser: appointedUser.id , appointor: appointorRole.id }));
 
         appointorRole.appointees.push(newRole.id);
@@ -196,10 +195,10 @@ export class UsersApi implements IUsersApi{
         let newRole;
         const appointorRole = await RoleCollection.findOne({ofUser:userId, store:storeId , name:STORE_OWNER});
         if(!appointorRole)
-            return ({status: Constants.BAD_REQUEST});
+            return ({status: Constants.BAD_REQUEST, err: "bad role for appointor"});
         const existRole = await RoleCollection.findOne({ofUser:appointedUser.id, store:storeId});
         if(existRole && existRole.name === STORE_OWNER)
-            return ({status: Constants.BAD_REQUEST});
+            return ({status: Constants.BAD_REQUEST, err: "already has a role in this store"});
         else if(existRole &&  existRole.name === STORE_MANAGER){
             existRole.name = STORE_OWNER;
             existRole.permissions.length = 0;
@@ -222,7 +221,7 @@ export class UsersApi implements IUsersApi{
         if(appointorRole.name === STORE_MANAGER && appointorRole.permissions.filter(perm => perm === Constants.APPOINT_STORE_MANAGER).length === 0 )
             return ({status: Constants.BAD_REQUEST, err:'dont have permission'});
         if(await RoleCollection.findOne({ofUser:appointedUser.id, store:storeId}))
-            return ({status: Constants.BAD_REQUEST});
+            return ({status: Constants.BAD_REQUEST, err:'role collection is not found'});
 
         const newRole = await RoleCollection.insert(new Role({
             name:STORE_MANAGER,
@@ -242,11 +241,11 @@ export class UsersApi implements IUsersApi{
         const existRole = await RoleCollection.findOne({ofUser:appointedUser.id, store:storeId});
 
         if(!existRole)
-            return {status: Constants.BAD_REQUEST};
+            return {status: Constants.BAD_REQUEST, err:'role does not exist'};
 
         const appointorRole = await RoleCollection.findOne({ofUser:userId, store:storeId});
         if(!appointorRole || !appointorRole.appointees.some(appointee => appointee.equals(existRole.id)))
-            return {status: Constants.BAD_REQUEST};
+            return {status: Constants.BAD_REQUEST, err:'does not have appointer role'};
 
         existRole.permissions = permissions;
         await RoleCollection.updateOne(existRole);
@@ -270,7 +269,7 @@ export class UsersApi implements IUsersApi{
     async pushNotification(userId, header, message){
         const user = await UserCollection.findById(userId);
         if(!user)
-            return {status: Constants.BAD_REQUEST};
+            return {status: Constants.BAD_REQUEST, err:'user does not exist'};
 
         user.notifications.push({header,message });
         await UserCollection.updateOne(user);
@@ -298,7 +297,7 @@ export class UsersApi implements IUsersApi{
     async getMessages(userId){
         let user = await UserCollection.findById(userId);
         if(!user)
-            return ({status: Constants.BAD_REQUEST});
+            return ({status: Constants.BAD_REQUEST, err:'user does not exist'});
         const messages = await MessageCollection.findByIds(user.messages);
 
         return ({status: Constants.OK_STATUS , messages});
@@ -306,11 +305,14 @@ export class UsersApi implements IUsersApi{
 
     async deleteUser(adminId, userNameToDisActivate){
         let admin = await UserCollection.findById(adminId);
+        if(!admin)
+            return {status: Constants.BAD_REQUEST, err: "the user is not an admin"};
         let user = await UserCollection.findOne({userName: userNameToDisActivate});
+        if(!user)
+            return {status: Constants.BAD_REQUEST, err: "the user does not exist"};
         let adminRole = await RoleCollection.find({ofUser: adminId, name:ADMIN});
-
-        if(!admin || !adminRole || !user)
-            return {status: Constants.BAD_REQUEST};
+        if(!adminRole)
+            return {status: Constants.BAD_REQUEST, err: "the admin role does not exist"};
         user.isDeactivated = true; 
 
         user = await UserCollection.updateOne(user);
@@ -345,7 +347,7 @@ export class UsersApi implements IUsersApi{
             toUser = await UserCollection.findOne({userName:toName});
         
         if(!user || !(toUser || toStore))
-            return ({status: Constants.BAD_REQUEST});
+            return ({status: Constants.BAD_REQUEST, err: "bad details"});
 
         const message = await MessageCollection.insert(
             new Message({
