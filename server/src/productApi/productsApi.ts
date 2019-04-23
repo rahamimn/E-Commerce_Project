@@ -5,49 +5,48 @@ import { IProductApi } from "./productsApiInterface";
 import { Review } from "../storeApi/models/review";
 export class ProductsApi implements IProductApi{
 
-    async addProduct(userId: String, storeId: String, productName:String, amountInventory: Number, sellType: String, price: Number, keyWords: String[], category: String){
-
+    async addProduct(userId,newProduct: {storeId: String, name:String, amountInventory: Number, sellType: String, price: Number, keyWords: String[], category: String,coupons?: String,description?: String,imageUrl?: String,acceptableDiscount: number,discountPrice?: number,rank:number,reviews: any[]}){
         if (!userId){
             return ({status: BAD_REQUEST, error: BAD_USER_ID});
         }
 
-        if (!this.isStoreVaild(storeId)){
+        if (!this.isStoreVaild(newProduct.storeId)){
             return ({status: BAD_REQUEST, error: BAD_STORE_ID});
        }
 
        const isUserAdmin = await RoleCollection.findOne({ofUser:userId, name:ADMIN})
-       const isUserPermitted = await RoleCollection.findOne({ofUser:userId, store:storeId , name:{$in: [STORE_OWNER,STORE_MANAGER]}});
+       const isUserPermitted = await RoleCollection.findOne({ofUser:userId, store:newProduct.storeId , name:{$in: [STORE_OWNER,STORE_MANAGER]}});
 
        if(!isUserPermitted && !isUserAdmin){
             return ({status: BAD_REQUEST, error: "You have no permission for this action (User ID: " + userId + ")."});
         }
 
-        if (amountInventory < 0) {
+        if (newProduct.amountInventory < 0) {
             return ({status: BAD_REQUEST, error: BAD_AMOUNT});
         }
 
-        if (price < 0){
+        if (newProduct.price < 0){
             return ({status: BAD_REQUEST, error: BAD_PRICE});
         }
 
-         if (await (this.doesStoreHaveThisProduct(storeId, productName))){
-            return ({status: BAD_REQUEST, error: ("The product \"" + productName + "\" already exists in the store with ID: \"" + storeId +"\"") });
+         if (await (this.doesStoreHaveThisProduct(newProduct.storeId, newProduct.name))){
+            return ({status: BAD_REQUEST, error: ("The product \"" + newProduct.name + "\" already exists in the store with ID: \"" + newProduct.storeId +"\"") });
         }
 
-        try{ 
+        try{
             const productToInsert = await ProductCollection.insert(new Product({
-                storeId,
-                name: productName,
-                amountInventory: amountInventory,
-                sellType: sellType,
-                price: price,
+                storeId: newProduct.storeId,
+                name: newProduct.name,
+                amountInventory: newProduct.amountInventory,
+                sellType: newProduct.sellType,
+                price: newProduct.price,
                 coupons: null,
                 acceptableDiscount: null,
                 discountPrice: null,
                 rank: null,
                 reviews: [],
-                keyWords: keyWords,
-                category: category,
+                keyWords: newProduct.keyWords,
+                category: newProduct.category,
                 isActivated: true
             }));
 
@@ -128,7 +127,7 @@ export class ProductsApi implements IProductApi{
             reviewToAdd.id = "tempID"; //NIR: need to generate id ???;
 
             let productToUpdate = await ProductCollection.findById(productId);
-            productToUpdate.reviews.push(reviewToAdd) //NIR: SOMETHING'S NOT WORKING HERE
+            productToUpdate.reviews.push(reviewToAdd.id) //NIR: SOMETHING'S NOT WORKING HERE
 
             let product_AfterUpdate = await ProductCollection.updateOne(productToUpdate);
             return {status: OK_STATUS ,product: productToUpdate}

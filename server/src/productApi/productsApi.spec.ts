@@ -27,16 +27,25 @@ describe('Product model',() => {
 
     let product = fakeProduct({});
     product.storeId = store.store.id;
-    
+
     let response = await productsApi.addProduct(
-        user.id,
-        product.storeId,
-        product.name,
-        product.amountInventory,
-        product.sellType,
-        product.price,
-        product.keyWords,
-        product.category
+        user.id,product
+            // user.id,
+            // product.storeId,
+            // product.name,
+            // product.amountInventory,
+            // product.sellType,
+            // product.price,
+            // product.keyWords,
+            // product.category,
+            // product.imageUrl,
+            // product.description,
+            // product.coupons,
+            // product.acceptableDiscount,
+            // product.discountPrice,
+            // product.rank,
+            // product.reviews,
+            // product.category
     );
 
     let productFromDB = await ProductCollection.findById(response.product.id);
@@ -63,14 +72,7 @@ describe('Product model',() => {
     let negativePrice = -1*(chance.natural());
     
     let response = await productsApi.addProduct(
-        user.id,
-        store.store.id,
-        product.name,
-        product.amountInventory,
-        product.sellType,
-        negativePrice,
-        product.keyWords,
-        product.category
+        user.id,product
     );
 
     expect(response.status).toEqual(BAD_REQUEST);
@@ -88,14 +90,7 @@ describe('Product model',() => {
     let negativeAmountInventory = -1*(chance.natural());
     
     let response = await productsApi.addProduct(
-        user.id,
-        product.storeId,
-        product.name,
-        negativeAmountInventory,
-        product.sellType,
-        product.price,
-        product.keyWords,
-        product.category
+        user.id,product
     );
 
     expect(response.status).toEqual(BAD_REQUEST);
@@ -111,14 +106,7 @@ describe('Product model',() => {
     let invalidStoreId = genObjectId();
 
     let response = await productsApi.addProduct(
-        user.id,
-        invalidStoreId,
-        product.name,
-        product.amountInventory,
-        product.sellType,
-        product.price,
-        product.keyWords,
-        product.category
+        user.id,product
     );
 
     expect(response.status).toEqual(BAD_REQUEST);
@@ -137,13 +125,7 @@ describe('Product model',() => {
 
     let response = await productsApi.addProduct(
         userWithNoPermission.id,
-        store.store.id,
-        product.name,
-        product.amountInventory,
-        product.sellType,
-        negativePrice,
-        product.keyWords,
-        product.category
+        product
     );
 
     expect(response.status).toEqual(BAD_REQUEST);
@@ -198,7 +180,7 @@ describe('Product model',() => {
 
     let product = fakeProduct({});
     
-    let response = await productsApi.addProduct(user.id, store.store.id,product.name, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
+    let response = await productsApi.addProduct(user.id,product);
     let product_BeforeRemove = await ProductCollection.findById(response.product.id);
     let product_AfterRemove = await productsApi.removeProduct(user.id, product_BeforeRemove.id);
   
@@ -218,7 +200,7 @@ describe('Product model',() => {
 
     let product = fakeProduct({});
     
-    let response = await productsApi.addProduct(user.id, store.store.id,product.name, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
+    let response = await productsApi.addProduct(user.id,product);
     let product_BeforeRemove = await ProductCollection.findById(response.product.id);
     let product_AfterRemove = await productsApi.removeProduct(user.id, product_BeforeRemove.id);
   
@@ -239,7 +221,7 @@ describe('Product model',() => {
 
     let product = fakeProduct({});
     
-    let response = await productsApi.addProduct(user.id, store.store.id,product.name, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
+    let response = await productsApi.addProduct(user.id,product);
     let product_BeforeRemove = await ProductCollection.findById(response.product.id);
 
     let userWithNoPermission = await UserCollection.insert(fakeUser({}));
@@ -261,7 +243,7 @@ describe('Product model',() => {
     
         let product = fakeProduct({});
         
-        let productToDB = await productsApi.addProduct(user.id, store.store.id, product.name, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
+        let productToDB = await productsApi.addProduct(user.id, product);
         let productFromDB = await productsApi.getProductDetails(productToDB.product.id);
     
         let productDetails = productFromDB.product;
@@ -284,7 +266,7 @@ describe('Product model',() => {
 
     let product = fakeProduct({});
     
-    let productToDB = await productsApi.addProduct(user.id, store.store.id, product.name, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
+    let productToDB = await productsApi.addProduct(user.id, product);
     let productFromDB = await productsApi.getProductDetails(productToDB.product.id);
 
     let productDetails = productFromDB.product;
@@ -318,7 +300,7 @@ it('getProducts with 3 params: {storeId, category, keyWords}', async () => {
 
   let product = fakeProduct({});
   
-  let productFromDB = await productsApi.addProduct(user.id, store.store.id, product.name, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
+  let productFromDB = await productsApi.addProduct(user.id, product);
     
     let storeId = productFromDB.product.storeId;
     let category = productFromDB.product.category;
@@ -337,7 +319,7 @@ it('getProducts with 2 params: {storeId, category}', async () => {
 
   let product = fakeProduct({});
   
-  let productFromDB = await productsApi.addProduct(user.id, store.store.id, product.name, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
+  let productFromDB = await productsApi.addProduct(user.id, product);
     
     let storeId = productFromDB.product.storeId;
     let category = productFromDB.product.category;
@@ -356,7 +338,7 @@ it('getProducts with 1 params: {storeId}', async () => {
 
   let product = fakeProduct({});
   
-  let productFromDB = await productsApi.addProduct(user.id, store.store.id, product.name, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
+  let productFromDB = await productsApi.addProduct(user.id,product);
     
     let storeId = productFromDB.product.storeId;
     let res = await productsApi.getProducts({storeId});
@@ -374,7 +356,7 @@ it('getProducts with store name: {storeName}', async () => {
 
   let product = fakeProduct({});
 
-  let productFromDB = await productsApi.addProduct(user.id, response.store.id, product.name, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
+  let productFromDB = await productsApi.addProduct(user.id,product);
   let store =  await StoreCollection.findById(productFromDB.product.storeId);
   let res = await productsApi.getProducts({storeName: store.name});
 

@@ -111,7 +111,7 @@ export const fakeCart = (opt: any = {}) => {
 
 export const fakeProduct = (opt: any = {}) => {
     return new Product({
-        
+
         id: genObjectId(),
         storeId: opt.storeId|| genObjectId() ,
         amountInventory: opt.amountInventory || chance.natural(),

@@ -14,7 +14,7 @@ export class Product {
     private _acceptableDiscount: number;
     private _discountPrice: number;
     private _rank: number;
-    private _reviews: Review[];
+    private _reviews: string[];
     private _keyWords: String[];
     private _category: String;
     private _isActivated: Boolean;
@@ -215,7 +215,7 @@ export class Product {
      * Getter reviews
      * @return {Review[]}
      */
-	public get reviews(): Review[] {
+	public get reviews(): string[] {
 		return this._reviews;
 	}
 
@@ -314,7 +314,7 @@ export class Product {
      * Setter reviews
      * @param {Review[]} value
      */
-	public set reviews(value: Review[]) {
+	public set reviews(value: string[]) {
 		this._reviews = value;
 	}
 

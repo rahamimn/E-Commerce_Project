@@ -4,7 +4,7 @@ import { Product } from './models/product';
 
 export interface IProductApi{
 
-    addProduct: (userId: String, storeId: String, productName:String, amountInventory: number, sellType: String, price: number, keyWords: String[], category: String) =>  Promise< { status: number ,error?: String, product?:Product   }>,
+    addProduct: (userId, newProduct: {storeId: String, name:String, amountInventory: Number, sellType: String, price: Number, keyWords: String[], category: String,coupons?: String,description?: String,imageUrl?: String,acceptableDiscount: number,discountPrice?: number,rank:number,reviews: any[]}) =>  Promise< { status: number ,error?: String, product?:Product   }>,
     removeProduct: (userId: String, productId: String) => Promise< { status: number ,error?: String, product?:Product   }>,
     updateProduct: (userId: String, storeId: String, productId: String, newPrice: number) => Promise< { status: number ,error?: String, product?:Product   }>,
     getProducts: (filter:{storeId?:String, category?: String, keyWords?: String[], name?:String}) => Promise< {status:number, error?: String, products?:Product[]   }>, 
