@@ -1,4 +1,4 @@
-<%- include('./adminHeader',{user}) %>
+<%- include('./storeHeader',{user, storeId}) %>
 
 <div class="card">
 
@@ -44,7 +44,21 @@
                     </div>
 
                     <div class="form-group row">
-                        <label for="key_words" class="col-md-4 col-form-label text-md-right"></label>
+                        <label for="image_url" class="col-md-4 col-form-label text-md-right">Image Url </label>
+                        <div class="col-md-6">
+                            <input type="text" id="imageUrl" class="form-control" name="imageUrl">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="description" class="col-md-4 col-form-label text-md-right">Description </label>
+                        <div class="col-md-6">
+                            <textarea class="form-control" rows="3" id="description"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="category" class="col-md-4 col-form-label text-md-right"></label>
                         <div class="col-md-6">
                             <select class="custom-select" id="category" name="category">
                                 <option selected>Category</option>
@@ -59,7 +73,7 @@
                         <button type="submit" class="btn btn-primary">
                             Add
                         </button>
-                        <p id="register-error"> </p>
+                        <p id="add-error"> </p>
                     </div>
             </div>
 
@@ -76,29 +90,40 @@
 
     function onSubmitAddProduct(event) {
         event.preventDefault();
-        var productName = $("#productName").val();
+        var name = $("#productName").val();
         var amountInventory = $("#amountInventory").val();
         var sellType = $("#sellType").val();
         var keyWordsFull = $("#keyWords").val();
         var keyWords = keyWordsFull.split(",", 10);
         var category = $("#category").val();
+        var price = $("#price").val();
         var userId = "<%=user.id%>";
         var storeId = "<%=storeId%>";
+        var imageUrl = $("#imageUrl").val();
+        var description = $("#description").val();
         postData(`/productsApi/addProduct`,{
             userId,
             storeId,
-            productName,
+            name,
             amountInventory,
+            price,
             sellType,
             keyWords,
-            category
+            category,
+            imageUrl,
+            description
         })
             .then(data => {
                 if (data.status < 0)
-                    $("#register-error").text(data.err);
+        {
+            console.log(data.error);
+            $("#add-error").text(data.err);
+        }
                 else
-                    document.location.href = '/';
-                console.log(data.err);
+        {
+
+            document.location.href = '/store-panel/<%=storeId%>';
+        }
             }) // JSON-string from `response.json()` call
             .catch(error => console.error(error));
     };

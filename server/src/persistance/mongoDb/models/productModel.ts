@@ -17,7 +17,7 @@ interface IProduct {
     acceptableDiscount: number,
     discountPrice?: number,
     rank?: number,
-    reviews?: MonArray<Review>,
+    reviews?: any[],
     keyWords?: String[],
     category?: String,
     isActivated: boolean
