@@ -180,10 +180,10 @@ export class UsersApi implements IUsersApi{
         const appointedUser = await UserCollection.findOne({userName: appointedUserName});
         const appointorRole = await RoleCollection.findOne({ofUser:userId , name:ADMIN});
         if(!appointorRole)
-            return ({status: Constants.BAD_REQUEST});
+            return ({status: Constants.BAD_REQUEST , err:'Appointor is not admin'});
         const existRole = await RoleCollection.findOne({ofUser:appointedUser.id, name:ADMIN});
         if(existRole)
-            return ({status: Constants.BAD_REQUEST});
+            return ({status: Constants.BAD_REQUEST, err:`${appointedUserName} is already admin`});
         const newRole = await RoleCollection.insert(new Role({name:ADMIN, ofUser: appointedUser.id , appointor: appointorRole.id }));
 
         appointorRole.appointees.push(newRole.id);

@@ -25,17 +25,31 @@ const storeSection = (permission = undefined) =>
     (req:Request,res:Response, next) => {
 
         //const response = await storeApi.getWorkers(req.params.storeId);
-        //if(response.workers.filter(worker => worker.role.ofUser === req.session.user.id).length === 0) 
+        //const workers = response.workers.filter(worker => worker.role.ofUser === req.session.user.id)
+        //if(workers.length === 0) 
         //   res.redirect('/') orErrorPage
-        //else
-        //   next();
-            next();
+        //const roleOfUser = workers[0].role;
+        //if(!persmission || roleOfUser.name === STORE_OWNER )
+        //  next();
+        //if(roleOfUser.name === STORE_MANAGER  &&
+        //   roleOfUser.permissions.some(perm => perm === permission))
+        //       next();
+        //
+        //res.redirect('/') orErrorPage
         };
 
 webRoutes.get('/' ,async (req:Request,res:express.Response)=>{
 
     res.render('pages/home', {
         user: req.session.user
+    });
+});
+
+webRoutes.get('/error' ,async (req:Request,res:express.Response)=>{
+
+    res.render('pages/error', {
+        user: req.session.user
+
     });
 });
 
@@ -170,6 +184,13 @@ webRoutes.get('/admin-panel', loginSection, async (req:Request,res:express.Respo
     });
 });
 
+webRoutes.get('/admin-panel/appoint-admin', loginSection, async (req:Request,res:express.Response)=>{
+    if(!req.session.user.isAdmin )
+        res.redirect("/");
+    res.render('pages/adminPages/appointAdmin',{
+        user: req.session.user
+    });
+});
 
 
 webRoutes.get('/store-panel/:storeId', loginSection, storeSection(), async (req:Request,res:express.Response)=>{

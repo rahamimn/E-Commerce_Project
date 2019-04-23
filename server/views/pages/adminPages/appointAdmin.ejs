@@ -1,0 +1,49 @@
+ <%- include('./adminHeader',{user})%>
+            <h2 class="display-6" style="color:grey">Appoint New Admin</h2>
+                
+                <div class="card">  
+                    <div class="card-header">New Admin</div>
+                        <div class="card-body">
+                            <form name="register-form" onsubmit="onSubmitRegister(event)">
+                                <div class="form-group row">
+                                    <label for="user_name" class="col-md-4 col-form-label text-md-right">UserName</label>
+                                    <div class="col-md-6">
+                                        <input type="text" id="userName" class="form-control" name="username">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 offset-md-4">
+                                    <button type="submit" class="btn btn-primary">
+                                    Appoint
+                                    </button>
+                                    <p id="new-admin-error"> </p>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+</div>
+</main>
+</div>  
+
+<script>
+function onSubmitRegister(event){
+  event.preventDefault();
+  var userName = $("#userName").val();
+  postData(`/usersApi/setUserAsSystemAdmin`, {
+    appointedUserName: userName
+    })
+  .then(data => {
+      alert(data.status,data.err );
+      if(data.status<0)
+        $("#new-admin-error").text(data.err);
+      else
+        document.location.href = '/user-panel';
+  }) 
+  .catch(error => console.error(error));
+};
+</script>
+
+<%- include ../../partials/pageWithSideFooter %>
