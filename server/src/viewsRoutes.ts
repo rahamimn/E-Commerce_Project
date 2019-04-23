@@ -134,6 +134,15 @@ webRoutes.get('/user-panel', loginSection, async (req:Request,res:express.Respon
     });
 });
 
+
+webRoutes.get('/store-panel/:storeId/addProduct', loginSection, async (req:Request,res:express.Response)=>{
+    res.render('pages/adminPages/addProduct1',{
+        user: req.session.user,
+        storeId: req.params.storeId,
+        categories
+    });
+});
+
 webRoutes.get('/user-panel/my-stores', loginSection, async (req:Request,res:express.Response)=>{
     const response = await usersApi.getUserStores(req.session.user.id);
 
@@ -142,6 +151,7 @@ webRoutes.get('/user-panel/my-stores', loginSection, async (req:Request,res:expr
         stores: response.stores
     });
 });
+
 
 
 
