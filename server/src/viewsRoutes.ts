@@ -2,14 +2,17 @@ import express = require('express');
 import { Request } from '../types/moongooseArray';
 import { Response } from 'express-serve-static-core';
 // import { verifyToken, createToken } from './jwt';
-import { MISSING_PARAMETERS, BAD_REQUEST } from './consts';
+import { MISSING_PARAMETERS, BAD_REQUEST, STORE_OWNER, STORE_MANAGER } from './consts';
 import { UsersApi } from './usersApi/usersApi';
 import { ProductsApi } from './productApi/productsApi';
+import { StoresApi } from './storeApi/storesApi';
 
 export const webRoutes = express.Router();
 
 const usersApi = new UsersApi();
 const productApi = new ProductsApi();
+const storesApi = new StoresApi();
+
 
 const categories = ["Home","Garden","Kitchen"];
 
@@ -22,12 +25,13 @@ const loginSection = (req:Request,res:Response, next) =>{
 }
 
 const storeSection = (permission = undefined) =>
-    (req:Request,res:Response, next) => {
+    async (req:Request,res:Response, next) => {
 
         //const response = await storeApi.getWorkers(req.params.storeId);
         //const workers = response.workers.filter(worker => worker.role.ofUser === req.session.user.id)
         //if(workers.length === 0) 
         //   res.redirect('/') orErrorPage
+
         //const roleOfUser = workers[0].role;
         //if(!persmission || roleOfUser.name === STORE_OWNER )
         //  next();
@@ -36,6 +40,16 @@ const storeSection = (permission = undefined) =>
         //       next();
         //
         //res.redirect('/') orErrorPage
+        //else
+        //   next();
+
+            if(!req.session.user.role || req.session.user.role.store !== req.params.storeId){
+
+                const res =  await usersApi.getUserRole(req.session.user.id, req.params.storeId)
+                const role = res.role
+                req.session.user.role = role;
+            }
+            next();
         };
 
 webRoutes.get('/' ,async (req:Request,res:express.Response)=>{
@@ -174,6 +188,17 @@ webRoutes.get('/user-panel/my-stores', loginSection, async (req:Request,res:expr
 });
 
 
+webRoutes.get('/store-panel/:storeId/workers', loginSection, storeSection(), async (req:Request,res:express.Response)=>{
+
+    const workers = await storesApi.getWorkers(req.session.user.id, req.params.storeId);
+    const user = req.session.user;
+
+    res.render('pages/storePages/workersPage',{
+        user: user,
+        storeId: req.params.storeId,
+        workers: workers.storeWorkers
+    });
+});
 
 
 webRoutes.get('/admin-panel', loginSection, async (req:Request,res:express.Response)=>{

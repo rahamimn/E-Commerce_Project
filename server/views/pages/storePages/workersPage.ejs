@@ -1,0 +1,51 @@
+ <%- include('./storeHeader',{user})%>
+  <h2 class="display-6" style="color:grey">Workers</h2>
+
+        <table class="table">  
+          <tbody>
+                <%workers.forEach(function (worker){%>
+                <tr>
+                <td><%= worker.userName %></td>
+                <td><%= worker.role.name %></td>
+                  <%if((worker.role.appointor).equals(user.role.id)){%>
+                <td><button id="r<%=worker.userName%>" class="btn btn-warning" type="button" onclick="removeRole(this.id)"><span>ᐅ</span> Remove Role </button></td>
+                <%};%> 
+              </tr>
+            <%})%>
+            </tbody>
+          </table>
+
+    <p id="workers-error"></p>
+  </ul>
+</div>
+
+
+
+
+    </div>
+
+    </main>
+</div>  
+<script>
+
+function removeRole(rUserName){
+
+    const userName = rUserName.slice(1);
+    postData('/usersApi/removeRole',{
+        userNameRemove: userName,
+        storeId: "<%= storeId %>"
+    }).then(res =>{
+        if(res.status < 0){
+            alert('Error');
+            $('#workers-error').text(res.err);
+        }
+        else{
+            document.location.href = '/store-panel/<%=storeId%>/workers';
+        }   
+    });
+}
+
+</script>
+
+
+<%- include ../../partials/pageWithSideFooter %>
