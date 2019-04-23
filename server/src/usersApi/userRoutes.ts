@@ -192,7 +192,8 @@ async function setUserAsSystemAdmin(req: Request, res: express.Response) {
         }
     }
     catch (err) {
-        res.send({status: Constants.BAD_REQUEST});
+        console.log(err);
+        res.send({status: Constants.BAD_REQUEST, err: err.toString()});
     }
 }
 

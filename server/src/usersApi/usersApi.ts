@@ -183,6 +183,7 @@ export class UsersApi implements IUsersApi{
         const existRole = await RoleCollection.findOne({ofUser:appointedUser.id, name:ADMIN});
         if(existRole)
             return ({status: Constants.BAD_REQUEST, err: "tole does not exist for admin"});
+
         const newRole = await RoleCollection.insert(new Role({name:ADMIN, ofUser: appointedUser.id , appointor: appointorRole.id }));
 
         appointorRole.appointees.push(newRole.id);
