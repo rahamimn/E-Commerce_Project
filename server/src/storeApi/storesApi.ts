@@ -8,17 +8,22 @@ import { IStoresApi } from './storesApiInterface';
 import { Message } from '../usersApi/models/message';
 import { asyncForEach } from '../utils/utils';
 import { UsersApi } from '../usersApi/usersApi';
+import { addToRegularLogger, addToErrorLogger } from '../utils/addToLogger';
 
 export class StoresApi implements IStoresApi {
     //works after test
     async addStore( storeNewOwnerId: String, storeName: string){
         try {
+
+            addToRegularLogger(" add store ", {storeNewOwnerId , storeName});
             const user = await UserCollection.findById(storeNewOwnerId);
             if(!user){
+                addToErrorLogger(" add store  ");
                 return {status: BAD_REQUEST, err:"bad user details"};
             }
             const store_should_be_null = await StoreCollection.findOne({name:storeName });
             if(store_should_be_null){
+                addToErrorLogger(" add store  ");
                 return {status: BAD_REQUEST, err:"the store name is not unic.."}; 
             }
             const new_store_added = await StoreCollection.insert(new Store({
@@ -40,6 +45,7 @@ export class StoresApi implements IStoresApi {
             return {status: OK_STATUS, store: new_store_added};
         }
         catch(err){
+            addToErrorLogger(" add store  ");
             return {status: BAD_REQUEST, err:"bad details"};
         }
     }
@@ -48,6 +54,7 @@ export class StoresApi implements IStoresApi {
     //workes after test
     async closeStore(ownerId: String, storeId: string){
         //const user_details = await UserCollection.findOne({userName: adminId});
+        addToRegularLogger(" close store ", {ownerId , storeId});
         const role_details_of_user = await RoleCollection.findOne({ofUser: ownerId , name: STORE_OWNER});
         if(!role_details_of_user){
             return ({status: BAD_REQUEST, err: "bad role could not find"});
@@ -62,6 +69,9 @@ export class StoresApi implements IStoresApi {
     }
 
     async getStore (storeName: String) {
+
+        addToRegularLogger(" get Store ", {storeName});
+
         const storeDetails =  await StoreCollection.findOne({name: storeName});
         if(!storeDetails){
             return {store: storeDetails ,status: BAD_REQUEST};
@@ -73,7 +83,8 @@ export class StoresApi implements IStoresApi {
     
 
     async getStoreMessages(ownerId: string, storeID: string) {
-        //const user_details = await UserCollection.findOne({userName: adminId});
+        addToRegularLogger(" get Store messages ", {ownerId,storeID });
+
         const role_details_of_user = await RoleCollection.findOne({ofUser: ownerId , name: STORE_OWNER});
 
         if(!role_details_of_user){
@@ -87,37 +98,15 @@ export class StoresApi implements IStoresApi {
         return ({status: OK_STATUS,  arrat_of_messages: store_object_from_db.messages});
     };
     
-    // async getWorkers(ownerId: string, storeID: string) {
-    //     //const user_details = await UserCollection.findOne({userName: adminId});
-    //     const role_details_of_user = await RoleCollection.findOne({ofUser: ownerId , name: STORE_OWNER});
+    async getWorkers(ownerId: string, storeID: string) {
+        addToRegularLogger(" get workers from store ", {ownerId,storeID });
 
-    //     if(!role_details_of_user){
-    //         //console.log("bad role could not find" );
-    //         return ({status: BAD_REQUEST});
-    //     }
-
-
-    //     const store_object_from_db = await StoreCollection.findOne({_id: storeID});
-
-
-    //     if(!store_object_from_db){
-    //         console.log("fail in get store messages return from func ");
-
-    //         //console.log("bad store could not find" );
-    //         return ({status: BAD_REQUEST});
-    //     }
-    //     return ({status: OK_STATUS,  arrat_of_messages: store_object_from_db.workers});
-    // };
-
-    async getWorkers(userId: string, storeId: string) {
-
-        const role_details_of_user = await RoleCollection.findOne({ofUser: userId , store: storeId});
-
+        const role_details_of_user = await RoleCollection.findOne({ofUser: ownerId , name: STORE_OWNER});
         if(!role_details_of_user){
             return ({status: BAD_REQUEST});
         }
 
-        const roles = await RoleCollection.find({store: storeId});
+        const roles = await RoleCollection.find({store: storeID});
 
 
         if(!roles){
@@ -142,7 +131,7 @@ export class StoresApi implements IStoresApi {
 
     //works after test
     async disableStore(adminId, storeId){
-        //const user_details = await UserCollection.findOne({userName: adminId});
+        addToRegularLogger(" get workers from store ", {adminId,storeId });
         const role_details_of_user = await RoleCollection.findOne({ofUser: adminId , name: ADMIN});
         if(!role_details_of_user){
             return ({status: BAD_REQUEST, err: "the user is not an admin and cannot disable store.." });
@@ -157,6 +146,8 @@ export class StoresApi implements IStoresApi {
     }
 
     async sendMessage(workerId, storeId, title, body, userName) {
+        addToRegularLogger(" send Message ", {workerId,storeId,title ,body, userName });
+
         const userId = userName;
         //todo find the userId from username: userToDisActivate == userName
         let worker =  await RoleCollection.findOne({ofUser: workerId , store: storeId});

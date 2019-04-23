@@ -9,6 +9,7 @@ import { Role } from "./models/role";
 import { User } from "./models/user";
 import { Message } from "./models/message";
 import { asyncForEach } from "../utils/utils";
+import { addToRegularLogger } from "../utils/addToLogger";
 
 
 const verifyPassword = (candidatePassword:String, salt: String, userPassword: String) => {
@@ -24,6 +25,8 @@ export class UsersApi implements IUsersApi{
 
     async login(userName ,password){
         try {
+            addToRegularLogger(" login ", {userName , password});
+
             const user = await UserCollection.findOne({userName});
             const isAdmin = await RoleCollection.findOne({ofUser:user.id, name:ADMIN})
             if(user.isDeactivated)
@@ -43,11 +46,15 @@ export class UsersApi implements IUsersApi{
 
 
     async logout (userId){
+        addToRegularLogger(" logout ", {userId });
+
         return Constants.OK_STATUS
     }
 
     async register(userDetails,sessionId= undefined){
         try {
+            addToRegularLogger(" register ", {userDetails, sessionId });
+
             const userExists = await UserCollection.findOne({userName: userDetails.userName});
             if(userExists)
                 return {status:Constants.BAD_USERNAME, err:"userName exists"};
@@ -78,6 +85,8 @@ export class UsersApi implements IUsersApi{
         }
     }
     async getUserDetails(userId){
+        addToRegularLogger(" get User Details ", {userId });
+
         let user = await UserCollection.findById(userId);
         if(!user)
             return ({status: Constants.BAD_REQUEST}); //inorder to remove props from object
@@ -87,6 +96,7 @@ export class UsersApi implements IUsersApi{
 
 
     async updateUser(userId, userDetails){//should get user props with _ from client    //todo userToUpdate not used - check why
+        addToRegularLogger(" update User ", {userId, userDetails });
         let userToUpdate = await UserCollection.findById(userId);
         if(!userToUpdate)
             return ({status: Constants.BAD_REQUEST});
@@ -97,6 +107,8 @@ export class UsersApi implements IUsersApi{
 
     async getCart(userId, cartId, sessionId=undefined){
         //todo use the sessionId - support for guests
+        addToRegularLogger(" get Cart ", {userId, cartId });
+
         let cart = await CartCollection.findById(cartId);
         if(!cart || !cart.ofUser.equals(userId))
         {
@@ -106,6 +118,8 @@ export class UsersApi implements IUsersApi{
     }
 
     async updateCart(cartDetails){
+        addToRegularLogger(" update Cart ", {cartDetails });
+
         let cartToUpdate = await CartCollection.findById(cartDetails.id);
         if(!cartToUpdate)
             return ({status: Constants.BAD_REQUEST});
@@ -124,7 +138,9 @@ export class UsersApi implements IUsersApi{
     }
 
     async getCarts(userId, sessionId = undefined){
-        let user
+        addToRegularLogger(" get Carts ", {userId });
+
+        let user;
         if(!userId && !sessionId )
             return ({status: Constants.BAD_REQUEST, err:"session nor user given"});
         if(userId){
@@ -140,6 +156,8 @@ export class UsersApi implements IUsersApi{
     }
 
     async addProductToCart(userId,productId, amount,sessionId = undefined){
+        addToRegularLogger(" add Product To Cart ", {userId ,productId,amount });
+
         if(!userId && !sessionId)
             return ({status: Constants.BAD_REQUEST, err:"user notDefined nor visitor "});        
         const product = await ProductCollection.findById(productId);
@@ -176,6 +194,8 @@ export class UsersApi implements IUsersApi{
     }
 
     async setUserAsSystemAdmin(userId, appointedUserName){
+        addToRegularLogger(" set User As System Admin ", {userId ,appointedUserName });
+
         const appointedUser = await UserCollection.findOne({userName: appointedUserName});
         const appointorRole = await RoleCollection.findOne({ofUser:userId , name:ADMIN});
         if(!appointorRole)
@@ -192,6 +212,8 @@ export class UsersApi implements IUsersApi{
     }
 
     async setUserAsStoreOwner(userId, appointedUserName, storeId){
+        addToRegularLogger(" set User As store owner ", {userId ,appointedUserName, storeId });
+
         const appointedUser = await UserCollection.findOne({userName: appointedUserName});
         let newRole;
         const appointorRole = await RoleCollection.findOne({ofUser:userId, store:storeId , name:STORE_OWNER});
@@ -215,6 +237,8 @@ export class UsersApi implements IUsersApi{
     }
 
     async setUserAsStoreManager(userId, appointedUserName, storeId, permissions){
+        addToRegularLogger(" set User As store manager ", {userId ,appointedUserName, storeId, permissions });
+
         const appointedUser = await UserCollection.findOne({userName: appointedUserName});
         const appointorRole = await RoleCollection.findOne({ofUser:userId, store:storeId , name:{$in: [STORE_OWNER,STORE_MANAGER]}});
         if(!appointorRole)
@@ -238,6 +262,8 @@ export class UsersApi implements IUsersApi{
     }
 
     async updatePermissions(userId, appointedUserName, storeId, permissions){
+        addToRegularLogger(" update Permissions ", {userId ,appointedUserName, storeId, permissions });
+
         const appointedUser = await UserCollection.findOne({userName: appointedUserName});
         const existRole = await RoleCollection.findOne({ofUser:appointedUser.id, store:storeId});
 
@@ -255,6 +281,7 @@ export class UsersApi implements IUsersApi{
     }
 
     async popNotifications(userId){
+        addToRegularLogger(" pop Notifications ", {userId });
 
         const user = await UserCollection.findById(userId);
         if(!user)
@@ -268,6 +295,8 @@ export class UsersApi implements IUsersApi{
     }
 
     async pushNotification(userId, header, message){
+        addToRegularLogger(" push Notifications ", {userId, header, message });
+
         const user = await UserCollection.findById(userId);
         if(!user)
             return {status: Constants.BAD_REQUEST, err:'user does not exist'};
@@ -279,7 +308,8 @@ export class UsersApi implements IUsersApi{
     }
 
     async removeRole(userId, userNameRemove, storeId){
-        console.log(userId);
+        addToRegularLogger(" remove Role ", {userId, userNameRemove, storeId });
+
         const roleUserId = await RoleCollection.findOne({ ofUser: userId, store: storeId });
         const userofRoleToDelete = await UserCollection.findOne({ userName: userNameRemove });
         if(!userofRoleToDelete)
@@ -300,6 +330,8 @@ export class UsersApi implements IUsersApi{
     }
 
     async getMessages(userId){
+        addToRegularLogger(" get Messages", {userId });
+
         let user = await UserCollection.findById(userId);
         if(!user)
             return ({status: Constants.BAD_REQUEST, err:'user does not exist'});
@@ -309,6 +341,8 @@ export class UsersApi implements IUsersApi{
     }
 
     async deleteUser(adminId, userNameToDisActivate){
+        addToRegularLogger(" delete User", {adminId, userNameToDisActivate });
+
         let admin = await UserCollection.findById(adminId);
         if(!admin)
             return {status: Constants.BAD_REQUEST, err: "the user is not an admin"};
@@ -325,6 +359,7 @@ export class UsersApi implements IUsersApi{
     }
 
     async getUserStores(userId){
+        addToRegularLogger(" get User Stores", {userId});
 
         let roles:any = await RoleCollection.find({ofUser: userId, name:{$in:[STORE_MANAGER,STORE_OWNER]}});;
 
@@ -342,6 +377,8 @@ export class UsersApi implements IUsersApi{
     }
 
    async sendMessage(userId, title, body, toName , toIsStore){
+        addToRegularLogger(" send Message", {userId, title, body, toName , toIsStore});
+
         let toUser,toStore; 
         let user = await UserCollection.findById(userId);
 
