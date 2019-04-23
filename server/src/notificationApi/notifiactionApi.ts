@@ -3,11 +3,11 @@ import { UsersApi } from "../usersApi/usersApi";
 const server = require('http').createServer();
 const io = require('socket.io')(server);
 const PORT = 3002;
-const usersApi = new UsersApi();
 
 //temp for tests
 export const clientSockets = {};
 export const connectWsServer = () => {
+    const usersApi = new UsersApi();
     io.on('connection', socket => {
         let idClient;
 
@@ -53,6 +53,7 @@ export const connectWsServer = () => {
 }
 
 export const sendNotification = async (userId, header, message) => {
+    const usersApi = new UsersApi();
     if(clientSockets[userId] && clientSockets[userId].socket ){
         clientSockets[userId].maxId++;
         const id = clientSockets[userId].maxId-1;

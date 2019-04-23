@@ -10,6 +10,7 @@ import { User } from "./models/user";
 import { Message } from "./models/message";
 import { asyncForEach } from "../utils/utils";
 import { addToRegularLogger } from "../utils/addToLogger";
+import { sendNotification } from "../notificationApi/notifiactionApi";
 
 
 const verifyPassword = (candidatePassword:String, salt: String, userPassword: String) => {
@@ -208,6 +209,7 @@ export class UsersApi implements IUsersApi{
 
         appointorRole.appointees.push(newRole.id);
         await RoleCollection.updateOne(appointorRole);
+        await sendNotification(appointedUser.id,'System Message','some one has appointed you \n please commit login again');
         return ({status: Constants.OK_STATUS});
     }
 

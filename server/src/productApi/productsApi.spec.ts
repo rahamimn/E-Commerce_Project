@@ -188,7 +188,7 @@ describe('Product model',() => {
     let response = await productsApi.addProduct(user.id,product);
     console.log(response);
     let product_BeforeRemove = await ProductCollection.findById(response.product.id);
-    let product_AfterRemove = await productsApi.removeProduct(user.id, product_BeforeRemove.id);
+    let product_AfterRemove = await productsApi.setProdactActivation(user.id, product_BeforeRemove.id);
   
     expect(response.status).toEqual(OK_STATUS);
     expect(product_BeforeRemove.isActivated).toBeTruthy;
@@ -208,7 +208,7 @@ describe('Product model',() => {
     
     let response = await productsApi.addProduct(user.id,product);
     let product_BeforeRemove = await ProductCollection.findById(response.product.id);
-    let product_AfterRemove = await productsApi.removeProduct(user.id, product_BeforeRemove.id);
+    let product_AfterRemove = await productsApi.setProdactActivation(user.id, product_BeforeRemove.id);
   
     //NIR: need to fix
     expect(response.status).toEqual(OK_STATUS);
@@ -231,7 +231,7 @@ describe('Product model',() => {
     let product_BeforeRemove = await ProductCollection.findById(response.product.id);
 
     let userWithNoPermission = await UserCollection.insert(fakeUser({}));
-    let product_AfterRemove = await productsApi.removeProduct(userWithNoPermission.id, product_BeforeRemove.id);
+    let product_AfterRemove = await productsApi.setProdactActivation(userWithNoPermission.id, product_BeforeRemove.id);
   
     expect(product_AfterRemove.status).toEqual(BAD_REQUEST);
     expect((product_AfterRemove.error).startsWith("You have no permission for this action"));
@@ -369,10 +369,6 @@ it('getProducts with store name: {storeName}', async () => {
   expect(res.status).toEqual(OK_STATUS);
   expect(res.products === [productFromDB.product]);
 });
-
-
-
-
 });
 
 

@@ -14,11 +14,13 @@
 
 /acceptanceTest/dist/
 
+/server/E_Commerce_system_error_logger.log
+
+/server/E_Commerce_system_logger.log
+
 /acceptanceTest/package-lock.json
 
 .env
-
-.gitignore
 
 private.key
 
