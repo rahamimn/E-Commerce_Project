@@ -352,4 +352,14 @@ it('add product to cart of guest and than register ', async () => {
  
 });
 
+
+it('get user stores ', async () => {
+    const response = await usersApi.getUserStores(storeOwner.id);
+
+    expect(response.status).toEqual(constants.OK_STATUS);
+    expect(response.stores.length).toBe(1);
+    expect(response.stores[0].id.toString()).toEqual(store.id);
+    expect(response.stores[0].name).toEqual(store.name);
+});
+
 });

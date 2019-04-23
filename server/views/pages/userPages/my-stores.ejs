@@ -1,0 +1,19 @@
+ <%- include('./userHeader',{user})%>
+ <!--content-->
+<h2 class="display-6" style="color:grey">My Stores</h2>
+
+<table class="table">
+  <tbody>
+  <%stores.forEach( function (store){%>
+    <tr>
+      <td><%=store.name%></td>
+      <td><a class="btn btn-warning" href="/store-panel/<%=store.id%>">Store Actions</a></td>
+    </tr>
+  <%})%>
+  </tbody>
+</table>
+<!--end content-->
+</div>
+</main>
+</div>  
+<%- include ../../partials/pageWithSideFooter %>

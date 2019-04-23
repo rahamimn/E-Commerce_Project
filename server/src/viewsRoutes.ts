@@ -21,6 +21,17 @@ const loginSection = (req:Request,res:Response, next) =>{
         next();
 }
 
+const storeSection = (permission = undefined) =>
+    (req:Request,res:Response, next) => {
+
+        //const response = await storeApi.getWorkers(req.params.storeId);
+        //if(response.workers.filter(worker => worker.role.ofUser === req.session.user.id).length === 0) 
+        //   res.redirect('/') orErrorPage
+        //else
+        //   next();
+            next();
+        };
+
 webRoutes.get('/' ,async (req:Request,res:express.Response)=>{
 
     res.render('pages/home', {
@@ -123,6 +134,16 @@ webRoutes.get('/user-panel', loginSection, async (req:Request,res:express.Respon
     });
 });
 
+webRoutes.get('/user-panel/my-stores', loginSection, async (req:Request,res:express.Response)=>{
+    const response = await usersApi.getUserStores(req.session.user.id);
+
+    res.render('pages/userPages/my-stores',{
+        user: req.session.user,
+        stores: response.stores
+    });
+});
+
+
 
 webRoutes.get('/admin-panel', loginSection, async (req:Request,res:express.Response)=>{
     if(!req.session.user.isAdmin )
@@ -131,3 +152,13 @@ webRoutes.get('/admin-panel', loginSection, async (req:Request,res:express.Respo
         user: req.session.user
     });
 });
+
+
+
+webRoutes.get('/store-panel/:storeId', loginSection, storeSection(), async (req:Request,res:express.Response)=>{
+    res.render('pages/storePages/storeHome',{
+        user: req.session.user,
+        storeId: req.params.storeId
+    });
+});
+
