@@ -138,6 +138,27 @@ export class Role {
         await RoleCollection.delete({ _id : this.id});
   };
 
+  public getRoleDetails (){
+    const {
+        _id,
+        _name,
+        _ofUser, 
+        _store,
+        _appointor, 
+        _appointees ,
+        _permissions ,
+        } = this;
+    return ({
+        id:_id,
+        name:_name,
+        ofUser:_ofUser, 
+        store:_store,
+        appointor:_appointor, 
+        appointees:_appointees ,
+        permissions:_permissions ,
+    });
+}
+
 
     private _id: String;
     private _name: String;

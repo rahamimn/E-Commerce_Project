@@ -33,7 +33,7 @@ const roleScheme = new Schema({
   appointees: [{type: Schema.Types.ObjectId, ref: 'Role', required: true, default:[] }],
 });
 
-roleScheme.index({ofUser:1/*,store:1*/ },{unique:true})
+roleScheme.index({ofUser:1,store:1 },{unique:true})
 
 
 export let RoleModel : Model<IRoleModel>

@@ -42,7 +42,7 @@ describe("Store api model", () => {
   });
 
 
-  it("test disable store (currentlly in app.ts)", async () => {
+  it("test disable store", async () => {
     var user1 = fakeUser({});
     var user2 =  await UserCollection.insert(user1);
     // UserCollection.insert(user1);
@@ -55,7 +55,7 @@ describe("Store api model", () => {
     expect(status_of_function.status).toEqual(OK_STATUS);
   });
 
-  it("test CLOSE STORE (currentlly in app.ts)", async () => {
+  it("test CLOSE STORE", async () => {
     var user1 = fakeUser({});
     var user2 = await UserCollection.insert(user1);
     var user2_id = user2.id;
@@ -69,7 +69,7 @@ describe("Store api model", () => {
     expect(hi.status).toEqual(OK_STATUS);
   });
 
-  it("test add store (currentlly in app.ts)", async () => {
+  it("test add store", async () => {
     let user = await UserCollection.insert(fakeUser({}));
     const storeName = chance.string();
     const response = await storesApi.addStore(user.id,storeName);
@@ -85,7 +85,7 @@ describe("Store api model", () => {
     expect(response.store.storeState).toEqual(OPEN_STORE);
   });
 
-  it("test GET STORE (currentlly in app.ts)", async () => {
+  it("test GET STORE", async () => {
     const storeName = 'store1';
     var store = await StoreCollection.insert(fakeStore({name: storeName}));
 
@@ -94,7 +94,7 @@ describe("Store api model", () => {
     expect(store_from_db.store.name).toEqual(storeName);
   });
 
-  it("test GET STORE MESSAGES (currentlly in app.ts)", async () => {
+  it("test GET STORE MESSAGES", async () => {
     var user1 = fakeUser({});
     var user2 = await UserCollection.insert(user1);
     var user2_id = user2.id.toString();
@@ -117,7 +117,7 @@ describe("Store api model", () => {
     expect(store_from_db.arrat_of_messages.length).toEqual(1);
   });
 
-  it("test SEND MESSAGE to user (currentlly in app.ts)", async () => {
+  it("test SEND MESSAGE to user ", async () => {
     var store = await StoreCollection.insert(fakeStore({}));
     var owner = await UserCollection.insert(fakeUser({}));
     var user = await UserCollection.insert(fakeUser({}));
@@ -139,23 +139,23 @@ describe("Store api model", () => {
     expect(storeWithMessage.messages[0].equals(response.message.id)).toBeTruthy();
   });
 
-  it("test GET STORE WORKERS (currentlly in app.ts)", async () => {
+  // it("test GET STORE WORKERS (currentlly in app.ts)", async () => {
 
-    var user1 = fakeUser({});
-    var user2 = await UserCollection.insert(user1);
+  //   var user1 = fakeUser({});
+  //   var user2 = await UserCollection.insert(user1);
 
-    var user2_id = user2.id.toString();
+  //   var user2_id = user2.id.toString();
 
-    var store1 = chance.string();
-    var store2 = await storesApi.addStore(user2_id, store1);
+  //   var store1 = chance.string();
+  //   var store2 = await storesApi.addStore(user2_id, store1);
 
-    const store_from_db = await storesApi.getWorkers(user2_id, store2.store.id);
-    expect(store_from_db.arrat_of_messages.length).toEqual(1);
-  });
-    /*it('chenge the name', async () => {
-        const new_store_name ="aviv the king";
-        const response = await storesApi.addStore(new_store_name);
-        expect(response.status).toEqual(OK_STATUS);
-        });*/
+  //   const store_from_db = await storesApi.getWorkers(user2_id, store2.store.id);
+  //   expect(store_from_db.arrat_of_messages.length).toEqual(1);
+  // });
+  //   /*it('chenge the name', async () => {
+  //       const new_store_name ="aviv the king";
+  //       const response = await storesApi.addStore(new_store_name);
+  //       expect(response.status).toEqual(OK_STATUS);
+  //       });*/
 
 });
