@@ -258,7 +258,6 @@ export class Product {
 	public set amountInventory(value: number) {
         if(value<0)
             throw new Error('amountInventory not valid');
-        
         this._amountInventory = value;
 	}
 

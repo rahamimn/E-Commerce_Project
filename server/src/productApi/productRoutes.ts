@@ -18,7 +18,7 @@ async function addProduct(req: Request, res: express.Response) {
             res.send({status: Constants.NO_VISITOR_ACCESS, err: Constants.ERR_Access_MSG});
             return;
         }
-        const userId = req.session.user;
+        const userId = req.session.user.id;
         const storeId = req.body.storeId;
         const amountInventory = req.body.amountInventory;
         const sellType = req.body.sellType;
@@ -26,16 +26,18 @@ async function addProduct(req: Request, res: express.Response) {
         const category = req.body.category;
         const coupons = "";
         const acceptableDiscount = 0;
-        const discountPrice = req.body.discountPrice;
+        const discountPrice = 0;
         const rank = 3;
-        const name = req.body.productName;
+        const name = req.body.name;
         const keyWords = req.body.keyWords;
         const reviews = [];
         const imageUrl = req.body.imageUrl;
         const description = req.body.description;
 
-        if (!name || !amountInventory || !sellType || !price || !category )
+        if (!name || !amountInventory || !sellType || !price || !category ) {
+            console.log(name,amountInventory,sellType,price,category);
             res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
+        }
         const newProduct = {storeId, name ,amountInventory, sellType, price, keyWords, category,coupons,acceptableDiscount,discountPrice,rank,reviews,imageUrl,description};
         const response = await productsApi.addProduct(userId,newProduct);
         res.send(response);

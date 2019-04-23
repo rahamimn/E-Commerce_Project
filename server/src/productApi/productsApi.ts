@@ -6,11 +6,14 @@ import { Review } from "../storeApi/models/review";
 export class ProductsApi implements IProductApi{
 
     async addProduct(userId,newProduct: {storeId: String, name:String, amountInventory: Number, sellType: String, price: Number, keyWords: String[], category: String,coupons?: String,description?: String,imageUrl?: String,acceptableDiscount: number,discountPrice?: number,rank:number,reviews: any[]}){
+        console.log(userId,newProduct);
         if (!userId){
+            console.log('111111111111111111');
             return ({status: BAD_REQUEST, error: BAD_USER_ID});
         }
 
         if (!this.isStoreVaild(newProduct.storeId)){
+            console.log('222222222222222222');
             return ({status: BAD_REQUEST, error: BAD_STORE_ID});
        }
 
@@ -18,18 +21,22 @@ export class ProductsApi implements IProductApi{
        const isUserPermitted = await RoleCollection.findOne({ofUser:userId, store:newProduct.storeId , name:{$in: [STORE_OWNER,STORE_MANAGER]}});
 
        if(!isUserPermitted && !isUserAdmin){
+           console.log('222222222222222222');
             return ({status: BAD_REQUEST, error: "You have no permission for this action (User ID: " + userId + ")."});
         }
 
         if (newProduct.amountInventory < 0) {
+            console.log('3333333333333333');
             return ({status: BAD_REQUEST, error: BAD_AMOUNT});
         }
 
         if (newProduct.price < 0){
+            console.log('4444444444444444');
             return ({status: BAD_REQUEST, error: BAD_PRICE});
         }
 
          if (await (this.doesStoreHaveThisProduct(newProduct.storeId, newProduct.name))){
+             console.log('555555555555555');
             return ({status: BAD_REQUEST, error: ("The product \"" + newProduct.name + "\" already exists in the store with ID: \"" + newProduct.storeId +"\"") });
         }
 
@@ -40,6 +47,8 @@ export class ProductsApi implements IProductApi{
                 amountInventory: newProduct.amountInventory,
                 sellType: newProduct.sellType,
                 price: newProduct.price,
+                imageUrl: newProduct.imageUrl,
+                description: newProduct.description,
                 coupons: null,
                 acceptableDiscount: null,
                 discountPrice: null,
@@ -53,6 +62,7 @@ export class ProductsApi implements IProductApi{
             return {status: OK_STATUS , product: productToInsert}
 
         } catch(error) {
+            console.log('666666666666666666666666');
             return ({status: BAD_REQUEST});
         }
     }
