@@ -279,13 +279,17 @@ export class UsersApi implements IUsersApi{
     }
 
     async removeRole(userId, userNameRemove, storeId){
+        console.log(userId);
         const roleUserId = await RoleCollection.findOne({ ofUser: userId, store: storeId });
         const userofRoleToDelete = await UserCollection.findOne({ userName: userNameRemove });
         if(!userofRoleToDelete)
             return {status: Constants.BAD_REQUEST, err: 'There is no user with this user name'};
         const role = await RoleCollection.findOne({ ofUser: userofRoleToDelete.id, store: storeId });
-        if(!role || !roleUserId)
-            return {status: Constants.BAD_REQUEST, err: 'role of userId or userIdRemove not exist'};
+        if(!roleUserId)
+            return {status: Constants.BAD_REQUEST, err: 'appointor userIdRemove role not exist'};
+
+        if(!role)
+            return {status: Constants.BAD_REQUEST, err: 'role of appointee not exist'};
 
         if(role.appointor.equals(roleUserId.id)){
             await role.delete(true);
@@ -370,6 +374,48 @@ export class UsersApi implements IUsersApi{
             await UserCollection.updateOne(toUser);
         }
         return ({status: Constants.OK_STATUS , message});
+    }
+
+
+    // async getUserAppointees(appointerId: string, storeId: string) {
+
+    //     const role_of_appointer = await RoleCollection.findOne({ofUser: appointerId , store: storeId});
+
+    //     if(!role_of_appointer){
+    //         return ({status: Constants.BAD_REQUEST});
+    //     }
+
+    //     const userAppointees = role_of_appointer.appointees;
+
+    //     if(!userAppointees){
+    //         console.log("fail to get appointees ");
+    //         return ({status: Constants.BAD_REQUEST});
+    //     }
+
+    //     let appointees = [];
+
+    //     await asyncForEach(userAppointees, async appointee => {
+    //         console.log(" HERE   ");
+
+    //         const userName = (await UserCollection.findById(role.ofUser)).userName;
+    //         appointees.push({userName: userName , role: role.getRoleDetails()})
+    //     });
+
+
+    //     return ({status: Constants.OK_STATUS,  appointees: appointees});
+    // };
+
+    async getUserRole(userId, storeId){
+
+        let role = await RoleCollection.findOne({ofUser: userId, store: storeId});;
+
+        if (!role){
+            return ({status: Constants.BAD_REQUEST});
+        }
+
+
+
+        return ({status: Constants.OK_STATUS , role});
     }
 
 }

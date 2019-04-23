@@ -255,12 +255,13 @@ usersApiRouter.post('/usersApi/removeRole', removeRole);
 
 async function removeRole(req: Request, res: express.Response) {
     try {
+        console.log(req.body);
         const user = req.session.user;
         if (!user) {
             res.send({status: Constants.NO_VISITOR_ACCESS, err: Constants.ERR_Access_MSG});
             return;
         }
-        const storeId = req.session.storeId;
+        const storeId = req.body.storeId;
         const userNameRemove = req.body.userNameRemove;
 
         if (!storeId)
@@ -273,7 +274,7 @@ async function removeRole(req: Request, res: express.Response) {
         }
     }
     catch (err) {
-        res.send({status: Constants.BAD_REQUEST});
+        res.send({status: Constants.BAD_REQUEST, err});
     }
 }
 

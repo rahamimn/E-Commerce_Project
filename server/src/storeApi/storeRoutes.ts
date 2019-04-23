@@ -82,6 +82,7 @@ storesApiRouter.post('/storesApi/getWorkers', getWorkers);
 
 async function getWorkers(req: Request, res: express.Response) {
     try {
+        console.log(req.body);
         const user = req.session.user;
         if (!user) {
             res.send({status: Constants.NO_VISITOR_ACCESS, err: Constants.ERR_Access_MSG});

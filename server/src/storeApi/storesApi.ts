@@ -1,15 +1,15 @@
 
-import { BAD_REQUEST, STORE_OWNER, CLOSE_STORE_BY_OWNER, CLOSE_STORE_BY_ADMIN } from './../consts';
+import { BAD_REQUEST, STORE_OWNER, CLOSE_STORE_BY_OWNER, CLOSE_STORE_BY_ADMIN, STORE_MANAGER } from './../consts';
 import { StoreCollection, UserCollection, RoleCollection, MessageCollection } from '../persistance/mongoDb/Collections';
 import { OK_STATUS, BAD_USERNAME, OPEN_STORE, ADMIN } from "../consts";
 import { Store } from './models/store';
 import { Role } from '../usersApi/models/role';
 import { IStoresApi } from './storesApiInterface';
 import { Message } from '../usersApi/models/message';
+import { asyncForEach } from '../utils/utils';
+import { UsersApi } from '../usersApi/usersApi';
 
 export class StoresApi implements IStoresApi {
-  
-
     //works after test
     async addStore( storeNewOwnerId: String, storeName: string){
         try {
@@ -87,17 +87,56 @@ export class StoresApi implements IStoresApi {
         return ({status: OK_STATUS,  arrat_of_messages: store_object_from_db.messages});
     };
     
-    async getWorkers(ownerId: string, storeID: string) {
-        const role_details_of_user = await RoleCollection.findOne({ofUser: ownerId , name: STORE_OWNER});
+    // async getWorkers(ownerId: string, storeID: string) {
+    //     //const user_details = await UserCollection.findOne({userName: adminId});
+    //     const role_details_of_user = await RoleCollection.findOne({ofUser: ownerId , name: STORE_OWNER});
+
+    //     if(!role_details_of_user){
+    //         //console.log("bad role could not find" );
+    //         return ({status: BAD_REQUEST});
+    //     }
+
+
+    //     const store_object_from_db = await StoreCollection.findOne({_id: storeID});
+
+
+    //     if(!store_object_from_db){
+    //         console.log("fail in get store messages return from func ");
+
+    //         //console.log("bad store could not find" );
+    //         return ({status: BAD_REQUEST});
+    //     }
+    //     return ({status: OK_STATUS,  arrat_of_messages: store_object_from_db.workers});
+    // };
+
+    async getWorkers(userId: string, storeId: string) {
+
+        const role_details_of_user = await RoleCollection.findOne({ofUser: userId , store: storeId});
+
         if(!role_details_of_user){
             return ({status: BAD_REQUEST});
         }
-        const store_object_from_db = await StoreCollection.findOne({_id: storeID});
-        if(!store_object_from_db){
-            return ({status: BAD_REQUEST, err: "fail in get store messages return from func "});
+
+        const roles = await RoleCollection.find({store: storeId});
+
+
+        if(!roles){
+            console.log("Failed in get managers ");
+
+            return ({status: BAD_REQUEST});
         }
-        return ({status: OK_STATUS,  arrat_of_messages: store_object_from_db.workers});
+
+        let workers = [];
+
+        await asyncForEach(roles,async role => {
+            const userName = (await UserCollection.findById(role.ofUser)).userName;
+            workers.push({userName: userName , role: role.getRoleDetails()})
+        });
+
+
+        return ({status: OK_STATUS,  storeWorkers: workers});
     };
+
     addReview:(userId: string, storeId: string, rank: number, comment: string) => void;
 
 
@@ -147,4 +186,3 @@ export class StoresApi implements IStoresApi {
         return ({status: OK_STATUS , message: message1 });
     } 
 }
-

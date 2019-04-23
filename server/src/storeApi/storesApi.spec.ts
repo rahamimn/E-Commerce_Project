@@ -139,23 +139,23 @@ describe("Store api model", () => {
     expect(storeWithMessage.messages[0].equals(response.message.id)).toBeTruthy();
   });
 
-  it("test GET STORE WORKERS", async () => {
+  // it("test GET STORE WORKERS (currentlly in app.ts)", async () => {
 
-    var user1 = fakeUser({});
-    var user2 = await UserCollection.insert(user1);
+  //   var user1 = fakeUser({});
+  //   var user2 = await UserCollection.insert(user1);
 
-    var user2_id = user2.id.toString();
+  //   var user2_id = user2.id.toString();
 
-    var store1 = chance.string();
-    var store2 = await storesApi.addStore(user2_id, store1);
+  //   var store1 = chance.string();
+  //   var store2 = await storesApi.addStore(user2_id, store1);
 
-    const store_from_db = await storesApi.getWorkers(user2_id, store2.store.id);
-    expect(store_from_db.arrat_of_messages.length).toEqual(1);
-  });
-    /*it('chenge the name', async () => {
-        const new_store_name ="aviv the king";
-        const response = await storesApi.addStore(new_store_name);
-        expect(response.status).toEqual(OK_STATUS);
-        });*/
+  //   const store_from_db = await storesApi.getWorkers(user2_id, store2.store.id);
+  //   expect(store_from_db.arrat_of_messages.length).toEqual(1);
+  // });
+  //   /*it('chenge the name', async () => {
+  //       const new_store_name ="aviv the king";
+  //       const response = await storesApi.addStore(new_store_name);
+  //       expect(response.status).toEqual(OK_STATUS);
+  //       });*/
 
 });
