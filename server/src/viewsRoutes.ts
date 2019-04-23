@@ -74,6 +74,13 @@ webRoutes.get('/products/:productId' , async (req:Request,res:express.Response)=
     });
 });
 
+webRoutes.get('/user-panel/addStore', async (req:Request,res:express.Response)=>{
+    res.render('pages/userPages/addStore',{
+        user: req.session.user
+    });
+});
+
+
 webRoutes.get('/register', async (req:Request,res:express.Response)=>{
     res.render('pages/register',{
         user: req.session.user
