@@ -76,7 +76,6 @@ export const setData= async () =>{
      storeOwnerId= storeOwner.id;
      const storeOwnerRole = await setupRoleToUser(storeOwnerId,{name: STORE_OWNER, store: storeId1 });
    
-
      //store manager which appointed by storeOwner
      const storeManager = await insertRegisterdUser(storeManagerIdUsername,storeManagerIdPassword);
      storeManagerId= storeManager.id;
@@ -94,7 +93,7 @@ export const setData= async () =>{
          description:"sadsadsadsadsdsadasdsadas dsadas dsadas dgdfg gfdgdfg dasd ",
          imageUrl:"https://cdn.shopify.com/s/files/1/0396/8269/products/classic-towels-cotton-white-lp-000_2880x.jpg?v=1539717395",
          keyWords:['type1','type2'],
-         category:'cat'
+         category:'Home'
      }))).id;
 
      productId3 = (await ProductCollection.insert(fakeProduct({
@@ -105,7 +104,7 @@ export const setData= async () =>{
         description:"sadsadsadsadsdsadasdsadas dsadas dsadas dgdfg gfdgdfg dasd ",
         imageUrl:"http://www.freeindeed36.com/wp-content/uploads/2016/05/Egg.png",
         keyWords:['type1','type2','type3'],
-        category:'cat'
+        category:'Garden'
     }))).id;
 
      productId2 = (await ProductCollection.insert(fakeProduct({

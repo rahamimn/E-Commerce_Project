@@ -1,0 +1,133 @@
+<%- include('./storeHeader',{user, storeId, product}) %>
+    <h2 class="display-6" style="color:grey">Update Product</h2>
+        <div class="card">
+            <div class="card-header">Update</div>
+            <div class="card-body">
+                <form name="addProduct-form" onsubmit="onSubmitUpdateProduct(event)">
+                    <div class="form-group row">
+                        <label for="product_name" class="col-md-4 col-form-label text-md-right">Product Name *</label>
+                        <div class="col-md-6">
+                            <input type="text" id="productName" class="form-control" name="productName" value="<%=product.name%>">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="amount_inventory" class="col-md-4 col-form-label text-md-right">
+                            Amount Inventory *</label>
+                        <div class="col-md-6">
+                            <input type="text" id="amountInventory" class="form-control" name="amountInventory" value="<%=product.amountInventory%>">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="sell_type" class="col-md-4 col-form-label text-md-right">
+                            Sell type </label>
+                        <div class="col-md-6">
+                            <input type="text" id="sellType" class="form-control" name="sellType" value="<%=product.sellType%>">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="price" class="col-md-4 col-form-label text-md-right">Price *</label>
+                        <div class="col-md-6">
+                            <input type="text" id="price" class="form-control" name="price" value="<%=product.price%>">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="key_words" class="col-md-4 col-form-label text-md-right">Key words *</label>
+                        <div class="col-md-6">
+                            <input type="text" id="keyWords" class="form-control" name="keyWords" value="<%=product.keyWords%>">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="image_url" class="col-md-4 col-form-label text-md-right">Image Url </label>
+                        <div class="col-md-6">
+                            <input type="text" id="imageUrl" class="form-control" name="imageUrl" value="<%=product.imageUrl%>">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="description" class="col-md-4 col-form-label text-md-right">Description </label>
+                        <div class="col-md-6">
+                            <textarea class="form-control" rows="3" id="description"><%=product.description%></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="category" class="col-md-4 col-form-label text-md-right"></label>
+                        <div class="col-md-6">
+                        <%=product.category%>
+                            <select class="custom-select" id="category" name="category">
+                            
+                                <option selected>Category</option>
+                                <%categories.forEach(function(cat){%>
+                                    <% if(product.category && cat===product.category){ %>
+                                        <option value="<%=cat%>" selected><%=cat%></option>
+                                    <%} else {%>
+                                        <option value="<%=cat%>"><%=cat%></option>
+                                    <%}%>
+                                <%})%>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 offset-md-4">
+                        <button type="submit" class="btn btn-primary">
+                            Update
+                        </button>
+                        <p id="update-product-error"> </p>
+                    </div>
+            </div>
+
+            </form>
+         </div>
+    </div>
+</div>
+</div>
+</main>
+</div>
+<%- include ../../partials/pageWithSideFooter %>
+
+<script>
+
+    function onSubmitUpdateProduct(event) {
+        event.preventDefault();
+        var name = $("#productName").val();
+        var amountInventory = $("#amountInventory").val();
+        var sellType = $("#sellType").val();
+        var keyWordsFull = $("#keyWords").val();
+        var keyWords = keyWordsFull.split(",", 10);
+        var category = $("#category").val();
+        var price = $("#price").val();
+        var userId = "<%=user.id%>";
+        var storeId = "<%=storeId%>";
+        var imageUrl = $("#imageUrl").val();
+        var description = $("#description").val();
+        postData(`/productsApi/updateProduct`,{
+            userId,
+            storeId,
+            productId:"<%=product.id%>",
+            name,
+            amountInventory,
+            price,
+            sellType,
+            keyWords,
+            category,
+            imageUrl,
+            description
+        })
+            .then(data => {
+                if (data.status < 0){
+                    console.log(data.error);
+                    $("#update-product-error").text(data.err);
+                }else{
+                    document.location.href = '/';
+        }
+            }) // JSON-string from `response.json()` call
+            .catch(error => console.error(error));
+    };
+
+</script>
+</html>

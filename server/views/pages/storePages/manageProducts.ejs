@@ -1,0 +1,70 @@
+ <%- include('./storeHeader',{user, storeId})%>
+        <h2 class="display-6" style="color:grey">Manage Product</h2>
+        <%products.forEach((prod)=>{%>
+        <div class="row" style="justify-content:space-between;  margin: 0 15px">
+                <div class="row">
+                        <img class="img-responsive" src="<%=prod.imageUrl%>" alt="prewiew" width="120" height="80">
+                        <div style="margin: auto 10px"> <h5><%=prod.name%></h5></div>
+                        <%if(!prod.isActivated){%>
+                            <div style="margin: auto 10px"> <h6>dis-activated</h6></div>
+                        <%};%>
+                </div>
+
+                <div style="margin: auto 0" >
+                    <a href="/store-panel/<%=storeId%>/update-product/<%=prod.id%>" class="btn btn-warning"> Update Details</a>
+                    <%if(!prod.isActivated){%>
+                        <button  type="button" id="a<%=prod.id%>" class="btn btn-outline-success btn-xs" onclick="onActive(this.id)">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    <%} else {%>
+                        <button  type="button" id="d<%=prod.id%>" class="btn btn-outline-danger btn-xs" onclick="onDeactive(this.id)">
+                            <i class="fa fa-trash" aria-hidden="true"></i>
+                        </button>
+                    <%}%>
+                </div>
+                
+                
+        </div>
+
+        <hr>
+           <%});%>
+    </div>
+    </main>
+    
+</div>  
+<script>
+
+function onActive(aid){
+    event.preventDefault();
+    const productId  = aid.slice(1);
+    postData('/productsApi/activeProduct',{
+        storeId:"<%= storeId%>",
+        productId
+    }).then(data => {
+        if(data.status < 0){
+            alert(data.err);
+        }else{
+             document.location.href="/store-panel/<%=storeId%>/manage-products";
+        }
+    })
+    .catch(error => console.error(error));
+};
+
+function onDeactive(aid){
+    event.preventDefault();
+    const productId  = aid.slice(1);
+    postData('/productsApi/removeProduct',{
+        storeId:"<%= storeId%>",
+        productId
+    }).then(data => {
+        if(data.status < 0){
+            alert(data.err);
+        }else{
+             document.location.href="/store-panel/<%=storeId%>/manage-products";
+        }
+    })
+    .catch(error => console.error(error));
+};
+
+</script>
+<%- include ../../partials/pageWithSideFooter %>

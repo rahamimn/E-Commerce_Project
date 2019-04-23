@@ -26,29 +26,17 @@ const loginSection = (req:Request,res:Response, next) =>{
 
 const storeSection = (permission = undefined) =>
     async (req:Request,res:Response, next) => {
-
-        //const response = await storeApi.getWorkers(req.params.storeId);
-        //const workers = response.workers.filter(worker => worker.role.ofUser === req.session.user.id)
-        //if(workers.length === 0) 
-        //   res.redirect('/') orErrorPage
-
-        //const roleOfUser = workers[0].role;
-        //if(!persmission || roleOfUser.name === STORE_OWNER )
-        //  next();
-        //if(roleOfUser.name === STORE_MANAGER  &&
-        //   roleOfUser.permissions.some(perm => perm === permission))
-        //       next();
-        //
-        //res.redirect('/') orErrorPage
-        //else
-        //   next();
-
             if(!req.session.user.role || req.session.user.role.store !== req.params.storeId){
-
-                const res =  await usersApi.getUserRole(req.session.user.id, req.params.storeId)
-                const role = res.role
+                const response =  await usersApi.getUserRole(req.session.user.id, req.params.storeId)
+                if(response.status < 0 || 
+                    (permission &&
+                        response.role.name === STORE_MANAGER &&
+                        permission &&  response.role.permissions.some(perm => perm === permission )
+                    ))
+                    res.redirect('/');
+                const role = response.role;
                 req.session.user.role = role;
-            }
+            } 
             next();
         };
 
@@ -225,3 +213,23 @@ webRoutes.get('/store-panel/:storeId', loginSection, storeSection(), async (req:
     });
 });
 
+webRoutes.get('/store-panel/:storeId/manage-products', loginSection, storeSection(), async (req:Request,res:express.Response)=>{
+    const response = await productApi.getProducts({
+        storeId:req.params.storeId
+    },true);
+    res.render('pages/storePages/manageProducts',{
+        user: req.session.user,
+        storeId: req.params.storeId,
+        products: response.products
+    });
+});
+
+webRoutes.get('/store-panel/:storeId/update-product/:productId', loginSection, storeSection(), async (req:Request,res:express.Response)=>{
+    const response = await productApi.getProductDetails(req.params.productId);
+    res.render('pages/storePages/updateProduct',{
+        user: req.session.user,
+        storeId: req.params.storeId,
+        product: response.product,
+        categories
+    });
+});
