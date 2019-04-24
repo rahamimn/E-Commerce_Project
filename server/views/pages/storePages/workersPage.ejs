@@ -15,6 +15,34 @@
             </tbody>
           </table>
 
+
+
+          <div class="card">  
+            <div class="card-header">New Role</div>
+                <div class="card-body">
+                    <form name="register-form"">
+                        <div class="form-group row">
+                            <label for="user_name" class="col-md-4 col-form-label text-md-right">UserName</label>
+                            <div class="col-md-6">
+                                <input type="text" id="userName" class="form-control" name="username">
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 offset-md-4">
+                            <button type="submit" class="btn btn-primary" onclick="onSubmitSetOwner(event)">Set as Owner</button>
+                            <p id="new-owner-error"> </p>
+                        </div>
+                        <div class="col-md-6 offset-md-4">
+                          <button type="submit" class="btn btn-primary" onclick="onSubmitSetManager(event)">Set as Manager</button>
+                          <p id="new-manager-error"> </p>
+                      </div>
+                    </div>
+                </form>
+            </div>
+
+
+
+
     <p id="workers-error"></p>
   </ul>
 </div>
@@ -26,6 +54,7 @@
 
     </main>
 </div>  
+
 <script>
 
 function removeRole(rUserName){
@@ -46,6 +75,53 @@ function removeRole(rUserName){
 }
 
 </script>
+
+
+<script>
+  function onSubmitSetOwner(event){
+    event.preventDefault();
+    var userName = $("#userName").val();
+    postData(`/usersApi/setUserAsStoreOwner`, {
+      appointedUserName: userName, 
+      storeId: "<%= storeId %>"
+      })
+    .then(data => {
+        if(data.status < 0){
+          $("#new-owner-error").text(data.err);
+          alert(data.status, data.err );
+        }
+        else{
+          document.location.href = '/store-panel/<%=storeId%>/workers'; 
+        }
+          
+    }) 
+    .catch(error => console.error(error));
+  };
+  </script>
+
+<script>
+  function onSubmitSetManager(event){
+    event.preventDefault();
+    var userName = $("#userName").val();
+    postData(`/usersApi/setUserAsStoreManager`, {
+      appointedUserName: userName, 
+      storeId: "<%= storeId %>",
+      })
+    .then(data => {
+        if(data.status < 0){
+          $("#new-manager-error").text(data.err);
+          alert(data.status, data.err );
+        }
+        else{
+          document.location.href = '/store-panel/<%=storeId%>/workers'; 
+        }
+          
+    }) 
+    .catch(error => console.error(error));
+  };
+  </script>
+
+
 
 
 <%- include ../../partials/pageWithSideFooter %>

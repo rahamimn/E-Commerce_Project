@@ -33,12 +33,14 @@ export const ORDER_SUPPLY_APPROVED = "supply-system-approved";
 
 //Permissions 
 export const APPOINT_STORE_MANAGER = "appoint-store-manager"; //done
-export const ADD_PRODUCT_PERMOSSION = "add-product";
-export const REMOVE_PRODUCT_PERMOSSION = "remove-product";
-export const UPDATE_PRODUCT_PERMOSSION = "update-product";
-export const REMOVE_ROLE_PERMOSSION = "remove-role";
-export const GET_STORE_MESSAGE_PERMOSSION = "get-store-message";
-export const SEND_STORE_MESSAGE_PERMOSSION = "send-store-message";
+export const ADD_PRODUCT_PERMISSION = "add-product";
+export const REMOVE_PRODUCT_PERMISSION = "remove-product";
+export const UPDATE_PRODUCT_PERMISSION = "update-product";
+export const REMOVE_ROLE_PERMISSION = "remove-role";
+export const GET_STORE_MESSAGE_PERMISSION = "get-store-message";
+export const SEND_STORE_MESSAGE_PERMISSION = "send-store-message";
+export const EMPTY_PERMISSION = " ";
+
 
 //Product error messages
 export const BAD_PRICE = "Price cannot be a negative number";
