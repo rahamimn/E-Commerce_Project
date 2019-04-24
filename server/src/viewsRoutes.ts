@@ -177,12 +177,10 @@ webRoutes.get('/user-panel/my-stores', loginSection, async (req:Request,res:expr
 
 
 webRoutes.get('/store-panel/:storeId/workers', loginSection, storeSection(), async (req:Request,res:express.Response)=>{
-
     const workers = await storesApi.getWorkers(req.session.user.id, req.params.storeId);
-    const user = req.session.user;
 
     res.render('pages/storePages/workersPage',{
-        user: user,
+        user: req.session.user,
         storeId: req.params.storeId,
         workers: workers.storeWorkers
     });
