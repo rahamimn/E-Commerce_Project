@@ -91,7 +91,7 @@ async function getUserDetails(req: Request, res: express.Response) {
     try {
         const user = req.session.user;
         if (!user) {
-            res.send({status: Constants.NO_VISITOR_ACCESS, err: Constants.ERR_Access_MSG});
+            res.send({status: Constants.BAD_ACCESS_NO_VISITORS, err: Constants.ERR_Access_MSG});
             return;
         }
         const response =await usersApi.getUserDetails(user.id);
@@ -179,7 +179,7 @@ async function setUserAsSystemAdmin(req: Request, res: express.Response) {
     try {
         const user = req.session.user;
         if (!user) {
-            res.send({status: Constants.NO_VISITOR_ACCESS, err: Constants.ERR_Access_MSG});
+            res.send({status: Constants.BAD_ACCESS_NO_VISITORS, err: Constants.ERR_Access_MSG});
             return;
         }
         const appointedUserName = req.body.appointedUserName;
@@ -204,7 +204,7 @@ async function setUserAsStoreOwner(req: Request, res: express.Response) {
     try {
         const user = req.session.user;
         if (!user) {
-            res.send({status: Constants.NO_VISITOR_ACCESS, err: Constants.ERR_Access_MSG});
+            res.send({status: Constants.BAD_ACCESS_NO_VISITORS, err: Constants.ERR_Access_MSG});
             return;
         }
         const storeId = req.body.storeId;
@@ -233,7 +233,7 @@ async function setUserAsStoreManager(req: Request, res: express.Response) {
     try {
         const user = req.session.user;
         if (!user) {
-            res.send({status: Constants.NO_VISITOR_ACCESS, err: Constants.ERR_Access_MSG});
+            res.send({status: Constants.BAD_ACCESS_NO_VISITORS, err: Constants.ERR_Access_MSG});
             return;
         }
         const storeId = req.body.storeId;
@@ -264,7 +264,7 @@ async function removeRole(req: Request, res: express.Response) {
         console.log(req.body);
         const user = req.session.user;
         if (!user) {
-            res.send({status: Constants.NO_VISITOR_ACCESS, err: Constants.ERR_Access_MSG});
+            res.send({status: Constants.BAD_ACCESS_NO_VISITORS, err: Constants.ERR_Access_MSG});
             return;
         }
         const storeId = req.body.storeId;
@@ -290,7 +290,7 @@ async function updatePermissions(req: Request, res: express.Response) {
     try {
         const user = req.session.user;
         if (!user) {
-            res.send({status: Constants.NO_VISITOR_ACCESS, err: Constants.ERR_Access_MSG});
+            res.send({status: Constants.BAD_ACCESS_NO_VISITORS, err: Constants.ERR_Access_MSG});
             return;
         }
         const storeId = req.body.storeId;
@@ -317,7 +317,7 @@ async function popNotifications(req: Request, res: express.Response) {
     try {
         const user = req.session.user;
         // if (!user)
-        //     res.send({status: Constants.NO_VISITOR_ACCESS, err: Constants.ERR_Access_MSG});
+        //     res.send({status: Constants.BAD_ACCESS_NO_VISITORS, err: Constants.ERR_Access_MSG});
         const response = await usersApi.popNotifications(user.id);
         console.log(response);
         res.send(response);
@@ -333,7 +333,7 @@ async function getMessages(req: Request, res: express.Response) {
     try {
         const user = req.session.user;
         if (!user) {
-            res.send({status: Constants.NO_VISITOR_ACCESS, err: Constants.ERR_Access_MSG});
+            res.send({status: Constants.BAD_ACCESS_NO_VISITORS, err: Constants.ERR_Access_MSG});
             return;
         }
         const response = await usersApi.getMessages(user.id);
@@ -350,7 +350,7 @@ async function deleteUser(req: Request, res: express.Response) {
     try {
         const user = req.session.user;
         if (!user) {
-            res.send({status: Constants.NO_VISITOR_ACCESS, err: Constants.ERR_Access_MSG});
+            res.send({status: Constants.BAD_ACCESS_NO_VISITORS, err: Constants.ERR_Access_MSG});
             return;
         }
         const userNameToDisActivate = req.body.userNameToDisActivate;
@@ -372,7 +372,7 @@ async function sendMessage(req: Request, res: express.Response) {
     try {
         const user = req.session.user;
         if (!user) {
-            res.send({status: Constants.NO_VISITOR_ACCESS, err: Constants.ERR_Access_MSG});
+            res.send({status: Constants.BAD_ACCESS_NO_VISITORS, err: Constants.ERR_Access_MSG});
             return;
         }
         const title = req.body.title;

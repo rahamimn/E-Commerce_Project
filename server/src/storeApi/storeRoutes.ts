@@ -16,7 +16,7 @@ async function addStore(req: Request, res: express.Response) {
     try {
         const user = req.session.user;
         if (!user) {
-            res.send({status: Constants.NO_VISITOR_ACCESS, err: Constants.ERR_Access_MSG});
+            res.send({status: Constants.BAD_ACCESS_NO_VISITORS, err: Constants.ERR_Access_MSG});
             return;
         }
         const storeName = req.body.storeName;
@@ -40,7 +40,7 @@ async function disableStore(req: Request, res: express.Response) {
     try {
         const user = req.session.user;
         if (!user) {
-            res.send({status: Constants.NO_VISITOR_ACCESS, err: Constants.ERR_Access_MSG});
+            res.send({status: Constants.BAD_ACCESS_NO_VISITORS, err: Constants.ERR_Access_MSG});
             return;
         }
         const storeId = req.body.storeId;
@@ -62,7 +62,7 @@ async function closeStore(req: Request, res: express.Response) {
     try {
         const user = req.session.user;
         if (!user) {
-            res.send({status: Constants.NO_VISITOR_ACCESS, err: Constants.ERR_Access_MSG});
+            res.send({status: Constants.BAD_ACCESS_NO_VISITORS, err: Constants.ERR_Access_MSG});
             return;
         }
         const storeId = req.body.storeId;
@@ -85,7 +85,7 @@ async function getWorkers(req: Request, res: express.Response) {
         console.log(req.body);
         const user = req.session.user;
         if (!user) {
-            res.send({status: Constants.NO_VISITOR_ACCESS, err: Constants.ERR_Access_MSG});
+            res.send({status: Constants.BAD_ACCESS_NO_VISITORS, err: Constants.ERR_Access_MSG});
             return;
         }
         const storeId = req.body.storeId;
@@ -107,7 +107,7 @@ async function addReview(req: Request, res: express.Response) {
     try {
         const user = req.session.user;
         if (!user) {
-            res.send({status: Constants.NO_VISITOR_ACCESS, err: Constants.ERR_Access_MSG});
+            res.send({status: Constants.BAD_ACCESS_NO_VISITORS, err: Constants.ERR_Access_MSG});
             return;
         }
         const storeId = req.body.storeId;
@@ -135,7 +135,7 @@ async function getStoreMessages(req: Request, res: express.Response) {
     try {
         const user = req.session.user;
         if (!user) {
-            res.send({status: Constants.NO_VISITOR_ACCESS, err: Constants.ERR_Access_MSG});
+            res.send({status: Constants.BAD_ACCESS_NO_VISITORS, err: Constants.ERR_Access_MSG});
             return;
         }
         const storeId = req.body.storeId;
@@ -159,7 +159,7 @@ async function getStore(req: Request, res: express.Response) {
         //todo check who uses this function store manager or visitor
         const user = req.session.user;
         if (!user) {
-            res.send({status: Constants.NO_VISITOR_ACCESS, err: Constants.ERR_Access_MSG});
+            res.send({status: Constants.BAD_ACCESS_NO_VISITORS, err: Constants.ERR_Access_MSG});
             return;
         }
         const storeName = req.body.storeName;
@@ -183,7 +183,7 @@ async function sendMessage(req: Request, res: express.Response) {
     try {
         const user = req.session.user;
         if (!user) {
-            res.send({status: Constants.NO_VISITOR_ACCESS, err: Constants.ERR_Access_MSG});
+            res.send({status: Constants.BAD_ACCESS_NO_VISITORS, err: Constants.ERR_Access_MSG});
             return;
         }
         const title = req.body.title;

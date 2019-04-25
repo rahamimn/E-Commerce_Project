@@ -38,7 +38,7 @@ export class Cart{
 
       await asyncForEach(this.items, async item =>{
         const prod = await ProductCollection.findById(item.product);
-        sum += prod.price * item.amount; 
+        sum += prod.price * item.amount;
       });
 
       return sum;
@@ -84,6 +84,8 @@ export class Cart{
         _id,
         _items,
         _store,
+        _supplyPrice,
+        _state
     } = this;
     let newItems=[];
 
@@ -96,7 +98,9 @@ export class Cart{
       id:_id,
       items: newItems,
       store:_store,
-      totalPrice: await this.totalPrice()
+      supplyPrice:_supplyPrice,
+      state: _state,
+    totalPrice: await this.totalPrice()
     });
   } 
 
