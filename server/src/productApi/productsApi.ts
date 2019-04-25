@@ -5,49 +5,50 @@ import { IProductApi } from "./productsApiInterface";
 import { Review } from "../storeApi/models/review";
 export class ProductsApi implements IProductApi{
 
-    async addProduct(userId: String, storeId: String, productName:String, amountInventory: Number, sellType: String, price: Number, keyWords: String[], category: String){
-
+    async addProduct(userId,newProduct: {storeId: String, name:String, amountInventory: Number, sellType: String, price: Number, keyWords: String[], category: String,coupons?: String,description?: String,imageUrl?: String,acceptableDiscount: number,discountPrice?: number,rank:number,reviews: any[]}){
         if (!userId){
             return ({status: BAD_REQUEST, error: BAD_USER_ID});
         }
 
-        if (!this.isStoreVaild(storeId)){
+        if (!this.isStoreVaild(newProduct.storeId)){
             return ({status: BAD_REQUEST, error: BAD_STORE_ID});
-       }
+        }
 
        const isUserAdmin = await RoleCollection.findOne({ofUser:userId, name:ADMIN})
-       const isUserPermitted = await RoleCollection.findOne({ofUser:userId, store:storeId , name:{$in: [STORE_OWNER,STORE_MANAGER]}});
+       const isUserPermitted = await RoleCollection.findOne({ofUser:userId, store:newProduct.storeId , name:{$in: [STORE_OWNER,STORE_MANAGER]}});
 
        if(!isUserPermitted && !isUserAdmin){
             return ({status: BAD_REQUEST, error: "You have no permission for this action (User ID: " + userId + ")."});
         }
 
-        if (amountInventory < 0) {
+        if (newProduct.amountInventory < 0) {
             return ({status: BAD_REQUEST, error: BAD_AMOUNT});
         }
 
-        if (price < 0){
+        if (newProduct.price < 0){
             return ({status: BAD_REQUEST, error: BAD_PRICE});
         }
 
-         if (await (this.doesStoreHaveThisProduct(storeId, productName))){
-            return ({status: BAD_REQUEST, error: ("The product \"" + productName + "\" already exists in the store with ID: \"" + storeId +"\"") });
+         if (await (this.doesStoreHaveThisProduct(newProduct.storeId, newProduct.name))){
+            return ({status: BAD_REQUEST, error: ("The product \"" + newProduct.name + "\" already exists in the store with ID: \"" + newProduct.storeId +"\"") });
         }
 
-        try{ 
+        try{
             const productToInsert = await ProductCollection.insert(new Product({
-                storeId,
-                name: productName,
-                amountInventory: amountInventory,
-                sellType: sellType,
-                price: price,
+                storeId: newProduct.storeId,
+                name: newProduct.name,
+                amountInventory: newProduct.amountInventory,
+                sellType: newProduct.sellType,
+                price: newProduct.price,
+                imageUrl: newProduct.imageUrl,
+                description: newProduct.description,
                 coupons: null,
                 acceptableDiscount: null,
                 discountPrice: null,
                 rank: null,
                 reviews: [],
-                keyWords: keyWords,
-                category: category,
+                keyWords: newProduct.keyWords,
+                category: newProduct.category,
                 isActivated: true
             }));
 
@@ -59,7 +60,7 @@ export class ProductsApi implements IProductApi{
     }
 
     
-    async removeProduct(userId: String, productId: String){
+    async setProdactActivation(userId: String, productId: String, toActivate = false ){
 
         try{ 
 
@@ -78,7 +79,7 @@ export class ProductsApi implements IProductApi{
             }
             
             let productToRemove = await ProductCollection.findById(productId);
-            productToRemove.isActivated = false;
+            productToRemove.isActivated = toActivate;
             let product_AfterRemove = await ProductCollection.updateOne(productToRemove);
 
             return {status: OK_STATUS ,product: product_AfterRemove}
@@ -98,12 +99,11 @@ export class ProductsApi implements IProductApi{
     
             if (!this.isStoreVaild(storeId)){
                 return ({status: BAD_REQUEST, error: BAD_STORE_ID});
-           }
+            }
     
-           const isUserAdmin = await RoleCollection.findOne({ofUser:userId, name:ADMIN})
-           const isUserPermitted = await RoleCollection.findOne({ofUser:userId, store:storeId , name:{$in: [STORE_OWNER,STORE_MANAGER]}});
+           const isUserPermitted = await RoleCollection.findOne({ofUser:userId, store:storeId});
     
-           if(!isUserPermitted && !isUserAdmin){
+           if(!isUserPermitted ){
                 return ({status: BAD_REQUEST, error: "You have no permission for this action (User ID: " + userId + ")."});
             }
 
@@ -117,6 +117,7 @@ export class ProductsApi implements IProductApi{
             return {status: OK_STATUS ,product: product_AfterUpdate}
 
         } catch(error) {
+            console.log(error);
             return ({status: BAD_REQUEST});
         }
     }
@@ -128,7 +129,7 @@ export class ProductsApi implements IProductApi{
             reviewToAdd.id = "tempID"; //NIR: need to generate id ???;
 
             let productToUpdate = await ProductCollection.findById(productId);
-            productToUpdate.reviews.push(reviewToAdd) //NIR: SOMETHING'S NOT WORKING HERE
+            productToUpdate.reviews.push(reviewToAdd.id) //NIR: SOMETHING'S NOT WORKING HERE
 
             let product_AfterUpdate = await ProductCollection.updateOne(productToUpdate);
             return {status: OK_STATUS ,product: productToUpdate}
@@ -138,7 +139,7 @@ export class ProductsApi implements IProductApi{
         }
     }
 
-    async getProducts(parmas: {storeName?: String, storeId?: String, category?: String, keyWords?: String[], name?:String}){
+    async getProducts(parmas: {storeName?: String, storeId?: String, category?: String, keyWords?: String[], name?:String},includeDisabled=false){
         try{ 
 
             
@@ -157,7 +158,8 @@ export class ProductsApi implements IProductApi{
                 filter.name = parmas.name;
             if(parmas.keyWords && parmas.keyWords.length>0) 
                 filter.keyWords = {$in:parmas.keyWords};
-            filter.isActivated = true;
+            if(!includeDisabled)
+                filter.isActivated = true;
             let productsToReturn = await ProductCollection.find(filter);
             return {status: OK_STATUS ,products: productsToReturn}
 
@@ -206,7 +208,6 @@ export class ProductsApi implements IProductApi{
 
         if (!productId)
             return false;
-        
         try{ 
             let product = await ProductCollection.findById(productId);
 
@@ -217,7 +218,7 @@ export class ProductsApi implements IProductApi{
                 return true;
                 
         } catch(error) {
-            return ({status: BAD_REQUEST});
+            return false;
         }      
     }
 

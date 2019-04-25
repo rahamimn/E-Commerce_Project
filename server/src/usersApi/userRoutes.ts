@@ -3,7 +3,7 @@ import {Request} from "../../types/moongooseArray";
 import {UsersApi} from "./usersApi";
 import {createToken, verifyToken} from "../jwt";
 import * as Constants from "../consts";
-import {ERR_GENERAL_MSG} from "../consts";
+import {ERR_GENERAL_MSG, EMPTY_PERMISSION} from "../consts";
 
 export const usersApiRouter = express.Router();
 
@@ -192,7 +192,8 @@ async function setUserAsSystemAdmin(req: Request, res: express.Response) {
         }
     }
     catch (err) {
-        res.send({status: Constants.BAD_REQUEST});
+        console.log(err);
+        res.send({status: Constants.BAD_REQUEST, err: err.toString()});
     }
 }
 
@@ -206,13 +207,16 @@ async function setUserAsStoreOwner(req: Request, res: express.Response) {
             res.send({status: Constants.NO_VISITOR_ACCESS, err: Constants.ERR_Access_MSG});
             return;
         }
-        const storeId = req.session.storeId;
+        const storeId = req.body.storeId;
         const appointedUserName = req.body.appointedUserName;
-
-        if (!storeId)
+        if (!storeId){
             throw Error(ERR_GENERAL_MSG);
-        if (!appointedUserName)
+        }
+
+        if (!appointedUserName){
             res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
+        }
+
         else {
             const response = await usersApi.setUserAsStoreOwner(user.id, appointedUserName, storeId);
             res.send(response);
@@ -232,15 +236,18 @@ async function setUserAsStoreManager(req: Request, res: express.Response) {
             res.send({status: Constants.NO_VISITOR_ACCESS, err: Constants.ERR_Access_MSG});
             return;
         }
-        const storeId = req.session.storeId;
+        const storeId = req.body.storeId;
         const appointedUserName = req.body.appointedUserName;
-        const permissions = req.body.permissions;
+        let permissions = req.body.permissions;
 
         if (!storeId)
             throw Error(ERR_GENERAL_MSG);
-        if (!appointedUserName || !permissions)
+        if (!appointedUserName)
             res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
         else {
+            if (!permissions)
+                permissions = EMPTY_PERMISSION;
+
             const response = await usersApi.setUserAsStoreManager(user.id, appointedUserName, storeId, permissions);
             res.send(response);
         }
@@ -254,12 +261,13 @@ usersApiRouter.post('/usersApi/removeRole', removeRole);
 
 async function removeRole(req: Request, res: express.Response) {
     try {
+        console.log(req.body);
         const user = req.session.user;
         if (!user) {
             res.send({status: Constants.NO_VISITOR_ACCESS, err: Constants.ERR_Access_MSG});
             return;
         }
-        const storeId = req.session.storeId;
+        const storeId = req.body.storeId;
         const userNameRemove = req.body.userNameRemove;
 
         if (!storeId)
@@ -272,7 +280,7 @@ async function removeRole(req: Request, res: express.Response) {
         }
     }
     catch (err) {
-        res.send({status: Constants.BAD_REQUEST});
+        res.send({status: Constants.BAD_REQUEST, err});
     }
 }
 
@@ -285,7 +293,7 @@ async function updatePermissions(req: Request, res: express.Response) {
             res.send({status: Constants.NO_VISITOR_ACCESS, err: Constants.ERR_Access_MSG});
             return;
         }
-        const storeId = req.session.storeId;
+        const storeId = req.body.storeId;
         const appointedUserName = req.body.appointedUserName;
         const permissions = req.body.permissions;
 

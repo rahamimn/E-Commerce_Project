@@ -1,0 +1,132 @@
+<%- include('./storeHeader',{user, storeId}) %>
+
+<div class="card">
+
+
+            <div class="card-header">Add product</div>
+            <div class="card-body">
+                <form name="addProduct-form" onsubmit="onSubmitAddProduct(event)">
+                    <div class="form-group row">
+                        <label for="product_name" class="col-md-4 col-form-label text-md-right">Product Name *</label>
+                        <div class="col-md-6">
+                            <input type="text" id="productName" class="form-control" name="productName">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="amount_inventory" class="col-md-4 col-form-label text-md-right">
+                            Amount Inventory *</label>
+                        <div class="col-md-6">
+                            <input type="text" id="amountInventory" class="form-control" name="amountInventory">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="sell_type" class="col-md-4 col-form-label text-md-right">
+                            Sell type </label>
+                        <div class="col-md-6">
+                            <input type="text" id="sellType" class="form-control" name="sellType">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="price" class="col-md-4 col-form-label text-md-right">Price *</label>
+                        <div class="col-md-6">
+                            <input type="text" id="price" class="form-control" name="price">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="key_words" class="col-md-4 col-form-label text-md-right">Key words *</label>
+                        <div class="col-md-6">
+                            <input type="text" id="keyWords" class="form-control" name="keyWords">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="image_url" class="col-md-4 col-form-label text-md-right">Image Url </label>
+                        <div class="col-md-6">
+                            <input type="text" id="imageUrl" class="form-control" name="imageUrl">
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="description" class="col-md-4 col-form-label text-md-right">Description </label>
+                        <div class="col-md-6">
+                            <textarea class="form-control" rows="3" id="description"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="category" class="col-md-4 col-form-label text-md-right"></label>
+                        <div class="col-md-6">
+                            <select class="custom-select" id="category" name="category">
+                                <option selected>Category</option>
+                                <%categories.forEach(function(cat){%>
+                                <option value=<%=cat%>><%=cat%></option>
+                                <%})%>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 offset-md-4">
+                        <button type="submit" class="btn btn-primary">
+                            Add
+                        </button>
+                        <p id="add-error"> </p>
+                    </div>
+            </div>
+
+            </form>
+         </div>
+    </div>
+</div>
+</div>
+</main>
+</div>
+<%- include ../../partials/pageWithSideFooter %>
+
+<script>
+
+    function onSubmitAddProduct(event) {
+        event.preventDefault();
+        var name = $("#productName").val();
+        var amountInventory = $("#amountInventory").val();
+        var sellType = $("#sellType").val();
+        var keyWordsFull = $("#keyWords").val();
+        var keyWords = keyWordsFull.split(",", 10);
+        var category = $("#category").val();
+        var price = $("#price").val();
+        var userId = "<%=user.id%>";
+        var storeId = "<%=storeId%>";
+        var imageUrl = $("#imageUrl").val();
+        var description = $("#description").val();
+        postData(`/productsApi/addProduct`,{
+            userId,
+            storeId,
+            name,
+            amountInventory,
+            price,
+            sellType,
+            keyWords,
+            category,
+            imageUrl,
+            description
+        })
+            .then(data => {
+                if (data.status < 0)
+        {
+            console.log(data.error);
+            $("#add-error").text(data.err);
+        }
+                else
+        {
+
+            document.location.href = '/store-panel/<%=storeId%>';
+        }
+            }) // JSON-string from `response.json()` call
+            .catch(error => console.error(error));
+    };
+
+</script>
+</html>

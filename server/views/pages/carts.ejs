@@ -1,8 +1,8 @@
 <%- include('../partials/header',{user}) %>
 <main>
     <div class="jumbotron" style="min-height:600px; margin-bottom:0;">
-    <%carts.forEach((cart,cartIndex)=>{%>
-        <div class="container">
+    <%carts.forEach((cart)=>{%>
+        <div class="container" id="<%=cart.id%>" >
    <div class="card shopping-cart">
             <div class="card-header bg-dark text-light">
                 <i class="fa fa-shopping-cart" aria-hidden="true"></i>
@@ -11,13 +11,13 @@
             </div>
             <div class="card-body">
                     <!-- PRODUCT -->
-                    <%cart.items.forEach((item,itemIndex)=>{%>
+                    <%cart.items.forEach((item)=>{%>
                     <div class="row">
                         <div class="col-12 col-sm-12 col-md-2 text-center">
                                 <img class="img-responsive" src="<%=item.product.imageUrl%>" alt="prewiew" width="120" height="80">
                         </div>
                         <div class="col-12 text-sm-center col-sm-12 text-md-left col-md-6">
-                            <h4 class="product-name"><strong><%=item.product.name%>&nbsp;&nbsp;&nbsp;&nbsp;</strong><span id="d<%=cartIndex%>--<%=itemIndex%>" class="badge badge-pill badge-danger hide">Deleted</span></h4>
+                            <h4 class="product-name"><strong><%=item.product.name%>&nbsp;&nbsp;&nbsp;&nbsp;</strong><span id="d<%=cart.id%>--<%=item.product.id%>" class="badge badge-pill badge-danger hide">Deleted</span></h4>
                         </div>
                         <div class="col-12 col-sm-12 text-sm-center col-md-4 text-md-right row">
                             <div class="col-3 col-sm-3 col-md-6 text-md-right" style="padding-top: 5px">
@@ -25,14 +25,14 @@
                             </div>
                             <div class="col-4 col-sm-4 col-md-4">
                                 <div class="quantity">
-                                    <input type="button" id="+<%=cartIndex%>--<%=itemIndex%>" value="+" class="plus" onclick="onClickPlus(this.id)">
-                                    <input type="number" id="<%=cartIndex%>--<%=itemIndex%>" step="1" max="99" min="1" value="<%=item.amount%>" title="Qty" class="qty"
-                                           size="4">
-                                    <input type="button" id="-<%=cartIndex%>--<%=itemIndex%>" value="-" class="minus" onclick="onClickMinus(this.id)" >
+                                    <input type="button" id="+<%=cart.id%>--<%=item.product.id%>" value="+" class="plus" onclick="onClickPlus(this.id)">
+                                    <input type="number" id="n<%=cart.id%>--<%=item.product.id%>" step="1" max="99" min="1" value="<%=item.amount%>" title="Qty" class="qty"
+                                           size="4" >
+                                    <input type="button" id="-<%=cart.id%>--<%=item.product.id%>" value="-" class="minus" onclick="onClickMinus(this.id)" >
                                 </div>
                             </div>
                             <div class="col-2 col-sm-2 col-md-2 text-right">
-                                <button  type="button" id="db<%=cartIndex%>--<%=itemIndex%>" class="btn btn-outline-danger btn-xs" onclick="onClickRemove(this.id)">
+                                <button  type="button" id="db<%=cart.id%>--<%=item.product.id%>" class="btn btn-outline-danger btn-xs" onclick="onClickRemove(this.id)">
                                     <i class="fa fa-trash" aria-hidden="true"></i>
                                 </button>
                             </div>
@@ -42,15 +42,16 @@
                     <% });%>
                     <!-- END PRODUCT -->
                 <div class="pull-right" style="float:right">
-                    <a href="" id="u<%=cartIndex%>" class="btn btn-outline-secondary pull-right" onclick="updateCart(this.id)">
+                    <a href="" id="u<%=cart.id%>" class="btn btn-outline-secondary pull-right" onclick="updateCart(this.id)">
                         Update shopping cart
                     </a>
+                    <p id="error-<%=cart.id%>"></p>
                 </div>
             </div>
             <div class="card-footer" >
                 <div class="pull-right" style="margin: 10px ; display:flex ; justify-content:flex-end" >
                      <div class="pull-right" style="margin: 5px">
-                        Total price: <b>50.00$</b>
+                        Total price: <b><%=cart.totalPrice%>$</b>
                     </div>
                     <a href="" class="btn btn-success pull-right">Checkout</a>
                
@@ -68,13 +69,13 @@
 <script>
     function onClickPlus(plusId){
         const id = plusId.slice(1);
-        $('#'+id).val(parseInt($('#'+id).val())+1);
+        $('#n'+id).val(parseInt($('#n'+id).val())+1);
     }
 
     function onClickMinus(minusId){
         const id = minusId.slice(1);
-        if(parseInt($('#'+id).val())>1)
-            $('#'+id).val(parseInt($('#'+id).val())-1);
+        if(parseInt($('#n'+id).val())>1)
+            $('#n'+id).val(parseInt($('#n'+id).val())-1);
     }
 
     function onClickRemove(removeId){
@@ -85,7 +86,27 @@
     function updateCart(buttonId){
         event.preventDefault();
         const id = buttonId.slice(1);
-        console.log(id);
+        const inputs = $(`#${id} input[type="number"]`);
+        const length = inputs.length;
+        const items = [];
+        for(let i = 0 ; i < length ; i++){
+            const cartProduct = inputs[i].id.slice(1);
+            if($(`#d${cartProduct}`).hasClass('show'))
+                continue;
+            const productId = cartProduct.split('--')[1];
+            const productAmount = inputs[i].value;
+            items.push({product: productId, amount: productAmount});
+        }
+        postData('/usersApi/updateCart',{cartDetails:{id,items}})
+        .then(response => {
+            console.log(response);
+            if(response.status===0){
+                document.location.href = '/carts';
+            }
+            else if(response.status < 0)
+                $(`#error-${id}`).text(response.err);
+        })
+
     }
 
 </script>

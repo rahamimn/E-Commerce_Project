@@ -64,18 +64,34 @@ describe('Cart model',() => {
 
   });
 
-  it('update relevant details onlt items should updated', () => {
+  it('update relevant details onlt items should updated', async  () => {
+    const product = await ProductCollection.insert(fakeProduct({price: 10, amountInventory:7}));
+    const cart = await CartCollection.insert(fakeCart({}));
     const newDetils = {
-      items: [{product:new ObjectId(), amount:6}],
+      id:cart.id,
+      items: [{product:product.id, amount:6}],
       store: new ObjectId(),
     };
-    const cart = fakeCart({});
     
-    cart.updateDetails(newDetils);
+    expect(await  cart.updateDetails(newDetils)).toBe(true);
 
     expect(cart.items.length).toEqual(1);
     expect(cart.store).not.toEqual(newDetils.store);
   });
+
+  it('update relevant details onlt items should updated', async  () => {
+    const product = await ProductCollection.insert(fakeProduct({price: 10, amountInventory:7}));
+    const cart = await CartCollection.insert(fakeCart({}));
+    const newDetils = {
+      id:cart.id,
+      items: [{product:product.id, amount:8}],
+      store: new ObjectId(),
+    };
+    
+    expect(await  cart.updateDetails(newDetils)).toBe(false);
+
+  });
+
 
   it('getProducts should return all the products id', () => {
     const productId3 = new ObjectId();

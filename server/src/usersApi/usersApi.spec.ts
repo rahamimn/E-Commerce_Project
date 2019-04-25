@@ -29,7 +29,7 @@ describe('users-api-integration',() => {
   beforeEach(async () => { //create database to work with
       message = await MessageCollection.insert(fakeMessage({}));
       store = await StoreCollection.insert(fakeStore({}));
-      product = await ProductCollection.insert(fakeProduct({storeId: store.id }));
+      product = await ProductCollection.insert(fakeProduct({storeId: store.id, amountInvetory:10 }));
       cart = await CartCollection.insert(fakeCart({
           store: store.id,
           items:[{
@@ -245,7 +245,7 @@ describe('users-api-integration',() => {
 
       const cartDetails = response.cart;
 
-      cartDetails.items = [{product: product.id, amount: chance.integer()}];
+      cartDetails.items = [{product: product.id, amount: 1}];
 
       response = await usersApi.updateCart(cartDetails);
       const res = await usersApi.getCart(cart.ofUser,cartDetails.id);
@@ -254,6 +254,20 @@ describe('users-api-integration',() => {
       expect(response.status).toEqual(constants.OK_STATUS);
       expect(updatedcart.items[0].amount).toEqual(cartDetails.items[0].amount);
   });
+
+  it('update cart details should delete cart when empty ', async () => {
+    let response = await usersApi.getCart(cart.ofUser, cart.id);
+
+    const cartDetails = response.cart;
+
+    cartDetails.items = [];
+
+    response = await usersApi.updateCart(cartDetails);
+    const cartAfter = await CartCollection.findById(cartDetails.id);
+
+    expect(response.status).toEqual(constants.OK_STATUS);
+    expect(cartAfter).toBeNull();
+});
 
   it('sendMessage to user ', async () => {
       let response = await usersApi.sendMessage(
@@ -336,6 +350,16 @@ it('add product to cart of guest and than register ', async () => {
     expect(cartsUser.length).toBe(1);
     expect(cartsSession.length).toBe(0);
  
+});
+
+
+it('get user stores ', async () => {
+    const response = await usersApi.getUserStores(storeOwner.id);
+
+    expect(response.status).toEqual(constants.OK_STATUS);
+    expect(response.stores.length).toBe(1);
+    expect(response.stores[0].id.toString()).toEqual(store.id);
+    expect(response.stores[0].name).toEqual(store.name);
 });
 
 });
