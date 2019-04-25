@@ -15,7 +15,7 @@ async function addProduct(req: Request, res: express.Response) {
     try {
         const user = req.session.user;
         if (!user) {
-            res.send({status: Constants.NO_VISITOR_ACCESS, err: Constants.ERR_Access_MSG});
+            res.send({status: Constants.BAD_ACCESS_NO_VISITORS, err: Constants.ERR_Access_MSG});
             return;
         }
         const userId = req.session.user.id;
@@ -55,7 +55,7 @@ async function updateProduct(req: Request, res: express.Response) {
     try {
         const user = req.session.user;
         if (!user) {
-            res.send({status: Constants.NO_VISITOR_ACCESS, err: Constants.ERR_Access_MSG});
+            res.send({status: Constants.BAD_ACCESS_NO_VISITORS, err: Constants.ERR_Access_MSG});
             return;
         }
         const userId = req.session.user.id;
@@ -114,7 +114,7 @@ async function removeProduct(req: Request, res: express.Response) {
     try {
         const user = req.session.user;
         if (!user) {
-            res.send({status: Constants.NO_VISITOR_ACCESS, err: Constants.ERR_Access_MSG});
+            res.send({status: Constants.BAD_ACCESS_NO_VISITORS, err: Constants.ERR_Access_MSG});
             return;
         }
         const userId = req.session.user.id;
@@ -137,7 +137,7 @@ async function activeProduct(req: Request, res: express.Response) {
     try {
         const user = req.session.user;
         if (!user) {
-            res.send({status: Constants.NO_VISITOR_ACCESS, err: Constants.ERR_Access_MSG});
+            res.send({status: Constants.BAD_ACCESS_NO_VISITORS, err: Constants.ERR_Access_MSG});
             return;
         }
         const userId = req.session.user.id;
@@ -160,7 +160,7 @@ async function addReview(req: Request, res: express.Response) {
     try {
         const user = req.session.user;
         if (!user) {
-            res.send({status: Constants.NO_VISITOR_ACCESS, err: Constants.ERR_Access_MSG});
+            res.send({status: Constants.BAD_ACCESS_NO_VISITORS, err: Constants.ERR_Access_MSG});
             return;
         }
         const productId = req.body.productId;

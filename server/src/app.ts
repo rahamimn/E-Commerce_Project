@@ -1,5 +1,7 @@
 //import {storesApiRouter} from "./storeApi/storeRoutes";
 
+import {ordersApiRouter} from "./orderApi/orderRoutes";
+
 const mongoose = require('mongoose');
 import express = require('express');
 const path = require('path');
@@ -47,6 +49,7 @@ if(process.argv.some( arg => arg === '-initWithSomeData')){
 
 const app  = express();
 
+
 //express extensions
 app.set('view engine', 'ejs');
 // BodyParser Middleware
@@ -70,6 +73,7 @@ app.use(session({
 app.use(usersApiRouter);
 app.use(storesApiRouter);
 app.use(productsApiRouter);
+app.use(ordersApiRouter);
 app.use(webRoutes);
 
 //app.use(oredersApiRouter);

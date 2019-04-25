@@ -1,0 +1,227 @@
+<%- include('../partials/header',{user}) %>
+<main>
+    <script>
+        const cartId = "<%=cart.id%>";
+    </script>
+    <div class="jumbotron" style="min-height:600px; margin-bottom:0;">
+        <div class="container">
+            <div class="card shopping-cart">
+                <div class="card-header bg-dark text-light">
+                    <i class="fa fa-shopping-cart" aria-hidden="true"></i>
+                    Shopping cart
+                    <div class="clearfix"></div>
+                </div>
+                <div class="card-body">
+                    <!-- PRODUCT -->
+                    <% cart.items.forEach((item, itemIndex) =>{ %>
+                    <div class="row">
+                        <div class="col-12 col-sm-12 col-md-2 text-center">
+                            <img class="img-responsive" src="<%= item.product.imageUrl %>" alt="prewiew" width="120"
+                                 height="80">
+                        </div>
+                        <div class="col-12 text-sm-center col-sm-12 text-md-left col-md-6">
+                            <h4 class="product-name"><strong><%= item.product.name %>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;</strong><span id="d<%= cart.id %>--<%= itemIndex %>"
+                                                                           class="badge badge-pill badge-danger hide">Deleted</span>
+                            </h4>
+                        </div>
+                        <div class="col-12 col-sm-12 text-sm-center col-md-4 text-md-right row">
+                            <div class="col-3 col-sm-3 col-md-6 text-md-right" style="padding-top: 5px">
+                                <h6><strong><%= item.product.price %><span class="text-muted">$</span></strong></h6>
+                                <h6><strong><%= item.amount %><span class="text-muted"> units</span></strong></h6>
+                            </div>
+                        </div>
+                    </div>
+                    <hr>
+                    <% }); %>
+                    <!-- END PRODUCT -->
+                </div>
+                <div class="card-footer">
+                    <form id="addressForm" onsubmit="onSubmitAddress(event)">
+
+                        <div class="form-group">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"> <i class="fa fa-user"></i> </span>
+                                </div>
+                                <input id="address" name="address" class="form-control" placeholder="address" type="text">
+                                <input id="country" name="country" class="form-control" placeholder="country" type="text">
+                            </div> <!-- input-group.// -->
+                        </div> <!-- form-group// -->
+
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary"> Check Total price</button>
+                            <p id="address-error"></p>
+                            <div class="pull-right" style="margin: 5px">
+                                <strong>Shipping price: <b id="supply-price"></b></strong>
+                            </div>
+                            <div class="pull-right" style="margin: 5px">
+                                <strong>Total price: <b id="total-price"></b></strong>
+                            </div>
+                        </div> <!-- form-group// -->
+                    </form>
+                    <form id="paymentForm" onsubmit="onSubmitPay(event)">
+
+                        <div class="form-group">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"> <i class="fa fa-user"></i> </span>
+                                </div>
+                                <input id="cardNumber" name="creditNumber" class="form-control" placeholder="XXXX XXXX XXXX XXXX" type=tel>
+                                <input id="csv" name="csv" class="form-control" placeholder="000" type="text" maxlength="3">
+                                <select name='expireMM' id='expireMM'>
+                                    <option value=''>Month</option>
+                                    <option value='01'>January</option>
+                                    <option value='02'>February</option>
+                                    <option value='03'>March</option>
+                                    <option value='04'>April</option>
+                                    <option value='05'>May</option>
+                                    <option value='06'>June</option>
+                                    <option value='07'>July</option>
+                                    <option value='08'>August</option>
+                                    <option value='09'>September</option>
+                                    <option value='10'>October</option>
+                                    <option value='11'>November</option>
+                                    <option value='12'>December</option>
+                                </select>
+                                <select name='expireYY' id='expireYY'>
+                                    <option value=''>Year</option>
+                                    <option value='19'>2019</option>
+                                    <option value='20'>2020</option>
+                                    <option value='21'>2021</option>
+                                    <option value='22'>2022</option>
+                                    <option value='23'>2023</option>
+                                    <option value='24'>2024</option>
+                                </select>
+                            </div> <!-- input-group.// -->
+                        </div> <!-- form-group// -->
+
+                        <div class="form-group">
+                            <button style="background-color:#008800" type="submit" class="btn btn-primary"> Pay</button>
+                            <p id="payment-error"></p>
+                        </div> <!-- form-group// -->
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+<footer>
+    <%# include ../partials/footer %>
+</footer>
+
+<script>
+
+    var addressGlobal = '';
+    var countryGlobal = '';
+    var paymentErrorMessage = ''
+
+    function onSubmitAddress(event) {
+        event.preventDefault();
+        var address = $("#address").val();
+        var country = $("#country").val();
+        if (checkAddressSyntax(country, address)) {
+            $("#address-error").text('')
+            postData('/ordersApi/checkSupply', {cartId:cartId,country:country ,address:address})
+                .then(data => {
+                    if(data.status < 0){
+                        $("#total-price").text('');
+                        $("#address-error").text(data.err);
+                    }
+                     else{        //cart return in data
+                        addressGlobal = address
+                        countryGlobal = country
+                        const supplyPrice = data.cart.supplyPrice;
+                        const totalPrice = data.totalPrice;
+                        $("#supply-price").text(supplyPrice + '$');
+                        $("#total-price").text(totalPrice + '$');
+            }}) // JSON-string from `response.json()` call
+                    .catch(error => console.error(error));
+        }
+        else
+            $("#address-error").text("please enter legal address");
+    };
+
+    function checkAddressSyntax(country, address) {
+        return address != '' && country != '';
+    }
+
+    function checkPaymentSyntax(cardNumber, csv, expireMM, expireYY) {
+        try {
+            const isVaildLength = cardNumber.length == 16 && csv.length == 3;
+            if (!isVaildLength)
+                paymentErrorMessage = 'credit card number should be 16 chars, csv should be 3 chars'
+            const isNotNumber = isNaN(Number(cardNumber)) || isNaN(Number(csv));
+            if(isNotNumber)
+                paymentErrorMessage = 'credit card number, csv should contains only numbers'
+            const isEnteredExpiration = expireMM!= '' && expireYY != '';
+            if (!isEnteredExpiration)
+                paymentErrorMessage = 'please fill all of the fields'
+            return isVaildLength && !isNotNumber && isEnteredExpiration;
+        }
+        catch (err){
+            console.log(err);
+            return false;
+        }
+    }
+
+    function onSubmitPay(event) {
+        event.preventDefault();
+        const cardNumber = $("#cardNumber").val();
+        const csv = $("#csv").val();
+        const expireMM = $("#expireMM").val();
+        const expireYY = $("#expireYY").val();
+        if (checkPaymentSyntax(cardNumber, csv, expireMM, expireYY)) {
+            $("#payment-error").text('');
+            const payment = {cardNumber:cardNumber, csv:csv, expireMM:expireMM, expireYY:expireYY}
+            const address = addressGlobal
+            const country = countryGlobal
+            postData('/ordersApi/pay', {cartId:cartId, address:address,country:country, payment:payment})
+                .then(data => {
+                if(data.status < 0)
+                    $("#payment-error").text(data.err);
+                else{
+                    alert("Mazal Tov, your cart is on the way");
+                    document.location.href = '/';
+            }}) // JSON-string from `response.json()` call
+                .catch(error => console.error(error));
+        }
+        else{
+            $("#payment-error").text(paymentErrorMessage);
+        }
+        //todo else alert invalid syntax
+    };
+
+
+</script>
+<style>
+
+    .quantity input {
+        margin: 0;
+        text-align: center;
+        width: 15px;
+        height: 15px;
+        padding: 0;
+        float: right;
+        color: #000;
+        font-size: 20px;
+        border: 0;
+        outline: 0;
+        background-color: #F6F6F6
+    }
+
+    .shopping-cart {
+        margin-top: 20px;
+    }
+
+    .hide {
+        display: none
+    }
+
+    .show {
+        display: inline
+    }
+
+</style>
+</body>
+</html>

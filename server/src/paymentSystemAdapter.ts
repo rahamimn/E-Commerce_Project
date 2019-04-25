@@ -1,10 +1,11 @@
 import { User } from "./usersApi/models/user";
 
-const takePayment = (user: User, totalPrice: number ) => { // depeneds outside api
+const takePayment = (cardNumber:String, csv:String, expireMM:String, expireYY:String, priceWithSupply:number) => { // depeneds outside api
+   console.log('hey');
     return true;
 }
 
-const refund = (user: User, totalPrice: number ) => { // depeneds outside api
+const refund = (cardNumber:String, totalPrice: number ) => { // depeneds outside api
     return true;
 }
 

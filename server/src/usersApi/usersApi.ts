@@ -22,6 +22,16 @@ const hashPassword = (password: String, salt: String) => {
     return bcrypt.hashSync(password+process.env.HASH_SECRET_KEY, salt);
 };
 
+const validateUserCart = function(userId,cart){
+    if (cart){
+        if(cart.ofUser)
+            return cart.ofUser.toString() == userId.toString();
+        else
+            return cart.ofSession.toString() == userId.toString();
+    }
+    return false;
+}
+
 export class UsersApi implements IUsersApi{
 
     async login(userName ,password){
@@ -82,6 +92,7 @@ export class UsersApi implements IUsersApi{
             return {status: Constants.OK_STATUS, userId: user.id}
         }
         catch(err){
+            console.log(err);
             return {status:Constants.BAD_USERNAME, err:"bad username"};
         }
     }
@@ -111,11 +122,14 @@ export class UsersApi implements IUsersApi{
         addToRegularLogger(" get Cart ", {userId, cartId });
 
         let cart = await CartCollection.findById(cartId);
-        if(!cart || !cart.ofUser.equals(userId))
-        {
-            return ({status: Constants.BAD_REQUEST});
+        if (cart){
+            //todo - use validate user and change tests accordingly in usersApi.spec
+            // const isVaild = userId? validateUserCart(userId, cart) : validateUserCart(sessionId, cart);
+            const isVaild = true;
+            return isVaild?
+                {status: Constants.OK_STATUS ,cart: await cart.getDetails()}:
+                {status: Constants.BAD_REQUEST}
         }
-        return ({status: Constants.OK_STATUS ,cart: await cart.getDetails()});
     }
 
     async updateCart(cartDetails){
@@ -135,7 +149,7 @@ export class UsersApi implements IUsersApi{
             return ({status: Constants.OK_STATUS});
         }
 
-        return ({status:Constants.BAD_REQUEST, err:'items not valid' }); 
+        return ({status:Constants.BAD_REQUEST, err:'items not valid' });
     }
 
     async getCarts(userId, sessionId = undefined){
@@ -369,7 +383,7 @@ export class UsersApi implements IUsersApi{
             const store = await StoreCollection.findById(role.store);
             if(store)
                 role.storeName = store.name;
-            else 
+            else
                 throw Error(`store ${role.store} not found`);
         });
 
@@ -381,7 +395,7 @@ export class UsersApi implements IUsersApi{
    async sendMessage(userId, title, body, toName , toIsStore){
         addToRegularLogger(" send Message", {userId, title, body, toName , toIsStore});
 
-        let toUser,toStore; 
+        let toUser,toStore;
         let user = await UserCollection.findById(userId);
 
         if(toIsStore)

@@ -94,8 +94,17 @@ export const fakeComplaint = (opt: any = {}) => {
 });
 }
 
+export const fakePayment = (opt: any = {}) => {
+    return {cardNumber: '1111222233334444', csv:'123',expireMM:'12', expireYY:'25'}
+}
 
+export const fakeCountry = (opt: any = {}) => {
+    return chance.country()
+}
 
+export const fakeAddress = (opt: any = {}) => {
+    return chance.address()
+}
 
 export const fakeCart = (opt: any = {}) => {
     return new Cart({

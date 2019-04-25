@@ -57,6 +57,10 @@ webRoutes.get('/error' ,async (req:Request,res:express.Response)=>{
 
 webRoutes.get('/products' ,async (req:Request,res:express.Response)=>{
     const response = await productApi.getProducts({});
+    if(response.status<0) {
+        console.log(response)
+        res.redirect("/");
+    }
     res.render('pages/products', {
         user: req.session.user,
         categories,
@@ -72,6 +76,11 @@ webRoutes.post('/products' ,async (req:Request,res:express.Response)=>{
         category:req.body.category !== "Category" ? req.body.category : undefined,
     });
 
+    if(response.status<0) {
+        console.log(response)
+        res.redirect("/");
+    }
+
     res.render('pages/products', {
         user: req.session.user,
         categories,
@@ -81,8 +90,10 @@ webRoutes.post('/products' ,async (req:Request,res:express.Response)=>{
 
 webRoutes.get('/products/:productId' , async (req:Request,res:express.Response)=>{
     const response = await productApi.getProductDetails(req.params.productId);
-    if(response.status<0)
+    if(response.status<0) {
+        console.log(response)
         res.redirect("/");
+    }
 
     res.render('pages/productPage', {
         user: req.session.user,
@@ -148,6 +159,23 @@ webRoutes.get('/carts', async (req:Request,res:express.Response)=>{
     res.render('pages/carts',{
         user: req.session.user,
         carts,
+    });
+});
+
+webRoutes.get('/order/:cartId' , async (req:Request,res:express.Response)=>{
+    const userId = req.session.user ? req.session.user.id: null;
+    const sessionId = req.session.id;
+    const cartId = req.params.cartId;
+
+    const response = await usersApi.getCart(userId, cartId, sessionId);
+    if(response.status<0) {
+        console.log(response)
+        res.redirect("/");
+    }
+
+    res.render('pages/orderPage', {
+        user: req.session.user,
+        cart: response.cart
     });
 });
 
