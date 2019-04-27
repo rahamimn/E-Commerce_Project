@@ -2,7 +2,7 @@ import express = require('express');
 import { Request } from '../types/moongooseArray';
 import { Response } from 'express-serve-static-core';
 // import { verifyToken, createToken } from './jwt';
-import { MISSING_PARAMETERS, BAD_REQUEST, STORE_OWNER, STORE_MANAGER } from './consts';
+import { MISSING_PARAMETERS, BAD_REQUEST, STORE_OWNER, STORE_MANAGER, APPOINT_STORE_MANAGER, ADD_PRODUCT_PERMISSION, EMPTY_PERMISSION, SEND_STORE_MESSAGE_PERMISSION, GET_STORE_MESSAGE_PERMISSION, REMOVE_ROLE_PERMISSION, REMOVE_PRODUCT_PERMISSION, UPDATE_PRODUCT_PERMISSION } from './consts';
 import { UsersApi } from './usersApi/usersApi';
 import { ProductsApi } from './productApi/productsApi';
 import { StoresApi } from './storeApi/storesApi';
@@ -213,6 +213,22 @@ webRoutes.get('/store-panel/:storeId/workers', loginSection, storeSection(), asy
         workers: workers.storeWorkers
     });
 });
+
+webRoutes.get('/store-panel/:storeId/workers/updatePermissions/:workerId', loginSection, storeSection(), async (req:Request,res:express.Response)=>{
+    const worker = await usersApi.getUserDetails(req.params.workerId);
+    const role = await usersApi.getUserRole(req.params.workerId, req.params.storeId);
+    const currPermissions = role.role.permissions;
+    const allPermissions = [APPOINT_STORE_MANAGER, ADD_PRODUCT_PERMISSION, SEND_STORE_MESSAGE_PERMISSION ,GET_STORE_MESSAGE_PERMISSION ,REMOVE_ROLE_PERMISSION ,REMOVE_PRODUCT_PERMISSION ,UPDATE_PRODUCT_PERMISSION];
+
+    res.render('pages/storePages/permissionsPage',{
+        user: req.session.user,
+        storeId: req.params.storeId,
+        worker: worker.user,
+        currPermissions: currPermissions,
+        allPermissions: allPermissions
+    });
+});
+
 
 
 webRoutes.get('/admin-panel', loginSection, async (req:Request,res:express.Response)=>{
