@@ -1,126 +1,130 @@
- <%- include('./storeHeader',{user})%>
-  <h2 class="display-6" style="color:grey">Workers</h2>
-
-        <table class="table">  
-          <tbody>
-                <%workers.forEach(function (worker){%>
-                <tr>
-                <td><%= worker.userName %></td>
-                <td><%= worker.role.name %></td>
-                  <%if((worker.role.appointor).equals(user.role.id)){%>
-                <td><button id="r<%=worker.userName%>" class="btn btn-warning" type="button" onclick="removeRole(this.id)"><span>ᐅ</span> Remove Role </button></td>
-                <%};%> 
-              </tr>
-            <%})%>
-            </tbody>
-          </table>
+<%- include('./storeHeader',{user})%>
+<h2 class="display-6" style="color:grey">Workers</h2>
 
 
+<table class="table table-bordered">
+  <thead>
+    <tr>
+      <th scope="col">UserName</th>
+      <th scope="col">Role</th>
+      <th scope="col" colspan="2">Actions</th>
+    </tr>
+  </thead>
 
-          <div class="card">  
-            <div class="card-header">New Role</div>
-                <div class="card-body">
-                    <form name="register-form"">
-                        <div class="form-group row">
-                            <label for="user_name" class="col-md-4 col-form-label text-md-right">UserName</label>
-                            <div class="col-md-6">
-                                <input type="text" id="userName" class="form-control" name="username">
-                            </div>
-                        </div>
+  <tbody>
+    <%workers.forEach(function (worker){%>
+    <tr>
+      <td><%= worker.userName %></td>
+      <td>
+        <%if((worker.role.name) == 'store-manager'){%>
+          <%= 'Manager' %>
+        <%}%> 
 
-                        <div class="col-md-6 offset-md-4">
-                            <button type="submit" class="btn btn-primary" onclick="onSubmitSetOwner(event)">Set as Owner</button>
-                            <p id="new-owner-error"> </p>
-                        </div>
-                        <div class="col-md-6 offset-md-4">
-                          <button type="submit" class="btn btn-primary" onclick="onSubmitSetManager(event)">Set as Manager</button>
-                          <p id="new-manager-error"> </p>
-                      </div>
-                    </div>
-                </form>
-            </div>
+        <%if((worker.role.name) == 'store-owner'){%>
+          <%= 'Owner' %>
+        <%}%> 
+      </td>
 
-
-
-
-    <p id="workers-error"></p>
-  </ul>
-</div>
-
-
+      <%if((worker.role.appointor).equals(user.role.id)){%>
+        <td><button id="r<%=worker.userName%>" class="btn btn-danger" type="button" title="Remove Role"
+          onclick="removeRole(this.id)"> <i class="fas fa-user-slash" aria-hidden="true"> </i></button></td>
+      <%}else{ %>
+        <td><button class="btn btn-outline-secondary" type="button" title="No Available Actions">
+        <i class=" far fa-window-minimize"></i></button></td>
+      <% } %>
 
 
+      <%if((worker.role.appointor).equals(user.role.id) && ('store-manager' == worker.role.name)){%>
+        <td><a href="/store-panel/<%=storeId%>/workers/updatePermissions/<%=worker.role.ofUser%>"
+            id="e<%=worker.userName%>" class="btn btn-info" role="button" title="Update Permissions"> <i
+              class="fas fa-user-edit"></i></a></td>
+
+      <%}else{ %>
+        <td><button class="btn btn-outline-secondary" type="button" title="No Available Actions">
+          <i class=" far fa-window-minimize"></i></button></td>
+      <% } %>%>
+
+    </tr>
+    <%})%>
+  </tbody>
+  </table>
+
+  <div class="input-group">
+    <input type="text" id="userName" class="form-control" placeholder="Enter username" width="18">
+    <div class="input-group-append">
+      <button class="btn btn-outline-secondary" type="button" onclick="onSubmitSetOwner(event)">Set As Owner</button>
+      <button class="btn btn-outline-secondary" type="button" onclick="onSubmitSetManager(event)">Set As Manager </button>
     </div>
 
-    </main>
-</div>  
+    <p id="workers-error"></p>
+    </ul>
+    
+  </div>
+</div>
+</main>
+</div>
 
 <script>
-
-function removeRole(rUserName){
-
+  function removeRole(rUserName) {
     const userName = rUserName.slice(1);
-    postData('/usersApi/removeRole',{
-        userNameRemove: userName,
-        storeId: "<%= storeId %>"
-    }).then(res =>{
-        if(res.status < 0){
-            alert('Error');
-            $('#workers-error').text(res.err);
-        }
-        else{
-            document.location.href = '/store-panel/<%=storeId%>/workers';
-        }   
+    postData('/usersApi/removeRole', {
+      userNameRemove: userName,
+      storeId: "<%= storeId %>"
+    }).then(res => {
+      if (res.status < 0) {
+        alert('Error');
+        $('#workers-error').text(res.err);
+      }
+      else {
+        document.location.href = '/store-panel/<%=storeId%>/workers';
+      }
     });
-}
-
+  }
 </script>
 
 
 <script>
-  function onSubmitSetOwner(event){
+  function onSubmitSetOwner(event) {
     event.preventDefault();
     var userName = $("#userName").val();
     postData(`/usersApi/setUserAsStoreOwner`, {
-      appointedUserName: userName, 
+      appointedUserName: userName,
       storeId: "<%= storeId %>"
-      })
-    .then(data => {
-        if(data.status < 0){
+    })
+      .then(data => {
+        if (data.status < 0) {
           $("#new-owner-error").text(data.err);
-          alert(data.status, data.err );
+          alert(data.status, data.err);
         }
-        else{
-          document.location.href = '/store-panel/<%=storeId%>/workers'; 
+        else {
+          document.location.href = '/store-panel/<%=storeId%>/workers';
         }
-          
-    }) 
-    .catch(error => console.error(error));
+      })
+      .catch(error => console.error(error));
   };
-  </script>
+</script>
+
 
 <script>
-  function onSubmitSetManager(event){
+  function onSubmitSetManager(event) {
     event.preventDefault();
     var userName = $("#userName").val();
     postData(`/usersApi/setUserAsStoreManager`, {
-      appointedUserName: userName, 
+      appointedUserName: userName,
       storeId: "<%= storeId %>",
-      })
-    .then(data => {
-        if(data.status < 0){
+    })
+      .then(data => {
+        if (data.status < 0) {
           $("#new-manager-error").text(data.err);
-          alert(data.status, data.err );
+          alert(data.status, data.err);
         }
-        else{
-          document.location.href = '/store-panel/<%=storeId%>/workers'; 
+        else {
+          document.location.href = '/store-panel/<%=storeId%>/workers';
         }
-          
-    }) 
-    .catch(error => console.error(error));
+      })
+      .catch(error => console.error(error));
   };
-  </script>
-
+</script>
 
 
 

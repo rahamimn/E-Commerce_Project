@@ -1,0 +1,67 @@
+<%- include('./storeHeader',{user})%>
+<h2 class="display-6" style="color:grey">Update Permissions</h2>
+<div class="alert alert-success" role="alert">"<%=worker.userName%>" - Current Permissions:</div>
+
+
+<table class="table table-bordered">
+    <tbody>
+        <%allPermissions.forEach(function (permission){%>
+        <tr>
+            <%if( currPermissions.includes(permission)){%>
+            <td>
+                <div class="custom-control custom-switch">
+                    <input type="checkbox" class="custom-control-input" id="<%=permission%>" value="<%=permission%>" checked>
+                    <label class="custom-control-label" for="<%=permission%>"><%=permission%></label>
+                </div>
+            </td>
+            <%}else{ %>
+            <td>
+                <div class="custom-control custom-switch">
+                    <input type="checkbox" class="custom-control-input" id="<%=permission%>" value="<%=permission%>">
+                    <label class="custom-control-label" for="<%=permission%>"><%=permission%></label>
+                </div>
+            </td>
+            <% } %>
+        </tr>
+        <%})%>
+    </tbody>
+</table>
+
+<div>
+    <button class="btn btn-outline-secondary" type="button" onclick="onSubmitUpdatePermissions(event)">UpdatePermissions </button>
+</div>
+
+
+</main>
+</div>
+
+
+
+<script>
+    function onSubmitUpdatePermissions(event) {
+        event.preventDefault();
+
+        var permissions = [];
+        $("input[type=checkbox]:checked").each(function () { permissions.push($(this).val()); })
+
+        postData(`/usersApi/updatePermissions`, {
+            appointedUserName: "<%=worker.userName%>",
+            storeId: "<%=storeId %>",
+            permissions: permissions
+        })
+            .then(data => {
+                if (data.status < 0) {
+                    $("#update-permission-error").text(data.err);
+                    alert(data.status, data.err);
+                }
+                else {
+                    document.location.href = '/store-panel/<%=storeId%>/workers/updatePermissions/<%=worker.id%>';
+                }
+
+            })
+            .catch(error => console.error(error));
+    };
+</script>
+
+
+<%- include ../../partials/pageWithSideFooter %>
