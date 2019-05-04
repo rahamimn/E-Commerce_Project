@@ -74,7 +74,7 @@ describe('users-api-integration',() => {
       return [userOfRole,role];
   }
   it('login to disactivate user ', async () => {
-    await usersApi.deleteUser(adminUser.id,userWithoutRole.userName);
+    await usersApi.setUserActivation(adminUser.id,userWithoutRole.userName,false);
     let response = await usersApi.login(userWithoutRole.userName, userWithoutRole.password);
 
     expect(response.status).toEqual(constants.BAD_REQUEST);
@@ -221,8 +221,16 @@ describe('users-api-integration',() => {
       expect(response.user.firstName).toEqual(user.firstName);
   });
 
+  it('get user details by name', async () => {
+    const user = await UserCollection.findById(userWithAll.id);
+    const response = await usersApi.getUserDetailsByName(userWithAll.userName);
+
+    expect(response.status).toEqual(constants.OK_STATUS);
+    expect(response.user.firstName).toEqual(user.firstName);
+});
+
   it('update  user details ', async () => {
-      let response = await usersApi.getUserDetails(userWithAll.id);
+      let response:any = await usersApi.getUserDetails(userWithAll.id);
 
       const userDetails = response.user;
       userDetails.firstName= chance.first();
@@ -307,13 +315,24 @@ describe('users-api-integration',() => {
   });
 
   it('delete user ', async () => {
-    let response = await usersApi.deleteUser(adminUser.id,userWithoutRole.userName);
+    let response = await usersApi.setUserActivation(adminUser.id,userWithoutRole.userName);
 
     const user = await UserCollection.findById(userWithoutRole.id);
 
     expect(response.status).toEqual(constants.OK_STATUS);
     expect(response.user.isDeactivated).toBeTruthy();
     expect(user.isDeactivated).toBeTruthy();
+
+  });
+
+  it('activate user ', async () => {
+    await usersApi.setUserActivation(adminUser.id,userWithoutRole.userName);
+    let response = await usersApi.setUserActivation(adminUser.id,userWithoutRole.userName,true);
+    const user = await UserCollection.findById(userWithoutRole.id);
+
+    expect(response.status).toEqual(constants.OK_STATUS);
+    expect(response.user.isDeactivated).toBeFalsy();
+    expect(user.isDeactivated).toBeFalsy();
 
   });
 

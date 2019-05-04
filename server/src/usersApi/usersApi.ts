@@ -101,7 +101,17 @@ export class UsersApi implements IUsersApi{
 
         let user = await UserCollection.findById(userId);
         if(!user)
-            return ({status: Constants.BAD_REQUEST}); //inorder to remove props from object
+            return ({status: Constants.BAD_REQUEST , err:"user not exists"}); //inorder to remove props from object
+
+        return ({status: Constants.OK_STATUS , user: user.getUserDetails()});
+    }
+
+    async getUserDetailsByName(userName){
+        addToRegularLogger(" get User Details By Name", {userName});
+
+        let user = await UserCollection.findOne({userName});
+        if(!user)
+            return ({status: Constants.BAD_REQUEST, err:"user not exists"}); //inorder to remove props from object
 
         return ({status: Constants.OK_STATUS , user: user.getUserDetails()});
     }
@@ -229,7 +239,9 @@ export class UsersApi implements IUsersApi{
 
     async setUserAsStoreOwner(userId, appointedUserName, storeId){
         addToRegularLogger(" set User As store owner ", {userId ,appointedUserName, storeId });
-
+        const store = await StoreCollection.findById(storeId);
+        if(!store)
+            return ({status: Constants.BAD_REQUEST, err: "store doesn't exists"});
         const appointedUser = await UserCollection.findOne({userName: appointedUserName});
         let newRole;
         const appointorRole = await RoleCollection.findOne({ofUser:userId, store:storeId , name:STORE_OWNER});
@@ -241,7 +253,7 @@ export class UsersApi implements IUsersApi{
         else if(existRole &&  existRole.name === STORE_MANAGER){
             existRole.name = STORE_OWNER;
             existRole.permissions.length = 0;
-            existRole.appointor = userId;
+            existRole.appointor = appointorRole.id;
             newRole = await RoleCollection.updateOne(existRole);
         }
         else{
@@ -249,18 +261,20 @@ export class UsersApi implements IUsersApi{
         }
         appointorRole.appointees.push(newRole.id);
         await RoleCollection.updateOne(appointorRole);
+        await sendNotification(appointedUser.id,`Store ${store.name}`,'Congratulation you\'re owner now');
         return ({status: Constants.OK_STATUS});
     }
 
     async setUserAsStoreManager(userId, appointedUserName, storeId, permissions){
         addToRegularLogger(" set User As store manager ", {userId ,appointedUserName, storeId, permissions });
-
+        const store = await StoreCollection.findById(storeId);
+        if(!store)
+            return ({status: Constants.BAD_REQUEST, err: "store doesn't exists"});
         const appointedUser = await UserCollection.findOne({userName: appointedUserName});
         const appointorRole = await RoleCollection.findOne({ofUser:userId, store:storeId , name:{$in: [STORE_OWNER,STORE_MANAGER]}});
-        if(!appointorRole)
-            return ({status: Constants.BAD_REQUEST});
-        if(appointorRole.name === STORE_MANAGER && appointorRole.permissions.filter(perm => perm === Constants.APPOINT_STORE_MANAGER).length === 0 )
+        if(!appointorRole || !appointorRole.checkPermission(Constants.APPOINT_STORE_MANAGER))
             return ({status: Constants.BAD_REQUEST, err:'dont have permission'});
+
         if(await RoleCollection.findOne({ofUser:appointedUser.id, store:storeId}))
             return ({status: Constants.BAD_REQUEST, err:'role collection is not found'});
 
@@ -274,6 +288,7 @@ export class UsersApi implements IUsersApi{
 
         appointorRole.appointees.push(newRole.id);
         await RoleCollection.updateOne(appointorRole);
+        await sendNotification(appointedUser.id,`Store ${store.name}`,'Congratulation you\'re manager now');
         return ({status: Constants.OK_STATUS});
     }
 
@@ -331,9 +346,9 @@ export class UsersApi implements IUsersApi{
         if(!userofRoleToDelete)
             return {status: Constants.BAD_REQUEST, err: 'There is no user with this user name'};
         const role = await RoleCollection.findOne({ ofUser: userofRoleToDelete.id, store: storeId });
-        if(!roleUserId)
+        if(!roleUserId || !roleUserId.checkPermission(Constants.REMOVE_ROLE_PERMISSION))
             return {status: Constants.BAD_REQUEST, err: 'appointor userIdRemove role not exist'};
-
+            
         if(!role)
             return {status: Constants.BAD_REQUEST, err: 'role of appointee not exist'};
 
@@ -356,19 +371,22 @@ export class UsersApi implements IUsersApi{
         return ({status: Constants.OK_STATUS , messages});
     }
 
-    async deleteUser(adminId, userNameToDisActivate){
+    async setUserActivation(adminId, userNameToDisActivate,toActivate = false ){
         addToRegularLogger(" delete User", {adminId, userNameToDisActivate });
 
         let admin = await UserCollection.findById(adminId);
         if(!admin)
-            return {status: Constants.BAD_REQUEST, err: "the user is not an admin"};
+            return {status: Constants.BAD_REQUEST, err: "there is  no permission"};
         let user = await UserCollection.findOne({userName: userNameToDisActivate});
         if(!user)
             return {status: Constants.BAD_REQUEST, err: "the user does not exist"};
         let adminRole = await RoleCollection.find({ofUser: adminId, name:ADMIN});
         if(!adminRole)
-            return {status: Constants.BAD_REQUEST, err: "the admin role does not exist"};
-        user.isDeactivated = true; 
+            return {status: Constants.BAD_REQUEST, err: "there is  no permission"};
+        if(await RoleCollection.findOne({ofUser:user.id, name:ADMIN}))
+            return {status: Constants.BAD_REQUEST, err: "cannot change activation to admin user"};
+
+        user.isDeactivated = !toActivate; 
 
         user = await UserCollection.updateOne(user);
         return ({status: Constants.OK_STATUS , user});
@@ -392,7 +410,7 @@ export class UsersApi implements IUsersApi{
         return ({status: Constants.OK_STATUS , stores});
     }
 
-   async sendMessage(userId, title, body, toName , toIsStore){
+    async sendMessage(userId, title, body, toName , toIsStore){
         addToRegularLogger(" send Message", {userId, title, body, toName , toIsStore});
 
         let toUser,toStore;

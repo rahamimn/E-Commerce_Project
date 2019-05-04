@@ -102,6 +102,23 @@ async function getUserDetails(req: Request, res: express.Response) {
     }
 }
 
+usersApiRouter.post('/usersApi/getUserDetailsByName', getUserDetailsByName);
+
+async function getUserDetailsByName(req: Request, res: express.Response) {
+    try {
+        const userName = req.body.userName;
+        if (!userName) {
+            res.send({status: Constants.BAD_ACCESS_NO_VISITORS, err: Constants.ERR_Access_MSG});
+            return;
+        }
+        const response =await usersApi.getUserDetailsByName(userName);
+        res.send(response);
+    }
+    catch (err) {
+        res.send({status: Constants.BAD_REQUEST});
+    }
+}
+
 usersApiRouter.post('/usersApi/getCarts', getCarts);
 
 async function getCarts(req: Request, res: express.Response) {
@@ -344,20 +361,21 @@ async function getMessages(req: Request, res: express.Response) {
     }
 }
 
-usersApiRouter.post('/usersApi/deleteUser', deleteUser);
+usersApiRouter.post('/usersApi/setUserActivation', setUserActivation);
 
-async function deleteUser(req: Request, res: express.Response) {
+async function setUserActivation(req: Request, res: express.Response) {
     try {
         const user = req.session.user;
         if (!user) {
             res.send({status: Constants.BAD_ACCESS_NO_VISITORS, err: Constants.ERR_Access_MSG});
             return;
         }
-        const userNameToDisActivate = req.body.userNameToDisActivate;
-        if (!userNameToDisActivate)
+        const userName = req.body.userName;
+        const toActivate = req.body.toActivate;
+        if (!userName)
             res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
 
-        const response = await usersApi.deleteUser(user.id, userNameToDisActivate);
+        const response = await usersApi.setUserActivation(user.id, userName, toActivate );
         res.send(response);
     }
     catch (err) {

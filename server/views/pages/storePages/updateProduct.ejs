@@ -123,7 +123,7 @@
                     console.log(data.error);
                     $("#update-product-error").text(data.err);
                 }else{
-                    document.location.href = '/';
+                    document.location.href = '/store-panel/<%=storeId%>/';
         }
             }) // JSON-string from `response.json()` call
             .catch(error => console.error(error));

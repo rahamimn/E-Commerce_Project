@@ -1,5 +1,5 @@
 
-import { BAD_REQUEST, STORE_OWNER, CLOSE_STORE_BY_OWNER, CLOSE_STORE_BY_ADMIN, STORE_MANAGER } from './../consts';
+import { BAD_REQUEST, STORE_OWNER, CLOSE_STORE_BY_OWNER, CLOSE_STORE_BY_ADMIN, STORE_MANAGER, WATCH_WORKERS_PERMISSION } from './../consts';
 import { StoreCollection, UserCollection, RoleCollection, MessageCollection } from '../persistance/mongoDb/Collections';
 import { OK_STATUS, BAD_USERNAME, OPEN_STORE, ADMIN } from "../consts";
 import { Store } from './models/store';
@@ -98,12 +98,15 @@ export class StoresApi implements IStoresApi {
         return ({status: OK_STATUS,  arrat_of_messages: store_object_from_db.messages});
     };
     
-    async getWorkers(ownerId: string, storeID: string) {
-        addToRegularLogger(" get workers from store ", {ownerId,storeID });
+    async getWorkers(workerId: string, storeID: string) {
+        addToRegularLogger(" get workers from store ", {workerId,storeID });
 
-        const role_details_of_user = await RoleCollection.findOne({ofUser: ownerId , name: STORE_OWNER});
+        const role_details_of_user = await RoleCollection.findOne({ofUser: workerId , store:storeID});
         if(!role_details_of_user){
-            return ({status: BAD_REQUEST});
+            return ({status: BAD_REQUEST, err:"user is'nt worker of this store"});
+        }
+        if(role_details_of_user.name === STORE_MANAGER && !role_details_of_user.permissions.some(perm => perm === WATCH_WORKERS_PERMISSION)){
+            return ({status: BAD_REQUEST, err:"manager doesn't has permission"});
         }
 
         const roles = await RoleCollection.find({store: storeID});

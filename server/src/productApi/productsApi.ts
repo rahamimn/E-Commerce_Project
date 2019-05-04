@@ -1,36 +1,36 @@
 import { ProductCollection, StoreCollection, UserCollection, RoleCollection } from "../persistance/mongoDb/Collections";
 import { Product } from "./models/product";
-import { OK_STATUS, BAD_REQUEST, BAD_AMOUNT, BAD_PRICE, BAD_STORE_ID, OPEN_STORE, BAD_USER_ID, STORE_OWNER, STORE_MANAGER, ADMIN } from "../consts";
+import { OK_STATUS, BAD_REQUEST, BAD_AMOUNT, BAD_PRICE, BAD_STORE_ID, OPEN_STORE, BAD_USER_ID, STORE_OWNER, STORE_MANAGER, ADMIN, ADD_PRODUCT_PERMISSION, REMOVE_PRODUCT_PERMISSION, UPDATE_PRODUCT_PERMISSION } from "../consts";
 import { IProductApi } from "./productsApiInterface";
 import { Review } from "../storeApi/models/review";
+import { Role } from "../usersApi/models/role";
 export class ProductsApi implements IProductApi{
 
     async addProduct(userId,newProduct: {storeId: String, name:String, amountInventory: Number, sellType: String, price: Number, keyWords: String[], category: String,coupons?: String,description?: String,imageUrl?: String,acceptableDiscount: number,discountPrice?: number,rank:number,reviews: any[]}){
         if (!userId){
-            return ({status: BAD_REQUEST, error: BAD_USER_ID});
+            return ({status: BAD_REQUEST, err: BAD_USER_ID});
         }
 
         if (!this.isStoreVaild(newProduct.storeId)){
-            return ({status: BAD_REQUEST, error: BAD_STORE_ID});
+            return ({status: BAD_REQUEST, err: BAD_STORE_ID});
         }
 
-       const isUserAdmin = await RoleCollection.findOne({ofUser:userId, name:ADMIN})
-       const isUserPermitted = await RoleCollection.findOne({ofUser:userId, store:newProduct.storeId , name:{$in: [STORE_OWNER,STORE_MANAGER]}});
+       const isUserPermitted = await RoleCollection.findOne({ofUser:userId, store:newProduct.storeId });
 
-       if(!isUserPermitted && !isUserAdmin){
-            return ({status: BAD_REQUEST, error: "You have no permission for this action (User ID: " + userId + ")."});
+        if(!isUserPermitted ||  !isUserPermitted.checkPermission(ADD_PRODUCT_PERMISSION )){
+            return ({status: BAD_REQUEST, err: "You have no permission for this action (User ID: " + userId + ")."});
         }
 
         if (newProduct.amountInventory < 0) {
-            return ({status: BAD_REQUEST, error: BAD_AMOUNT});
+            return ({status: BAD_REQUEST, err: BAD_AMOUNT});
         }
 
         if (newProduct.price < 0){
-            return ({status: BAD_REQUEST, error: BAD_PRICE});
+            return ({status: BAD_REQUEST, err: BAD_PRICE});
         }
 
          if (await (this.doesStoreHaveThisProduct(newProduct.storeId, newProduct.name))){
-            return ({status: BAD_REQUEST, error: ("The product \"" + newProduct.name + "\" already exists in the store with ID: \"" + newProduct.storeId +"\"") });
+            return ({status: BAD_REQUEST, err: ("The product \"" + newProduct.name + "\" already exists in the store with ID: \"" + newProduct.storeId +"\"") });
         }
 
         try{
@@ -54,28 +54,31 @@ export class ProductsApi implements IProductApi{
 
             return {status: OK_STATUS , product: productToInsert}
 
-        } catch(error) {
+        } catch(err) {
             return ({status: BAD_REQUEST});
         }
     }
 
+    checkPermission = (role:Role ,permission:string): boolean => !role ||
+                (role.name === STORE_MANAGER && role.permissions.some(perm => perm === permission));
+    
     
     async setProdactActivation(userId: String, productId: String, toActivate = false ){
 
         try{ 
 
             if (!userId || !productId){
-                return ({status: BAD_REQUEST, error: BAD_USER_ID});
+                return ({status: BAD_REQUEST, err: BAD_USER_ID});
             }
             let product = await ProductCollection.findById(productId);
             if(!product)
-                return ({status: BAD_REQUEST, error: "Product not found (Id: " + productId + ")."});
+                return ({status: BAD_REQUEST, err: "Product not found (Id: " + productId + ")."});
     
-           const isUserAdmin = await RoleCollection.findOne({ofUser:userId, name:ADMIN})
-           const isUserPermitted = await RoleCollection.findOne({ofUser:userId, store:product.storeId , name:{$in: [STORE_OWNER,STORE_MANAGER]}});
+            const isUserAdmin = await RoleCollection.findOne({ofUser:userId, name:ADMIN})
+            const isUserPermitted = await RoleCollection.findOne({ofUser:userId, store:product.storeId , name:{$in: [STORE_OWNER,STORE_MANAGER]}});
     
-           if(!isUserPermitted && !isUserAdmin){
-                return ({status: BAD_REQUEST, error: "You have no permission for this action (User ID: " + userId + ")."});
+           if(!isUserAdmin && (!isUserPermitted ||  !isUserPermitted.checkPermission(REMOVE_PRODUCT_PERMISSION ))){
+                return ({status: BAD_REQUEST, err: "You have no permission for this action (User ID: " + userId + ")."});
             }
             
             let productToRemove = await ProductCollection.findById(productId);
@@ -84,7 +87,7 @@ export class ProductsApi implements IProductApi{
 
             return {status: OK_STATUS ,product: product_AfterRemove}
 
-        } catch(error) {
+        } catch(err) {
             return ({status: BAD_REQUEST});
         }
     }
@@ -94,21 +97,22 @@ export class ProductsApi implements IProductApi{
         try{ 
 
             if (!userId){
-                return ({status: BAD_REQUEST, error: BAD_USER_ID});
+                return ({status: BAD_REQUEST, err: BAD_USER_ID});
             }
     
             if (!this.isStoreVaild(storeId)){
-                return ({status: BAD_REQUEST, error: BAD_STORE_ID});
+                return ({status: BAD_REQUEST, err: BAD_STORE_ID});
             }
     
-           const isUserPermitted = await RoleCollection.findOne({ofUser:userId, store:storeId});
+            const isUserAdmin = await RoleCollection.findOne({ofUser:userId, name:ADMIN})
+            const isUserPermitted = await RoleCollection.findOne({ofUser:userId, store:storeId });
     
-           if(!isUserPermitted ){
-                return ({status: BAD_REQUEST, error: "You have no permission for this action (User ID: " + userId + ")."});
+            if(!isUserAdmin && (!isUserPermitted ||  !isUserPermitted.checkPermission(UPDATE_PRODUCT_PERMISSION ))){
+                return ({status: BAD_REQUEST, err: "You have no permission for this action (User ID: " + userId + ")."});
             }
 
             if (!this.isProductVaild(productId)){
-                return ({status: BAD_REQUEST, error: "Product not found (Id: " + productId + ")" } );
+                return ({status: BAD_REQUEST, err: "Product not found (Id: " + productId + ")" } );
             }
 
             let productToUpdate = await ProductCollection.findById(productId);
@@ -116,8 +120,8 @@ export class ProductsApi implements IProductApi{
             let product_AfterUpdate = await ProductCollection.updateOne(productToUpdate);
             return {status: OK_STATUS ,product: product_AfterUpdate}
 
-        } catch(error) {
-            console.log(error);
+        } catch(err) {
+            console.log(err);
             return ({status: BAD_REQUEST});
         }
     }
@@ -134,7 +138,7 @@ export class ProductsApi implements IProductApi{
             let product_AfterUpdate = await ProductCollection.updateOne(productToUpdate);
             return {status: OK_STATUS ,product: productToUpdate}
 
-        } catch(error) {
+        } catch(err) {
             return ({status: BAD_REQUEST});
         }
     }
@@ -163,7 +167,7 @@ export class ProductsApi implements IProductApi{
             let productsToReturn = await ProductCollection.find(filter);
             return {status: OK_STATUS ,products: productsToReturn}
 
-        } catch(error) {
+        } catch(err) {
             return ({status: BAD_REQUEST});
         }
     }
@@ -173,7 +177,7 @@ export class ProductsApi implements IProductApi{
         try{ 
 
             if (!this.isProductVaild(productId)){
-                return ({status: BAD_REQUEST, error: "Product not found (Id: " + productId + ")" } );
+                return ({status: BAD_REQUEST, err: "Product not found (Id: " + productId + ")" } );
             }
             
             let product = await ProductCollection.findById(productId);
@@ -183,7 +187,7 @@ export class ProductsApi implements IProductApi{
             return ({status: OK_STATUS , product: product.getProductDetails()});
 
                
-        } catch(error) {
+        } catch(err) {
             return ({status: BAD_REQUEST});
         }
         
@@ -217,7 +221,7 @@ export class ProductsApi implements IProductApi{
             else
                 return true;
                 
-        } catch(error) {
+        } catch(err) {
             return false;
         }      
     }
@@ -225,7 +229,7 @@ export class ProductsApi implements IProductApi{
     async doesStoreHaveThisProduct(storeId: String, productName: String){
         try{ 
             if (!(await this.isStoreVaild(storeId)))
-                return ({status: BAD_REQUEST, error: BAD_STORE_ID});
+                return ({status: BAD_REQUEST, err: BAD_STORE_ID});
             
             let product = await ProductCollection.findOne({name:productName})
 
@@ -240,7 +244,7 @@ export class ProductsApi implements IProductApi{
             else
                 return false;
 
-        } catch(error) {
+        } catch(err) {
 
             return ({status: BAD_REQUEST});
         }       

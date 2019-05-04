@@ -1,4 +1,5 @@
 import { RoleCollection, UserCollection } from "../../persistance/mongoDb/Collections";
+import { STORE_MANAGER, STORE_OWNER } from "../../consts";
 
 export class Role {
 
@@ -157,7 +158,11 @@ export class Role {
         appointees:_appointees ,
         permissions:_permissions ,
     });
-}
+    };
+
+    checkPermission(permission:string): boolean {
+        return (this.name === STORE_OWNER  || this.name === STORE_MANAGER && this.permissions.some(perm => perm === permission));
+    };
 
 
     private _id: String;
