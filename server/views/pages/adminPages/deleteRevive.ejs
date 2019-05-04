@@ -1,0 +1,109 @@
+ <%- include('./adminHeader',{user})%>
+            <h2 class="display-6" style="color:grey">Delete / Revive User</h2>
+                
+                <div class="card">  
+                    <div class="card-header">Delete And Revive</div>
+                        <div class="card-body">
+                            <form name="register-form" onsubmit="onSubmitSearch(event)">
+                                <div class="form-group row">
+                                    <label for="user_name" class="col-md-4 col-form-label text-md-right">UserName</label>
+                                    <div class="col-md-6">
+                                        <input type="text" id="userName" class="form-control" name="username">
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6 offset-md-4">
+                                    <button type="submit" class="btn btn-primary">
+                                    Search
+                                    </button>
+                                    <p id="delete-user-error"> </p>
+                                </div>
+                           </form>
+                        </div>
+                    <div style="margin: 0 40px"> 
+                        <table id="user-details" class="table" style="display:none" >
+                         <tbody>
+                            <tr>
+                            <td id ="chosen-userName" style="line-height:40px">ddsad</td>
+                        
+                            <td id="removeB" style="display:none"><button  class="btn btn-danger" type="button" title="Remove Role" 
+                                onclick="deleteUser(event)"> <i class="fas fa-user-slash" aria-hidden="true">Remove </i></button></td>
+
+                            <td id="reviveB" style="display:none"><button  class="btn btn-success" type="button" title="Remove Role"
+                                onclick="reviveUser(event)"> <i class="fas fa-child" aria-hidden="true"> Revive </i></button></td>
+                            </tr>
+                        </tbody>
+                        </table>
+                    </div>
+                </div>
+             
+    </div>
+
+     
+
+
+</div>
+</main>
+</div>  
+
+<script>
+let userName ='';
+function onSubmitSearch(event){
+  event.preventDefault();
+  const userNameInput = $("#userName").val();
+  postData(`/usersApi/getUserDetailsByName`, {userName:userNameInput})
+  .then(data => {
+      alert(data.status,data.err );
+      if(data.status<0){
+        $("#delete-user-error").text(data.err);
+        $("#user-details").hide();
+        $("#removeB").hide();
+        $("#reviveB").hide();
+      }
+      else{
+        userName = data.user.userName;
+        $("#user-details").show();
+        $("#chosen-userName").text(''+data.user.userName);
+        if(data.user.isDeactivated)
+            $("#reviveB").show();
+        else 
+            $("#removeB").show();
+      }
+        //document.location.href = '/user-panel';
+  }) 
+  .catch(error => console.error(error));
+};
+
+function reviveUser(event){
+  event.preventDefault();
+  postData(`/usersApi/setUserActivation`, {
+      userName, toActivate:true})
+  .then(data => {
+      alert(data.status,data.err );
+      if(data.status<0)
+        $("#delete-user-error").text(data.err);
+      else{
+        document.location.href = '/user-panel';
+      }
+        //document.location.href = '/user-panel';
+  }) 
+  .catch(error => console.error(error));
+};
+
+function deleteUser(event){
+  event.preventDefault();
+  postData(`/usersApi/setUserActivation`, {
+      userName, toActivate:false})
+  .then(data => {
+      alert(data.status,data.err);
+      if(data.status<0)
+        $("#delete-user-error").text(data.err);
+      else{
+        document.location.href = '/user-panel';
+      }
+  }) 
+  .catch(error => console.error(error));
+};
+</script>
+
+<%- include ../../partials/pageWithSideFooter %>

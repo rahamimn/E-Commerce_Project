@@ -44,6 +44,7 @@ export const ADD_PRODUCT_PERMISSION = "add-product";
 export const REMOVE_PRODUCT_PERMISSION = "remove-product";
 export const UPDATE_PRODUCT_PERMISSION = "update-product";
 export const REMOVE_ROLE_PERMISSION = "remove-role";
+export const WATCH_WORKERS_PERMISSION = "watch-workers";
 export const GET_STORE_MESSAGE_PERMISSION = "get-store-message";
 export const SEND_STORE_MESSAGE_PERMISSION = "send-store-message";
 export const EMPTY_PERMISSION = " ";

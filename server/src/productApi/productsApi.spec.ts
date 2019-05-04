@@ -76,7 +76,7 @@ describe('Product model',() => {
     );
 
     expect(response.status).toEqual(BAD_REQUEST);
-    expect(response.error).toEqual(BAD_PRICE);
+    expect(response.err).toEqual(BAD_PRICE);
   });
 
   it.skip('addProduct with NEGATIVE AMOUNT - Test', async () => {
@@ -98,7 +98,7 @@ describe('Product model',() => {
     }
 
     // expect(response.status).toEqual(BAD_REQUEST);
-    // expect(response.error).toEqual(BAD_AMOUNT);
+    // expect(response.err).toEqual(BAD_AMOUNT);
   });
 
   it('addProduct with INVALID STORE ID - Test', async () => {
@@ -114,7 +114,7 @@ describe('Product model',() => {
     );
 
     expect(response.status).toEqual(BAD_REQUEST);
-    expect((response.error).startsWith("You have no permission for this action"));
+    expect((response.err).startsWith("You have no permission for this action"));
   });
 
   it('addProduct - WITH NO PERMISSION - Test', async () => {
@@ -133,7 +133,7 @@ describe('Product model',() => {
     );
 
     expect(response.status).toEqual(BAD_REQUEST);
-    expect((response.error).startsWith("You have no permission for this action"));
+    expect((response.err).startsWith("You have no permission for this action"));
   });
 
   //-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -171,7 +171,7 @@ describe('Product model',() => {
 
 
   //   expect(response.status).toEqual(BAD_REQUEST);
-  //   expect(response.error).toEqual(BAD_STORE_ID);
+  //   expect(response.err).toEqual(BAD_STORE_ID);
   // });
 
 
@@ -234,7 +234,7 @@ describe('Product model',() => {
     let product_AfterRemove = await productsApi.setProdactActivation(userWithNoPermission.id, product_BeforeRemove.id);
   
     expect(product_AfterRemove.status).toEqual(BAD_REQUEST);
-    expect((product_AfterRemove.error).startsWith("You have no permission for this action"));
+    expect((product_AfterRemove.err).startsWith("You have no permission for this action"));
     
 
   });
@@ -283,7 +283,7 @@ describe('Product model',() => {
     let productAfterUpdate = await productsApi.updateProduct(userWithNoPermission.id, store.store.id, productDetails.id, productDetails);
 
     expect(productAfterUpdate.status).toEqual(BAD_REQUEST);
-    expect((productAfterUpdate.error).startsWith("You have no permission for this action"));
+    expect((productAfterUpdate.err).startsWith("You have no permission for this action"));
 });
 
 //  it('addReview - Test', async () => {

@@ -93,7 +93,7 @@
     })
       .then(data => {
         if (data.status < 0) {
-          $("#new-owner-error").text(data.err);
+          $("#workers-error").text(data.err);
           alert(data.status, data.err);
         }
         else {
@@ -115,7 +115,7 @@
     })
       .then(data => {
         if (data.status < 0) {
-          $("#new-manager-error").text(data.err);
+          $("#workers-error").text(data.err);
           alert(data.status, data.err);
         }
         else {

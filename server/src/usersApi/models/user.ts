@@ -201,7 +201,8 @@ export class User {
             _firstName,
             _lastName,
             _email,
-            _phone
+            _phone,
+            _isDeactivated
         } = this;
         return ({
             id:_id,
@@ -210,6 +211,7 @@ export class User {
             lastName:_lastName,
             email:_email,
             phone:_phone,
+            isDeactivated:_isDeactivated
         });
     }
 

@@ -2,7 +2,7 @@ import express = require('express');
 import { Request } from '../types/moongooseArray';
 import { Response } from 'express-serve-static-core';
 // import { verifyToken, createToken } from './jwt';
-import { MISSING_PARAMETERS, BAD_REQUEST, STORE_OWNER, STORE_MANAGER, APPOINT_STORE_MANAGER, ADD_PRODUCT_PERMISSION, EMPTY_PERMISSION, SEND_STORE_MESSAGE_PERMISSION, GET_STORE_MESSAGE_PERMISSION, REMOVE_ROLE_PERMISSION, REMOVE_PRODUCT_PERMISSION, UPDATE_PRODUCT_PERMISSION } from './consts';
+import { MISSING_PARAMETERS, BAD_REQUEST, STORE_OWNER, STORE_MANAGER, APPOINT_STORE_MANAGER, ADD_PRODUCT_PERMISSION, EMPTY_PERMISSION, SEND_STORE_MESSAGE_PERMISSION, GET_STORE_MESSAGE_PERMISSION, REMOVE_ROLE_PERMISSION, REMOVE_PRODUCT_PERMISSION, UPDATE_PRODUCT_PERMISSION, WATCH_WORKERS_PERMISSION } from './consts';
 import { UsersApi } from './usersApi/usersApi';
 import { ProductsApi } from './productApi/productsApi';
 import { StoresApi } from './storeApi/storesApi';
@@ -24,6 +24,13 @@ const loginSection = (req:Request,res:Response, next) =>{
         next();
 }
 
+const adminSection = (req:Request,res:Response, next) =>{
+    if(!req.session.user || !req.session.user.isAdmin )
+        res.redirect("/");
+    else
+        next();
+}
+
 const storeSection = (permission = undefined) =>
     async (req:Request,res:Response, next) => {
             if(!req.session.user.role || req.session.user.role.store !== req.params.storeId){
@@ -31,13 +38,17 @@ const storeSection = (permission = undefined) =>
                 if(response.status < 0 || 
                     (permission &&
                         response.role.name === STORE_MANAGER &&
-                        permission &&  response.role.permissions.some(perm => perm === permission )
+                        permission && !response.role.permissions.some(perm => perm === permission )
                     ))
                     res.redirect('/');
+                else{
                 const role = response.role;
                 req.session.user.role = role;
+                next();
+                }
             } 
-            next();
+            else
+                next();
         };
 
 webRoutes.get('/' ,async (req:Request,res:express.Response)=>{
@@ -101,11 +112,6 @@ webRoutes.get('/products/:productId' , async (req:Request,res:express.Response)=
     });
 });
 
-webRoutes.get('/user-panel/addStore', async (req:Request,res:express.Response)=>{
-    res.render('pages/userPages/addStore',{
-        user: req.session.user
-    });
-});
 
 
 webRoutes.get('/register', async (req:Request,res:express.Response)=>{
@@ -184,13 +190,9 @@ webRoutes.get('/user-panel', loginSection, async (req:Request,res:express.Respon
         user: req.session.user
     });
 });
-
-
-webRoutes.get('/store-panel/:storeId/addProduct', loginSection, async (req:Request,res:express.Response)=>{
-    res.render('pages/storePages/addProduct1',{
-        user: req.session.user,
-        storeId: req.params.storeId,
-        categories
+webRoutes.get('/user-panel/addStore', loginSection, async (req:Request,res:express.Response)=>{
+    res.render('pages/userPages/addStore',{
+        user: req.session.user
     });
 });
 
@@ -203,22 +205,30 @@ webRoutes.get('/user-panel/my-stores', loginSection, async (req:Request,res:expr
     });
 });
 
-
-webRoutes.get('/store-panel/:storeId/workers', loginSection, storeSection(), async (req:Request,res:express.Response)=>{
-    const workers = await storesApi.getWorkers(req.session.user.id, req.params.storeId);
-
-    res.render('pages/storePages/workersPage',{
+webRoutes.get('/store-panel/:storeId/addProduct', loginSection,storeSection(ADD_PRODUCT_PERMISSION), async (req:Request,res:express.Response)=>{
+    res.render('pages/storePages/addProduct1',{
         user: req.session.user,
         storeId: req.params.storeId,
-        workers: workers.storeWorkers
+        categories
     });
 });
 
-webRoutes.get('/store-panel/:storeId/workers/updatePermissions/:workerId', loginSection, storeSection(), async (req:Request,res:express.Response)=>{
+webRoutes.get('/store-panel/:storeId/workers', loginSection, storeSection(WATCH_WORKERS_PERMISSION), async (req:Request,res:express.Response)=>{
+    const response = await storesApi.getWorkers(req.session.user.id, req.params.storeId);
+    if(response.status < 0)
+        res.redirect(`/store-panel/${req.params.storeId}/`);
+    res.render('pages/storePages/workersPage',{
+        user: req.session.user,
+        storeId: req.params.storeId,
+        workers: response.storeWorkers
+    });
+});
+
+webRoutes.get('/store-panel/:storeId/workers/updatePermissions/:workerId', loginSection, storeSection(REMOVE_ROLE_PERMISSION), async (req:Request,res:express.Response)=>{
     const worker = await usersApi.getUserDetails(req.params.workerId);
     const role = await usersApi.getUserRole(req.params.workerId, req.params.storeId);
     const currPermissions = role.role.permissions;
-    const allPermissions = [APPOINT_STORE_MANAGER, ADD_PRODUCT_PERMISSION, SEND_STORE_MESSAGE_PERMISSION ,GET_STORE_MESSAGE_PERMISSION ,REMOVE_ROLE_PERMISSION ,REMOVE_PRODUCT_PERMISSION ,UPDATE_PRODUCT_PERMISSION];
+    const allPermissions = [APPOINT_STORE_MANAGER, ADD_PRODUCT_PERMISSION, SEND_STORE_MESSAGE_PERMISSION ,GET_STORE_MESSAGE_PERMISSION ,REMOVE_ROLE_PERMISSION ,REMOVE_PRODUCT_PERMISSION ,UPDATE_PRODUCT_PERMISSION, WATCH_WORKERS_PERMISSION];
 
     res.render('pages/storePages/permissionsPage',{
         user: req.session.user,
@@ -231,22 +241,23 @@ webRoutes.get('/store-panel/:storeId/workers/updatePermissions/:workerId', login
 
 
 
-webRoutes.get('/admin-panel', loginSection, async (req:Request,res:express.Response)=>{
-    if(!req.session.user.isAdmin )
-        res.redirect("/");
+webRoutes.get('/admin-panel', adminSection, async (req:Request,res:express.Response)=>{
     res.render('pages/adminPages/adminHome',{
         user: req.session.user
     });
 });
 
-webRoutes.get('/admin-panel/appoint-admin', loginSection, async (req:Request,res:express.Response)=>{
-    if(!req.session.user.isAdmin )
-        res.redirect("/");
-    res.render('pages/adminPages/appointAdmin',{
+webRoutes.get('/admin-panel/delete-revive', adminSection, async (req:Request,res:express.Response)=>{
+    res.render('pages/adminPages/deleteRevive',{
         user: req.session.user
     });
 });
 
+webRoutes.get('/admin-panel/appoint-admin', adminSection, async (req:Request,res:express.Response)=>{
+    res.render('pages/adminPages/appointAdmin',{
+        user: req.session.user
+    });
+});
 
 webRoutes.get('/store-panel/:storeId', loginSection, storeSection(), async (req:Request,res:express.Response)=>{
     res.render('pages/storePages/storeHome',{
@@ -266,7 +277,7 @@ webRoutes.get('/store-panel/:storeId/manage-products', loginSection, storeSectio
     });
 });
 
-webRoutes.get('/store-panel/:storeId/update-product/:productId', loginSection, storeSection(), async (req:Request,res:express.Response)=>{
+webRoutes.get('/store-panel/:storeId/update-product/:productId', loginSection, storeSection(UPDATE_PRODUCT_PERMISSION), async (req:Request,res:express.Response)=>{
     const response = await productApi.getProductDetails(req.params.productId);
     res.render('pages/storePages/updateProduct',{
         user: req.session.user,
