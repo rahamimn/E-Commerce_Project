@@ -52,9 +52,10 @@ const storeSection = (permission = undefined) =>
         };
 
 webRoutes.get('/' ,async (req:Request,res:express.Response)=>{
-
+    const response = await storesApi.getAllStores();
     res.render('pages/home', {
-        user: req.session.user
+        user: req.session.user,
+        stores: response.stores
     });
 });
 
@@ -75,16 +76,19 @@ webRoutes.get('/products' ,async (req:Request,res:express.Response)=>{
     res.render('pages/products', {
         user: req.session.user,
         categories,
-        products:response.products
+        products:response.products,
+        storeId:null
     });
 });
 
 webRoutes.post('/products' ,async (req:Request,res:express.Response)=>{
     const keyWords = req.body.keywords.split(',');
+    const storeId = req.body.storeId;
     const response = await productApi.getProducts({
         name:req.body.name !== '' ? req.body.name : undefined,
         keyWords:req.body.keywords !== '' ? keyWords : undefined,
         category:req.body.category !== "Category" ? req.body.category : undefined,
+        storeId
     });
 
     if(response.status<0) {
@@ -95,7 +99,8 @@ webRoutes.post('/products' ,async (req:Request,res:express.Response)=>{
     res.render('pages/products', {
         user: req.session.user,
         categories,
-        products:response.products
+        products:response.products,
+        storeId
     });
 });
 
@@ -109,6 +114,28 @@ webRoutes.get('/products/:productId' , async (req:Request,res:express.Response)=
     res.render('pages/productPage', {
         user: req.session.user,
         product: response.product
+    });
+});
+
+webRoutes.get('/stores/:storeId' , async (req:Request,res:express.Response)=>{
+    const response = await storesApi.getStore(req.params.storeId);
+    res.render('pages/store', {
+        user: req.session.user,
+        store: response.store
+    });
+});
+
+webRoutes.get('/stores/:storeId/products' ,async (req:Request,res:express.Response)=>{
+    const response = await productApi.getProducts({storeId: req.params.storeId});
+    if(response.status<0) {
+        console.log(response)
+        res.redirect("/");
+    }
+    res.render('pages/products', {
+        user: req.session.user,
+        categories,
+        products:response.products,
+        storeId:req.params.storeId
     });
 });
 

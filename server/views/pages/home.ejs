@@ -10,94 +10,30 @@
 		<div class="col-md-12">
 			<div class="page-header" style="margin-bottom:15px">
                     <h1><em>Shop and Drop </em><span style="font-size: 16pt; color: #808080;"> | Dreams For Sale</span></h1> 
-			</div>  
-			<div class="row" >
-				<div class="col-md-4">
+			</div> 
+			<%stores.forEach((store,ind) => {%>
+				<%if(ind%3 === 0){%>
+					<div class="row">
+				<%};%> 
+				<div class="col-md-4" >
+					<a href="/stores/<%=store.id%>">
 					<div class="card" style="margin-bottom:10px">
-						<img class="card-img-top" alt="Bootstrap Thumbnail First" src="http://lorempixel.com/400/200/people/">
+						<img class="card-img-top" alt="Bootstrap Thumbnail First" src="http://lorempixel.com/400/200/people/<%=ind%>">
 						<div class="card-block">
 							<h5 class="card-title">
 							</h5>
 							<h5 class="card-title" style="padding-inline-start: 15px">
-                                  <span style="font-size: 14pt; color: #4e4d4d;">Last Minute Vacations</span>
+                                  <span style="font-size: 14pt; color: #4e4d4d;"><%=store.name%></span>
 							</h5>
 						</div>
 					</div>
+					</a>
 				</div><br>
-				<div class="col-md-4">
-					<div class="card">
-						<img class="card-img-top" alt="Bootstrap Thumbnail Second" src="http://lorempixel.com/400/200/city/">
-						<div class="card-block">
-							<h5 class="card-title">
-							</h5>
-							<h5 class="card-title" style="padding-inline-start: 15px">
-                                    <span style="font-size: 14pt; color: #4e4d4d;">Join On Guided-Tour</span>
-							</h5>
-						</div>
+				
+				<%if(ind%3 === 2){%>
 					</div>
-				</div>
-				<div class="col-md-4">
-					<div class="card">
-						<img class="card-img-top" alt="Bootstrap Thumbnail Third" src="http://lorempixel.com/400/200/cats/">
-						<div class="card-block">
-							<h5 class="card-title">
-							</h5>
-							<h5 class="card-title" style="padding-inline-start: 15px">
-                                        <span style="font-size: 14pt; color: #4e4d4d;">Selling Your Soul? Go Ahead!</span>
-							</h5>
-							<p class="card-text">
-							</p>
-						</div>
-					</div>
-				</div>
-			</div>
-			<div class="row">
-				<div class="col-md-4">
-					<div class="card">
-						<img class="card-img-top" alt="Bootstrap Thumbnail First" src="http://lorempixel.com/400/200/food/">
-						<div class="card-block">
-							<h5 class="card-title">
-							</h5>
-							<div>
-								<h5 class="card-title" style="padding-inline-start: 15px">
-                                  <span style="font-size: 14pt; color: #4e4d4d;">Last Minute Vacations</span>
-								</h5>
-							</div>
-						</div>
-					</div>
-				</div>
-				<div class="col-md-4">
-					<div class="card">
-						<img class="card-img-top" alt="Bootstrap Thumbnail Second" src="http://lorempixel.com/400/200/technics/">
-						<div class="card-block">
-							<h5 class="card-title">
-							</h5>
-							<div>
-								<h5 class="card-title" style="padding-inline-start: 15px">
-                                    <span style="font-size: 14pt; color: #4e4d4d;">Join On Guided-Tour</span>
-								</h5>
-							</div>
-
-						</div>
-					</div>
-				</div>
-				<div class="col-md-4">
-					<div class="card">
-						<img class="card-img-top" alt="Bootstrap Thumbnail Third" src="http://lorempixel.com/400/200/sports/">
-						<div class="card-block">
-							<h5 class="card-title">
-							</h5>
-							<div>
-								<h5 class="card-title" style="padding-inline-start: 15px">
-                                        <span style="font-size: 14pt; color: #4e4d4d;">Selling Your Soul? Go Ahead!</span>
-								</h5>
-							</div>
-
-							
-						</div>
-					</div>
-				</div>
-			</div>
+				<%};%> 
+			<%});%> 
 		</div>
 	</div>
 </div>

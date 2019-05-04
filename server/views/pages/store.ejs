@@ -1,0 +1,25 @@
+<%- include('../partials/header',{user}) %>
+<main>
+    <div class="jumbotron" style="min-height:600px; margin-bottom:0;">
+        <h1 class="display-4"><%=store.name%></h1>
+        <h2 class="display-6" style="color:grey"><%=store.description%></h2>
+        <hr class="my-4">
+        <h2 class="display-6" style="color:grey">Sales</h2>
+        <div style="display:flex; justify-content: space-between; margin-bottom:15px">
+            dddd
+        </div>
+        <hr class="my-4">
+        <h2 class="display-6" style="color:grey">Buying Rules</h2>
+        <div style="display:flex; justify-content: space-between; margin-bottom:15px">
+                ddd
+        </div>
+        <hr class="my-4">
+        <a class="btn btn-primary btn-lg" href="/stores/<%=store.id%>/products"> Our Products </a>
+    </div>
+</main>
+<footer>
+    <%# include ../partials/footer %>
+</footer>
+
+</body>
+</html>
