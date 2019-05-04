@@ -18,7 +18,7 @@ export interface IUsersApi{
     updateUser: (userId: String, user: any) => Promise< {status:number, err?: String}>,
     getUserDetails: (userId: String) => Promise< {status:number, err?: String , user?:any}>,
     getUserDetailsByName: (userId: String) => Promise< {status:number, err?: String , user?:any}>,
-    updateCart:(cartDetails: any) => Promise<{status:number, err?: String}>,
+    updateCart:(cartDetails: {id:string, items:any[] }) => Promise<{status:number, err?: String}>,
     getCart:(userId:String , cartId:String) => Promise< {status:number, err?: String , cart?: any  }>,
     getCarts:(userId:String, sessionId?:String) => Promise< {status:number, err?: String , carts?: any[]  }>,
     getMessages: (userId:String) => Promise< {status:number, err?: String , messsages?: Message[]  }>,
