@@ -18,12 +18,12 @@ export class StoresApi implements IStoresApi {
             addToRegularLogger(" add store ", {storeNewOwnerId , storeName});
             const user = await UserCollection.findById(storeNewOwnerId);
             if(!user){
-                addToErrorLogger(" add store  ");
+                addToErrorLogger(" add store the user does not exist ");
                 return {status: BAD_REQUEST, err:"bad user details"};
             }
             const store_should_be_null = await StoreCollection.findOne({name:storeName });
             if(store_should_be_null){
-                addToErrorLogger(" add store  ");
+                addToErrorLogger(" add store not unic name  ");
                 return {status: BAD_REQUEST, err:"the store name is not unic.."}; 
             }
             const new_store_added = await StoreCollection.insert(new Store({
@@ -53,15 +53,18 @@ export class StoresApi implements IStoresApi {
 
     //workes after test
     async closeStore(ownerId: String, storeId: string){
-        //const user_details = await UserCollection.findOne({userName: adminId});
         addToRegularLogger(" close store ", {ownerId , storeId});
         const role_details_of_user = await RoleCollection.findOne({ofUser: ownerId , name: STORE_OWNER});
         if(!role_details_of_user){
+            addToErrorLogger(" close store the user does not have the role needed ");
+
             return ({status: BAD_REQUEST, err: "bad role could not find"});
         }
         const store_object_from_db = await StoreCollection.findOne({_id: storeId});
         if(!store_object_from_db){
-            return ({status: BAD_REQUEST, err:"bad store could not find" });
+            addToErrorLogger(" close store the store does not exist! ");
+
+            return ({status: BAD_REQUEST, err: "bad store could not find" });
         }
         store_object_from_db.storeState = CLOSE_STORE_BY_OWNER;
         const store_curr = await StoreCollection.updateOne(store_object_from_db);
@@ -72,9 +75,11 @@ export class StoresApi implements IStoresApi {
 
         addToRegularLogger(" get Store ", {storeId});
 
-        const storeDetails =  await StoreCollection.findById(storeId);
-        if(!storeDetails){
-            return {store: storeDetails ,status: BAD_REQUEST};
+        const storeDetails =  await StoreCollection.findOne({name: storeName});
+        if (!storeDetails){
+            addToErrorLogger(" get store the store does not exist! ");
+            return {store: storeDetails ,status: BAD_REQUEST, err: "the store does not exist!"};
+
         }
         else {
         return {store: storeDetails.getStoreDetails(), status: OK_STATUS};
@@ -98,12 +103,13 @@ export class StoresApi implements IStoresApi {
         const role_details_of_user = await RoleCollection.findOne({ofUser: ownerId , name: STORE_OWNER});
 
         if(!role_details_of_user){
-            //console.log("bad role could not find" );
-            return ({status: BAD_REQUEST});
+            addToErrorLogger(" get store messages the role does not exist! ");
+            return ({status: BAD_REQUEST, err: "bad role could not find" });
         }
         const store_object_from_db = await StoreCollection.findOne({_id: storeID});
         if(!store_object_from_db){
-            return ({status: BAD_REQUEST, err:"fail in get store messages return from func " });
+            addToErrorLogger(" get store messages the store does not exist! ");
+            return ({status: BAD_REQUEST, err: "fail in get store messages return from func " });
         }
         return ({status: OK_STATUS,  arrat_of_messages: store_object_from_db.messages});
     };
@@ -113,19 +119,21 @@ export class StoresApi implements IStoresApi {
 
         const role_details_of_user = await RoleCollection.findOne({ofUser: workerId , store:storeID});
         if(!role_details_of_user){
-            return ({status: BAD_REQUEST, err:"user is'nt worker of this store"});
+            addToErrorLogger(" get workers the role does not exist! ");
+            return ({status: BAD_REQUEST, err: "user is'nt worker of this store"});
         }
         if(role_details_of_user.name === STORE_MANAGER && !role_details_of_user.permissions.some(perm => perm === WATCH_WORKERS_PERMISSION)){
-            return ({status: BAD_REQUEST, err:"manager doesn't has permission"});
+            addToErrorLogger(" get Workers problem with permissions.. ");
+            return ({status: BAD_REQUEST, err: "manager doesn't has permission"});
         }
 
         const roles = await RoleCollection.find({store: storeID});
 
 
         if(!roles){
-            console.log("Failed in get managers ");
+            addToErrorLogger(" get Workers problem with permissions.. ");
 
-            return ({status: BAD_REQUEST});
+            return ({status: BAD_REQUEST, err: "Failed in get managers "});
         }
 
         let workers = [];
@@ -147,10 +155,12 @@ export class StoresApi implements IStoresApi {
         addToRegularLogger(" get workers from store ", {adminId,storeId });
         const role_details_of_user = await RoleCollection.findOne({ofUser: adminId , name: ADMIN});
         if(!role_details_of_user){
+            addToErrorLogger(" disableStore problem with role of the user.. ");
             return ({status: BAD_REQUEST, err: "the user is not an admin and cannot disable store.." });
         }
         const store_object_from_db = await StoreCollection.findOne({_id: storeId});
         if(!store_object_from_db){
+            addToErrorLogger(" disableStore problem with store.. ");
             return ({status: BAD_REQUEST, err: "bad store could not be found"});
         }
         store_object_from_db.storeState = CLOSE_STORE_BY_ADMIN;
@@ -165,14 +175,18 @@ export class StoresApi implements IStoresApi {
         //todo find the userId from username: userToDisActivate == userName
         let worker =  await RoleCollection.findOne({ofUser: workerId , store: storeId});
         if(!worker){
+            addToErrorLogger(" sendMessage problem with role of the worker.. ");
             return ({status: BAD_REQUEST, err: "the worker does not exist"});
         }
         const toUser = await UserCollection.findById(userId);
         if(!toUser){
+            addToErrorLogger(" sendMessage problem with destination of the message.. ");
             return ({status: BAD_REQUEST, err: "the user does not exist"});
         }
         const store = await StoreCollection.findById(storeId);
         if(!store){
+            addToErrorLogger(" sendMessage problem with store.. ");
+
             return ({status: BAD_REQUEST, err: "the store does not exist"});
         }
         const message1 = await MessageCollection.insert(

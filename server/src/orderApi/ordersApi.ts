@@ -9,8 +9,10 @@ import { OrderCollection, CartCollection, UserCollection } from "../persistance/
 import { Order } from "./models/order";
 import supplySystem from "../supplySystemAdapter";
 import paymentSystem from "../paymentSystemAdapter";
+import { addToRegularLogger, addToErrorLogger } from "../utils/addToLogger";
 
 const validateUserCart = function(userId,cart){
+    addToRegularLogger("validateUserCart", {userId, cart});
     if (cart){
         if(cart.ofUser)
             return cart.ofUser.toString() == userId.toString();
@@ -21,10 +23,13 @@ const validateUserCart = function(userId,cart){
 }
 
 const validateAddress = function(country, address){
+    addToRegularLogger("validateAddress", {country, address});
     return address && country && address != '' && country != '';
 }
 
 function validatePayment(payment) {
+    addToRegularLogger("validatePayment", {payment});
+
     try {
         const cardNumber = payment.cardNumber;
         const csv = payment.csv;
@@ -37,6 +42,7 @@ function validatePayment(payment) {
         return isVaildLength && !isNotNumber && isEnteredExpiration;
     }
     catch (err){
+        addToErrorLogger("validatePayment");
         return false;
     }
 }
@@ -46,6 +52,7 @@ export class OrdersApi implements IOrderApi{
 
 
     async addOrder(storeId: String, userId: String, state: String, description: String, totalPrice: number){
+        addToRegularLogger("addOrder", {storeId: String, userId: String, state: String, description: String, totalPrice});
         try{ 
             const orderToInsert = await OrderCollection.insert(new Order({
                 storeId: storeId,
@@ -58,21 +65,27 @@ export class OrdersApi implements IOrderApi{
             return {status: OK_STATUS , order: orderToInsert}
 
         } catch(error) {
-            return ({status: BAD_REQUEST});
+            addToErrorLogger("addOrder");
+            return ({status: BAD_REQUEST, err: "bad order details"});
         }
     }
 
     async getStoreOrderHistory(storeId: String){
+        addToRegularLogger("getStoreOrderHistory", {storeId});
+
         try{ 
             let ordersToReturn = await OrderCollection.find({storeId: storeId});
             return {status: OK_STATUS ,orders: ordersToReturn}
 
         } catch(error) {
+            addToErrorLogger("getStoreOrderHistory");
             return ({status: BAD_REQUEST});
         }
     }
 
     async addComplaint(orderId: String, complaint: Complaint){
+        addToRegularLogger("addComplaint", {orderId: String, complaint: Complaint});
+
         try{ 
             let orderToComplain = await OrderCollection.findById(orderId);
             complaint.order = orderToComplain.id;
@@ -81,22 +94,32 @@ export class OrdersApi implements IOrderApi{
             return {status: OK_STATUS ,complaint: complaint}
 
         } catch(error) {
-            return ({status: BAD_REQUEST});
+            addToErrorLogger("getStoreOrderHistory");
+            return ({status: BAD_REQUEST, err: "bad details of the complaint"});
         }
     }
     async checkSupply(userId:String, cartId: String, country: String, address: String, sessionId: String){
+        addToRegularLogger("checkSupply", {userId:String, cartId: String, country: String, address: String, sessionId: String});
         try{
             let cart = await CartCollection.findById(cartId);
             const id = userId? userId : sessionId;
-            if(!cart)
-                return ({status: BAD_REQUEST});
-            if(!validateUserCart(id, cart))
-                return ({status: BAD_ACCESS_NOT_USER, err:ERR_Access_MSG});
-            if (!validateAddress(country, address))
-                return ({status: BAD_REQUEST, err:'Bad Address or Country - please insert legal data'});
+            if(!cart){
+                addToErrorLogger("checkSupply");
+                return ({status: BAD_REQUEST, err: "no cart to check supply"});
+            }
+            if(!validateUserCart(id, cart)){
+                addToErrorLogger("checkSupply");
+                return ({status: BAD_ACCESS_NOT_USER, err: "ERR Access MSG"});
+            }
+            if (!validateAddress(country, address)){
+                addToErrorLogger("checkSupply");
+                return ({status: BAD_REQUEST, err: 'Bad Address or Country - please insert legal data'});
+            }
             const supplyPrice = supplySystem.checkForSupplyPrice(cart, country, address);
-            if(supplyPrice === -1)
-                return ({status: BAD_REQUEST, err: 'supply system not support user\'s address'}); 
+            if(supplyPrice === -1){
+                addToErrorLogger("checkSupply");
+                return ({status: BAD_REQUEST, err: 'supply system not support user\'s address'});
+            } 
             cart.supplyPrice = supplyPrice;
 
             cart.state = ORDER_SUPPLY_APPROVED;
@@ -108,22 +131,29 @@ export class OrdersApi implements IOrderApi{
             return {status: OK_STATUS, cart:cartDetails, totalPrice:totalPrice+supplyPrice}
 
         } catch(error) {
+            addToErrorLogger("checkSupply");
             return ({status: BAD_REQUEST}); 
         }
     }
 
     async pay(cartId: String, payment:any, country:String, address:String){
+        addToRegularLogger("pay", {cartId: String, payment, country:String, address:String});
         try{
-            if (!validatePayment(payment))
+            if (!validatePayment(payment)){
+                addToErrorLogger("pay");
                 return ({status: BAD_REQUEST, err:'Bad payment - please insert legal data'});
+            }
             let cart = await CartCollection.findById(cartId);
-            if(!cart || cart.state !== ORDER_SUPPLY_APPROVED)
-                return ({status: BAD_REQUEST});
+            if(!cart || cart.state !== ORDER_SUPPLY_APPROVED){
+                addToErrorLogger("pay");
+                return ({status: BAD_REQUEST, err: "bad cart details"});
+            }
             let priceWithSupply = await cart.totalPrice()+ cart.supplyPrice;
 
-            if(!await cart.updateInventory(true))
+            if(!await cart.updateInventory(true)){
+                addToErrorLogger("pay");
                 return ({status: BAD_REQUEST, err:'seller doesnt have enough items in inventory'});
-
+            }
             const cardNumber = payment.cardNumber;
             const csv = payment.csv;
             const expireMM = payment.expireMM;
@@ -131,12 +161,14 @@ export class OrdersApi implements IOrderApi{
 
             if(!paymentSystem.takePayment(cardNumber, csv, expireMM, expireYY, priceWithSupply)){
                 await cart.updateInventory(false);
+                addToErrorLogger("pay");
                 return ({status: BAD_PAYMENT, err:ERR_PAYMENT_MSG});
             }
 
             if(!supplySystem.supply(cart, country, address)){
                 paymentSystem.refund(cardNumber, priceWithSupply);
                 await cart.updateInventory(false);
+                addToErrorLogger("pay");
                 return ({status: SUPPLY_PROBLEM, err:ERR_SUPPLY_MSG});
             }
 
@@ -148,7 +180,8 @@ export class OrdersApi implements IOrderApi{
             return {status: OK_STATUS , order}
             
         } catch(error) {
-            return ({status: BAD_REQUEST}); 
+            addToErrorLogger("pay");
+            return ({status: BAD_REQUEST, err:"errors with payment" }); 
         }
     }
 }
