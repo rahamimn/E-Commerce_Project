@@ -18,8 +18,16 @@
         <input name="keywords" type="text" class="form-control" id="inlineFormInputName" placeholder="Keywords(seperated by comma)" >
         </div>
         <div class="col-auto my-1">
+        <div style="display:none">
+            <%if(storeId){%>
+            <input name="storeId" value="<%=storeId%>" >
+            <%}else{%>
+            <input name="storeId" value="">
+            <%};%>
+        </div>
         <button type="submit" class="btn btn-success">Find</button>
         </div>
+
     </div>
     </form>
 

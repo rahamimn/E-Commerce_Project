@@ -17,4 +17,21 @@ describe("Store model", () => {
     store1.name = "aviv the king";
     expect(store1.name).toEqual("aviv the king");
   });
+
+  it("chenge the name", () => {
+    const store1 = fakeStore({});
+
+    store1.name = "aviv the king";
+    expect(store1.name).toEqual("aviv the king");
+  });
+
+  it('get changeable user details', () => {
+    const store = fakeStore({});
+
+    expect(store.getStoreDetails()).toMatchObject({
+      id: store.id,
+      name: store.name,
+      rank: store.rank,
+    });
+  });
 });

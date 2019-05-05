@@ -68,17 +68,27 @@ export class StoresApi implements IStoresApi {
         return ({status: OK_STATUS});
     }
 
-    async getStore (storeName: String) {
+    async getStore (storeId: String) {
 
-        addToRegularLogger(" get Store ", {storeName});
+        addToRegularLogger(" get Store ", {storeId});
 
-        const storeDetails =  await StoreCollection.findOne({name: storeName});
+        const storeDetails =  await StoreCollection.findById(storeId);
         if(!storeDetails){
             return {store: storeDetails ,status: BAD_REQUEST};
         }
         else {
-        return {store: storeDetails, status: OK_STATUS};
+        return {store: storeDetails.getStoreDetails(), status: OK_STATUS};
         }
+    };
+
+    async getAllStores () { //TODO TEST
+
+        addToRegularLogger(" get all Stores ",{});
+
+        const stores =  await StoreCollection.find({});
+
+        return {stores: stores.map(store => store.getStoreDetails()), status: OK_STATUS};
+        
     };
     
 

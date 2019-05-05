@@ -18,6 +18,7 @@ export class Store {
   private _review: any[]; //array of review
   private _purchasePolicy: string;
   private _storeState: string;
+  private _messages: any[];
 
   /**
    * Getter id
@@ -146,5 +147,20 @@ export class Store {
   public set messages(value: any[]) {
     this._messages = value;
   }
-  private _messages: any[];
+
+  
+  public getStoreDetails (){
+    const {
+        _id,
+        _name,
+        _rank,
+        
+    } = this;
+    return ({
+        id:_id,
+        name:_name,
+        rank: _rank,
+    });
+}
+
 }
