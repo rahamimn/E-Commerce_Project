@@ -1,7 +1,7 @@
 import { UserCollection, RoleCollection, StoreCollection, CartCollection, ProductCollection } from "../src/persistance/mongoDb/Collections";
 import { fakeUser, fakeRole, fakeStore, fakeCart, fakeProduct } from "./fakes";
 import { RoleModel } from "../src/persistance/mongoDb/models/roleModel";
-import { ADMIN, STORE_OWNER, STORE_MANAGER } from "../src/consts";
+import { ADMIN, STORE_OWNER, STORE_MANAGER, REMOVE_PRODUCT_PERMISSION, WATCH_WORKERS_PERMISSION } from "../src/consts";
 import bcrypt = require('bcryptjs');
 import { Role } from "../src/usersApi/models/role";
 
@@ -79,7 +79,7 @@ export const setData= async () =>{
      //store manager which appointed by storeOwner
      const storeManager = await insertRegisterdUser(storeManagerIdUsername,storeManagerIdPassword);
      storeManagerId= storeManager.id;
-     const storeManagerRole = await setupRoleToUser(storeManagerId,{name: STORE_MANAGER, store: storeId1, appointor:storeOwnerRole.id });
+     const storeManagerRole = await setupRoleToUser(storeManagerId,{name: STORE_MANAGER, store: storeId1, appointor:storeOwnerRole.id , permissions:[REMOVE_PRODUCT_PERMISSION] });
      storeOwnerRole.appointees.push(storeManagerRole.id);
      await RoleCollection.updateOne(storeOwnerRole);
  

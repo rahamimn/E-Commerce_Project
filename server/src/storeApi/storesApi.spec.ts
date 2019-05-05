@@ -89,9 +89,23 @@ describe("Store api model", () => {
     const storeName = 'store1';
     var store = await StoreCollection.insert(fakeStore({name: storeName}));
 
-    const store_from_db = await storesApi.getStore(store.name);
+    const store_from_db = await storesApi.getStore(store.id);
 
     expect(store_from_db.store.name).toEqual(storeName);
+  });
+
+  it("test GET ALL STORES", async () => {
+    await StoreCollection.drop();
+    const storeName = 'store2';
+    const storeName2 = 'store3';
+    var store1 = await StoreCollection.insert(fakeStore({name: storeName}));
+    var store2 = await StoreCollection.insert(fakeStore({name: storeName2}));
+
+    const store_from_db = await storesApi.getAllStores();
+
+    expect(store_from_db.stores.length).toEqual(2);
+    expect(store_from_db.stores[0]).toMatchObject({name:storeName});
+    expect(store_from_db.stores[1]).toMatchObject({name:storeName2});
   });
 
   it("test GET STORE MESSAGES", async () => {
