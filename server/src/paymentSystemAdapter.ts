@@ -1,7 +1,6 @@
 import { User } from "./usersApi/models/user";
 
 const takePayment = (cardNumber:String, csv:String, expireMM:String, expireYY:String, priceWithSupply:number) => { // depeneds outside api
-   console.log('hey');
     return true;
 }
 

@@ -60,7 +60,7 @@
                             </div>
                         </div> <!-- form-group// -->
                     </form>
-                    <form id="paymentForm" onsubmit="onSubmitPay(event)">
+                    <form id="paymentForm" style="visibility: hidden" onsubmit="onSubmitPay(event)">
 
                         <div class="form-group">
                             <div class="input-group">
@@ -135,6 +135,7 @@
                         const totalPrice = data.totalPrice;
                         $("#supply-price").text(supplyPrice + '$');
                         $("#total-price").text(totalPrice + '$');
+                        document.getElementById("paymentForm").style.visibility = 'visible';
             }}) // JSON-string from `response.json()` call
                     .catch(error => console.error(error));
         }

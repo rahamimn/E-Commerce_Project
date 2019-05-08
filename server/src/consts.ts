@@ -16,7 +16,13 @@ export const BAD_PASSWORD = -102;
 export const BAD_USERNAME = -103;
 
 export const BAD_PAYMENT = -101;
-export const SUPPLY_PROBLEM = -102;
+export const BAD_SUPPLY = -102;
+
+export const ERR_PAYMENT_SYSTEM = -103;
+export const ERR_SUPPLY_SYSTEM = -104;
+
+export const ERR_INVENTORY_PROBLEM = -105;
+
 
 // flags
 export const CREATE_SCHEMA = false;
@@ -26,8 +32,11 @@ export const RUN_LOCAL = true;
 export const ERR_PARAMS_MSG ='did not received all of the params'
 export const ERR_GENERAL_MSG ='Bad request';
 export const ERR_Access_MSG ='Bad access attempt - it is a restricted zone';
-export const ERR_PAYMENT_MSG ='Bad credit card details, please call your bank';
-export const ERR_SUPPLY_MSG ='we have problems with our supply system, dont worry, we didnt took your money';
+
+export const ERR_PAYMENT_MSG ='Payment System problem - ,check your details again, and perhaps you should call your bank';
+export const ERR_SUPPLY_MSG ='Supply System problem -maybe your address not supported, dont worry, we didnt took your money';
+export const ERR_INVENTORY_MSG ='seller doesnt have enough items in inventory';
+
 
 //Store state
 export const OPEN_STORE = "OPEN STORE";
