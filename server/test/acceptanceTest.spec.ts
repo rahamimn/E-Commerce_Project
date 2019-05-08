@@ -1,12 +1,18 @@
 import { MessageCollection, ProductCollection, StoreCollection, CartCollection, UserCollection, RoleCollection } from "../src/persistance/mongoDb/Collections";
-import { fakeMessage, fakeStore, fakeProduct, fakeCart, fakeUser, fakeRole } from "./fakes";
+import {
+    fakeMessage, fakeStore, fakeProduct, fakeCart, fakeUser, fakeRole, fakeCountry, fakeAddress,
+    fakePayment, fakeBadPayment
+} from "./fakes";
 import { connectDB } from "../src/persistance/connectionDbTest";
 import { User } from "../src/usersApi/models/user";
 import { Role } from "../src/usersApi/models/role";
 import { UsersApi } from "../src/usersApi/usersApi";
 import Chance from 'chance';
-import {STORE_OWNER, STORE_MANAGER, APPOINT_STORE_MANAGER, OK_STATUS, BAD_USERNAME, BAD_PASSWORD, BAD_REQUEST } from "../src/consts";
-import {setData} from "./accetpanceTestUtils";
+import {
+    STORE_OWNER, STORE_MANAGER, APPOINT_STORE_MANAGER, OK_STATUS, BAD_USERNAME, BAD_PASSWORD, BAD_REQUEST,
+    ERR_INVENTORY_PROBLEM, BAD_SUPPLY, ERR_SUPPLY_SYSTEM, BAD_PAYMENT, ERR_PAYMENT_SYSTEM
+} from "../src/consts";
+import {insertRegisterdUser, setData} from "./accetpanceTestUtils";
 import { OrdersApi } from "../src/orderApi/ordersApi";
 import { ProductsApi } from "../src/productApi/productsApi";
 import { StoresApi } from "../src/storeApi/storesApi";
@@ -142,37 +148,180 @@ describe('AcceptanceTest',()=>{
         expect(res.status).toBe(BAD_REQUEST);
     });
     //------------Sagi------------------
-    paymentSystemAdapter.takePayment = ()=>false;
-    it('uc2.8- regular purchese',async () => {
+    it('uc2.8- regular purchase',async () => {
         // in order to override external system behaviour 
         // before each test using them , mock them;
         //you may abstract by function.
-        paymentSystemAdapter.takePayment = () => false; // example
-        paymentSystemAdapter.refund = () => true; // example
-        supplySystemAdapter.checkForSupplyPrice = () => -1; // example
-        supplySystemAdapter.supply = () => false; // example
+        // paymentSystemAdapter.takePayment = () => true; // example
+        // paymentSystemAdapter.refund = () => true; // example
+        // supplySystemAdapter.checkForSupplyPrice = () => 70; // example
+        // supplySystemAdapter.supply = () => false; // example
         expect(1).toBe(1);
     });
 
-    it('uc2.8- regular purchese -  address not supported',async () => {
-        //TODO
-        expect(1).toBe(1);
+    it('uc2.8- regular purchase -  Success',async () => {
+        const user = data.userWithCart;
+        const cartId = data.cartId;
+        const payment = fakePayment();
+        const country = fakeCountry();
+        const address = fakeAddress();
+
+        //supply succeded
+        const res1 = await ordersApi.checkSupply(user.id, cartId, country, address);
+        expect(res1.status).toBe(OK_STATUS);
+
+        //order succeded
+        const res2 = await ordersApi.pay(cartId, payment, country, address);
+        expect(res2.status).toBe(OK_STATUS);
+
+        //cart deleted
+        const res3 = await usersApi.getCarts(user.id);
+        expect(res3.carts).toMatchObject([]);
     });
 
 
-    it('uc2.8- regular purchese - payment details not valid',async () => {
-        //TODO
-        expect(1).toBe(1);
+    it('uc2.8- regular purchase -  not enaugh items in inventory',async () => {
+
+        //set bad data for specific case
+        const userWithBadCartId = (await insertRegisterdUser('userWithBadCart','pass55')).id;
+        //illegal cart - to many items
+        const badCartId = (await CartCollection.insert(fakeCart({
+            ofUser: userWithBadCartId,
+            store: data.storeId1,
+            items:[{
+                product: data.productId2,
+                amount:10000
+            }]
+        }))).id;
+
+        const payment = fakePayment();
+        const country = fakeCountry();
+        const address = fakeAddress();
+
+        //supply succeded
+        const res1 = await ordersApi.checkSupply(userWithBadCartId, badCartId, country, address);
+        expect(res1.status).toBe(OK_STATUS);
+
+        //order Failed
+        const res = await ordersApi.pay(badCartId, payment, country, address);
+        expect(res.status).toBe(ERR_INVENTORY_PROBLEM);
+
+        //cart not deleted
+        const res2 = await usersApi.getCarts(userWithBadCartId);
+        expect(res2.carts).not.toMatchObject([]);
     });
 
-    it('uc2.8- regular purchese - payment system not working',async () => {
-        //TODO
-        expect(1).toBe(1);
+    it('uc2.8- regular purchase - AddressCheck Failure: supply details not valid',async () => {
+        const user = data.userWithCart;
+        const cartId = data.cartId;
+        const country = fakeCountry();
+        const address = fakeAddress();
+
+        //supply Failed - bad address
+        const res1 = await ordersApi.checkSupply(user.id, cartId, country, '');
+        expect(res1.status).toBe(BAD_SUPPLY);
+
+        //supply Failed - bad country
+        const res2 = await ordersApi.checkSupply(user.id, cartId, undefined, address);
+        expect(res2.status).toBe(BAD_SUPPLY);
+
+        //cart not deleted
+        const res3 = await usersApi.getCarts(user.id);
+        expect(res3.carts).not.toMatchObject([]);
     });
 
-    it('uc2.8- regular purchese - supply system not working',async () => {
-        //TODO
-        expect(1).toBe(1);
+    it('uc2.8- regular purchase - AddressCheck Failure: supply system not working',async () => {
+        const user = data.userWithCart;
+        const cartId = data.cartId;
+        const country = fakeCountry();
+        const address = fakeAddress();
+
+        supplySystemAdapter.checkForSupplyPrice = jest.fn(() => -1);
+
+        //supply Failed - bad address
+        const res1 = await ordersApi.checkSupply(user.id, cartId, country, address);
+        expect(res1.status).toBe(ERR_SUPPLY_SYSTEM);
+
+        //cart not deleted
+        const res3 = await usersApi.getCarts(user.id);
+        expect(res3.carts).not.toMatchObject([]);
+
+        //restore func to normal
+        supplySystemAdapter.checkForSupplyPrice = jest.fn(() => 70);
+    });
+
+    it('uc2.8- regular purchase - payment details not valid',async () => {
+        const user = data.userWithCart;
+        const cartId = data.cartId;
+        const payment = fakeBadPayment();
+        const country = fakeCountry();
+        const address = fakeAddress();
+
+        //supply succeded
+        const res1 = await ordersApi.checkSupply(user.id, cartId, country, address);
+        expect(res1.status).toBe(OK_STATUS);
+
+        //order Failed
+        const res2 = await ordersApi.pay(cartId, payment, country, address);
+        expect(res2.status).toBe(BAD_PAYMENT);
+
+        //cart not deleted
+        const res3 = await usersApi.getCarts(user.id);
+        expect(res3.carts).not.toMatchObject([]);
+    });
+
+    it('uc2.8- regular purchase - payment system not working',async () => {
+        const user = data.userWithCart;
+        const cartId = data.cartId;
+        const payment = fakePayment();
+        const country = fakeCountry();
+        const address = fakeAddress();
+
+        paymentSystemAdapter.takePayment = jest.fn(() => false);
+
+        //supply succeded
+        const res1 = await ordersApi.checkSupply(user.id, cartId, country, address);
+        expect(res1.status).toBe(OK_STATUS);
+
+        //order Failed
+        const res2 = await ordersApi.pay(cartId, payment, country, address);
+        expect(res2.status).toBe(ERR_PAYMENT_SYSTEM);
+
+        //cart not deleted
+        const res3 = await usersApi.getCarts(user.id);
+        expect(res3.carts).not.toMatchObject([]);
+
+        //restore function
+        paymentSystemAdapter.takePayment = jest.fn(() => true);
+    });
+
+    it('uc2.8- regular purchase - supply system not working (During the Pay time)',async () => {
+        const user = data.userWithCart;
+        const cartId = data.cartId;
+        const payment = fakePayment();
+        const country = fakeCountry();
+        const address = fakeAddress();
+
+        supplySystemAdapter.supply = jest.fn(() => false);
+        paymentSystemAdapter.refund = jest.fn(() => true);
+
+        //supply succeded
+        const res1 = await ordersApi.checkSupply(user.id, cartId, country, address);
+        expect(res1.status).toBe(OK_STATUS);
+
+        //order Failed
+        const res2 = await ordersApi.pay(cartId, payment, country, address);
+        expect(res2.status).toBe(ERR_SUPPLY_SYSTEM);
+
+        //refund customer
+        expect(paymentSystemAdapter.refund).toBeCalled();
+
+        //cart not deleted
+        const res3 = await usersApi.getCarts(user.id);
+        expect(res3.carts).not.toMatchObject([]);
+
+        //restore func to default
+        supplySystemAdapter.supply = jest.fn(() => true);
     });
 
     it('uc3.2- add store',async () => {

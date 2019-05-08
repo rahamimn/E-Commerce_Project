@@ -1,8 +1,11 @@
 import {
     fakeOrder, fakeStore, fakeComplaint, fakeCart, fakeUser, fakeProduct, fakeAddress,
-    fakeCountry, fakePayment
+    fakeCountry, fakePayment, fakeBadPayment
 } from '../../test/fakes';
-import {OK_STATUS, ORDER_SUPPLY_APPROVED, BAD_REQUEST, NORMAL_CART} from '../consts';
+import {
+    OK_STATUS, ORDER_SUPPLY_APPROVED, BAD_REQUEST, NORMAL_CART, BAD_SUPPLY, BAD_PAYMENT,
+    ERR_PAYMENT_SYSTEM, ERR_SUPPLY_SYSTEM, ERR_INVENTORY_PROBLEM
+} from '../consts';
 import {OrderCollection, UserCollection, CartCollection, ProductCollection} from '../persistance/mongoDb/Collections';
 import {connectDB} from '../persistance/connectionDbTest';
 import {OrdersApi} from './ordersApi';
@@ -59,7 +62,6 @@ describe('Owner model', () => {
     it('supplyCheck - Test - success', async () => {
         supplySystem.checkForSupplyPrice = jest.fn(() => 70);
         let user = await UserCollection.insert(fakeUser());
-        ;
         let cart = await CartCollection.insert(fakeCart({ofUser: user.id}));
         const country = fakeCountry();
         const address = fakeAddress();
@@ -80,7 +82,7 @@ describe('Owner model', () => {
         const country = fakeCountry();
 
         let response = await ordersApi.checkSupply(user.id, cart.id, country, null, null);
-        expect(response).toMatchObject({status: BAD_REQUEST});
+        expect(response).toMatchObject({status: BAD_SUPPLY});
         let cartAfter = await CartCollection.findById(cart.id);
         expect(cartAfter.state).toEqual(NORMAL_CART);
     });
@@ -93,7 +95,7 @@ describe('Owner model', () => {
         const address = fakeAddress();
 
         let response = await ordersApi.checkSupply(user.id, cart.id, '', address, null);
-        expect(response).toMatchObject({status: BAD_REQUEST});
+        expect(response).toMatchObject({status: BAD_SUPPLY});
         let cartAfter = await CartCollection.findById(cart.id);
         expect(cartAfter.state).toEqual(NORMAL_CART);
     });
@@ -148,36 +150,47 @@ describe('Owner model', () => {
             let response = await ordersApi.pay(cart.id, payment, country, address);
             product = await ProductCollection.findById(product.id);
 
-            expect(response).toMatchObject({status: BAD_REQUEST});
+            expect(response).toMatchObject({status: ERR_INVENTORY_PROBLEM});
             expect(product.amountInventory).toBe(1);
         });
-        //
-        // it('pay - Test - fail - on paymentSystem  ', async () => {
-        //     const payment = fakePayment();
-        //     const country = fakeCountry();
-        //     const address = fakeAddress();
-        //     paymentSystem.takePayment = jest.fn(() => false);
-        //
-        //     let response = await ordersApi.pay(cart.id, payment, country, address);
-        //     product = await ProductCollection.findById(product.id);
-        //
-        //     expect(response).toMatchObject({status: BAD_REQUEST});
-        //     expect(product.amountInventory).toBe(1);
-        // });
-        //
-        // it('pay - Test - fail - on supplySystem  ', async () => {
-        //     const payment = fakePayment();
-        //     const country = fakeCountry();
-        //     const address = fakeAddress();
-        //     supplySystem.supply = jest.fn(() => false);
-        //
-        //     let response = await ordersApi.pay(cart.id, payment, country, address);
-        //     product = await ProductCollection.findById(product.id);
-        //
-        //     expect(response).toMatchObject({status: BAD_REQUEST});
-        //     expect(product.amountInventory).toBe(1);
-        // });
-        //todo fix 2 tests and add tests
+
+        it('pay - Test - fail - on pay Details  ', async () => {
+            const payment = fakeBadPayment();
+            const country = fakeCountry();
+            const address = fakeAddress();
+
+            let response = await ordersApi.pay(cart.id, payment, country, address);
+            product = await ProductCollection.findById(product.id);
+
+            expect(response).toMatchObject({status: BAD_PAYMENT});
+            expect(product.amountInventory).toBe(1);
+        });
+
+        it('pay - Test - fail - on paymentSystem  ', async () => {
+            const payment = fakePayment();
+            const country = fakeCountry();
+            const address = fakeAddress();
+            paymentSystem.takePayment = jest.fn(() => false);
+
+            let response = await ordersApi.pay(cart.id, payment, country, address);
+            product = await ProductCollection.findById(product.id);
+
+            expect(response).toMatchObject({status: ERR_PAYMENT_SYSTEM});
+            expect(product.amountInventory).toBe(1);
+        });
+
+        it('pay - Test - fail - on supplySystem  ', async () => {
+            const payment = fakePayment();
+            const country = fakeCountry();
+            const address = fakeAddress();
+            supplySystem.supply = jest.fn(() => false);
+
+            let response = await ordersApi.pay(cart.id, payment, country, address);
+            product = await ProductCollection.findById(product.id);
+
+            expect(response).toMatchObject({status: ERR_SUPPLY_SYSTEM});
+            expect(product.amountInventory).toBe(1);
+        });
     })
 });
 

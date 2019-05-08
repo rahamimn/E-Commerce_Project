@@ -186,7 +186,6 @@ describe('Product model',() => {
     product.storeId = store.store.id;
     
     let response = await productsApi.addProduct(user.id,product);
-    console.log(response);
     let product_BeforeRemove = await ProductCollection.findById(response.product.id);
     let product_AfterRemove = await productsApi.setProdactActivation(user.id, product_BeforeRemove.id);
   

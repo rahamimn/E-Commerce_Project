@@ -75,7 +75,7 @@ export class StoresApi implements IStoresApi {
 
         addToRegularLogger(" get Store ", {storeId});
 
-        const storeDetails =  await StoreCollection.findOne({name: storeName});
+        const storeDetails =  await StoreCollection.findOne({_id: storeId});
         if (!storeDetails){
             addToErrorLogger(" get store the store does not exist! ");
             return {store: storeDetails ,status: BAD_REQUEST, err: "the store does not exist!"};

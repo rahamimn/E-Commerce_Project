@@ -98,6 +98,10 @@ export const fakePayment = (opt: any = {}) => {
     return {cardNumber: '1111222233334444', csv:'123',expireMM:'12', expireYY:'25'}
 }
 
+export const fakeBadPayment = (opt: any = {}) => {
+    return {cardNumber: '1111222232As', csv:'123',expireMM:'12', expireYY:'25'}
+}
+
 export const fakeCountry = (opt: any = {}) => {
     return chance.country()
 }

@@ -75,6 +75,7 @@ app.use(storesApiRouter);
 app.use(productsApiRouter);
 app.use(ordersApiRouter);
 app.use(webRoutes);
+app.use(express.static('public'));
 
 //app.use(oredersApiRouter);
 const port = 3000;
