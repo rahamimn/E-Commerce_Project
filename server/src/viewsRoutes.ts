@@ -6,6 +6,7 @@ import { MISSING_PARAMETERS, BAD_REQUEST, STORE_OWNER, STORE_MANAGER, APPOINT_ST
 import { UsersApi } from './usersApi/usersApi';
 import { ProductsApi } from './productApi/productsApi';
 import { StoresApi } from './storeApi/storesApi';
+import { mockPurchaseRules } from './storeApi/mockRules';
 
 export const webRoutes = express.Router();
 
@@ -119,6 +120,7 @@ webRoutes.get('/products/:productId' , async (req:Request,res:express.Response)=
 
 webRoutes.get('/stores/:storeId' , async (req:Request,res:express.Response)=>{
     const response = await storesApi.getStore(req.params.storeId);
+    //mocking store purches rules    
     res.render('pages/store', {
         user: req.session.user,
         store: response.store
@@ -138,6 +140,8 @@ webRoutes.get('/stores/:storeId/products' ,async (req:Request,res:express.Respon
         storeId:req.params.storeId
     });
 });
+
+
 
 
 
@@ -311,5 +315,16 @@ webRoutes.get('/store-panel/:storeId/update-product/:productId', loginSection, s
         storeId: req.params.storeId,
         product: response.product,
         categories
+    });
+});
+
+webRoutes.get('/store-panel/:storeId/purchase-rules', loginSection, storeSection(), async (req:Request,res:express.Response)=>{
+    const response = await productApi.getProducts({
+        storeId: req.params.storeId
+    },false);
+    res.render('pages/storePages/purchaseRules',{
+        user: req.session.user,
+        storeId: req.params.storeId,
+        products: response.products.map(product => ({id: product.id, name:product.name}))
     });
 });

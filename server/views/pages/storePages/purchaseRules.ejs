@@ -1,0 +1,352 @@
+ <%- include('./storeHeader',{user, storeId})%>
+        <h2 class="display-6" style="color:grey">Purchase Rules</h2>
+        <div style="display:flex; justify-content: space-between; margin-bottom:15px">
+            <div id="purchaseRules" style="padding-left:10px; width:100%">
+
+            </div>
+        </div>
+        <div id="newRuleView" style="display:none">
+            <hr/>
+                <h2 class="display-8" style="color:grey">New Rule</h2>
+                <div style="display:flex; justify-content: space-between; margin-bottom:15px">
+                    <div id="newRule" style="padding-left:10px">
+                        
+                    </div>
+            </div>
+            <div id="newCondForm">
+                <div class="card">
+                    <div class="card-header">Add Condition</div>
+                    <div class="card-body">
+                        <div class="form-group row">
+                            <label for="type" class="col-md-4 col-form-label text-md-right">Type</label>
+                            <div class="col-md-6">
+                                <select class="custom-select" id="type" name="type" onchange="onChangeType(event)">
+                                    <option value="complex" label="Complex Pre Condition" selected></option>
+                                    <option value="minProductA" label="Min Product Amount"></option>
+                                    <option value="maxProductA" label="Max Product Amount"></option>
+                                    <option value="maxProductsA" label="Max Products Amount"></option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group row" id="product_input_view" style="display:none">
+                            <label for="product" class="col-md-4 col-form-label text-md-right">Product</label>
+                            <div class="col-md-6">
+                                <select class="custom-select" id="product" name="product">
+                                    <%products.forEach((product)=>{%>
+                                        <option value="<%= product.id%>" label="<%= product.name%>" ></option>
+                                    <%});%>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group row" id="bin_op_input_view">
+                            <label for="bin_op" class="col-md-4 col-form-label text-md-right">Binary Operation</label>
+                            <div class="col-md-6">
+                                <select class="custom-select" id="bin_op" name="bin_op">
+                                    <option selected>And</option>
+                                    <option>Or</option>
+                                    <option>Xor</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group row" id="amount_input_view" style="display:none">
+                            <label for="amount" class="col-md-4 col-form-label text-md-right">Amount</label>
+                            <div class="col-md-6">
+                                <input type="number" id="amount" class="form-control" name="amount">
+                            </div>
+                        </div>
+
+                        <div class="form-group row" id="amount_input_view">
+                            <label for="displayText" class="col-md-4 col-form-label text-md-right">Display Text</label>
+                            <div class="col-md-6">
+                                <input type="text" id="displayText" class="form-control" name="displayText">
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 offset-md-4">
+                            <button id="newConditionB" class="btn btn-outline-secondary" type="button" onclick="updateCondition(event)">
+                                Add Pre Condition
+                            </button>
+                            <p id="add-condition-error"> </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button id="newRuleSaveB" class="btn btn-outline-secondary" type="button" onclick="addRule()">Save Rule</button>
+        </div>
+        <div id="newRuleForm">
+            <div class="input-group">
+                <input type="text" id="ruleName" class="form-control" placeholder="Enter Rule Name" width="18"/>
+                <div class="input-group-append">
+                    <button id="newRuleB" class="btn btn-outline-secondary" type="button" onclick="newRule(event)">New Rule</button>
+                </div>
+            </div>
+        </div>
+        <p id="purchaseRule-error"></p>
+
+    
+    </div>
+    </div>
+    </main>
+</div>  
+<%- include ../../partials/pageWithSideFooter %>
+
+
+<script>
+    let condId=0;
+    var newRule;
+    var condition;
+
+    $().ready(onStart);
+
+
+    function newRule(event){
+        event.preventDefault(); 
+        let ruleName = $('#ruleName')[0].value;
+        if(ruleName && ruleName!==''){
+            $('#newRuleView').show();
+            $('#newRuleForm').hide();
+            newRule={
+                id:'newRule-rule',
+                name:ruleName,
+                condition:{id:`new-${condId++}`, type:'unset'}
+            };
+            condition = newRule.condition
+            appendPurchaseRule(newRule,'#newRule',0,true);
+            setConditionFields(condition);
+        }
+        else{
+            $('#purchaseRule-error').text('rule name is empty');
+        }
+
+    };
+
+    function openConditionForm(aId){
+        const id = aId.slice(2);
+        $('.chosen').removeClass('chosen');
+        $(`#t-${id}`).addClass('chosen');
+
+        findCondition(newRule.condition,id);
+        setConditionFields(condition);
+    };
+
+    function findCondition(cond,id){
+        if(cond.id === id)
+            condition = cond;
+        else if(cond.type === "complex") {
+                findCondition(cond.op1,id);
+                findCondition(cond.op2,id)
+            
+        }
+        
+    };
+
+    function updateCondition(){
+        event.preventDefault();
+        let type = $('#type')[0].value;
+        let amount = $('#amount')[0].value;
+        let bin_op = $('#bin_op')[0].value;
+        let product = $('#product')[0].value;
+        let displayText = $('#displayText')[0].value;
+        
+        delete condition.op1;
+        delete condition.op2;
+        delete condition.bin_op;
+        delete condition.amount;
+        delete condition.product;
+
+        condition.type=type;
+        switch(type){
+            case 'complex':
+                condition.bin_op = bin_op;
+                condition.op1={id:`new-${condId++}`,type:"unset", parentId: condition.id };
+                condition.op2={id:`new-${condId++}`,type:"unset", parentId: condition.id };
+                break;
+            case 'minProductA','maxProductA': 
+                condition.amount = amount;
+                condition.product = product;
+                break;
+            case 'maxProductsA': 
+                condition.amount = amount;
+                break;
+        }
+      
+        condition.displayText = displayText;
+ 
+        $('#newRule').html('');
+        appendPurchaseRule(newRule,'#newRule',0,true);
+    };
+
+
+    function onChangeType(){
+        setFieldsByFields();
+    };
+
+    function setConditionFields(){
+        debugger;
+        condition.type && condition.type !== 'unset' ? $('#type')[0].value = condition.type : null;
+        condition.bin_op ? $('#bin_op')[0].value = condition.bin_op : null;
+        condition.product ?   $('#product')[0].value = condition.product: null;
+        $('#amount')[0].value = condition.amount?condition.amount:0;
+        $('#displayText')[0].value = condition.displayText;
+        setFieldsByFields();
+    }
+
+    function setFieldsByFields(){
+        switch($('#type')[0].value){
+            case 'complex':
+                $('#bin_op_input_view').show();
+                $('#product_input_view').hide();
+                $('#amount_input_view').hide();    
+                break;
+            case 'minProductA': 
+                $('#bin_op_input_view').hide();
+                $('#product_input_view').show();
+                $('#amount_input_view').show();    
+                break;
+            case 'maxProductA': 
+                $('#bin_op_input_view').hide();
+                $('#product_input_view').show();
+                $('#amount_input_view').show();    
+                break;
+            case 'maxProductsA': 
+                $('#bin_op_input_view').hide();
+                $('#product_input_view').hide();
+                $('#amount_input_view').show();  
+                break;
+        } 
+    }
+
+
+    function onStart(){
+        postData(`/storesApi/<%=storeId%>/purchaseRules`, {})
+        .then(data => {
+            if(data.status<0)
+                $("#purchaseRule-error").text(data.err);
+            else{
+                data.purchaseRules.forEach((rule,ind) => {
+                    appendPurchaseRule(rule,"#purchaseRules",ind);
+                });
+                console.log(data.purchaseRules);
+            }
+            
+        }) // JSON-string from `response.json()` call
+        .catch(error => console.error(error));
+    };
+
+    function addRule(){
+        if(!validateNewRule(newRule)){
+             $("#purchaseRule-error").text('new rule doesn\'t valid');
+             return;
+        }
+        postData(`/storesApi/<%=storeId%>/addPurchaseRule`, {rule: newRule})
+        .then(data => {
+            if(data.status<0){
+                $("#purchaseRule-error").text(data.err);
+            }
+            else{
+                document.location.href = '/store-panel/<%=storeId%>/purchase-rules';
+            }
+            
+        }) // JSON-string from `response.json()` call
+        .catch(error => console.error(error));
+    };
+
+    function deleteRule(d_id){
+        if(!confirm("Are you sure ?"))
+            return;
+        postData(`/storesApi/<%=storeId%>/purchaseRules/${d_id.slice(2)}/delete`, {})
+        .then(data => {
+            if(data.status<0){
+                $("#purchaseRule-error").text(data.err);
+            }
+            else{
+                document.location.href = '/store-panel/<%=storeId%>/purchase-rules';
+            }
+            
+        }) // JSON-string from `response.json()` call
+        .catch(error => console.error(error));
+    };
+
+
+    function appendPurchaseRule(rule,parentId,ind,newRule=false){
+        $(parentId).append(`
+        <div style="display:flex; justify-content:space-between;width:100%">
+            <div>
+                <span class="clickable" id="t-${rule.id}" onclick="toggleItem(this.id)"><i class="far fa-gem ic-w mx-1"></i>${rule.name}</span>
+                <ul class="rule" id="${rule.id}" style="display:${ind!==0?'none':'block'}">
+                    ${appendCondition(rule.condition,newRule,)}
+                </ul>
+            </div>
+            ${!newRule?`<div id="d_${rule.id}" onclick="deleteRule(this.id)" class="clickable">
+                <i class="fas fa-trash"></i>
+            </div>`:''}
+            
+        </div>
+        `);
+    }
+
+    function appendCondition(condition,newRule=false){
+        if(!condition)
+            return '';
+        if(condition.type == 'complex'){
+            return `
+                <div>
+                    <span class="clickable" id="t-${condition.id}" onclick="toggleItem(this.id)"><i class="far fa-circle ic-w mx-1"></i>${condition.displayText}</span>
+                        ${newRule?`<span id="a-${condition.id}" class="clickable" onclick="openConditionForm(this.id)"><i class="fas fa-plus-circle ic-w mx-1"></i></span>`:''}
+                    <ul class="condition" id="${condition.id}" style="display:${newRule?'block':'none'}">
+                        ${appendCondition(condition.op1,newRule)}
+                        ${appendCondition(condition.op2,newRule)}
+                    </ul>
+                </div>
+            `;
+        }else
+
+        return`<li class="clickable" id="t-${condition.id}" >
+                    <div><i class="fas fa-desktop ic-w mr-1"></i>
+                    ${condition.displayText}
+                    ${newRule?`<span id="a-${condition.id}" class="clickable" onclick="openConditionForm(this.id)"><i class="fas fa-plus-circle ic-w mx-1"></i></span>`:''}
+                    </div>
+                </li>
+            `; 
+        
+    };
+    
+    function toggleItem(id){
+        $('#'+id.slice(2)).toggle();
+        
+    };
+
+    function validateNewRule(){
+       return validateCondition(newRule.condition);
+    };
+
+    function validateCondition(){
+        if(condition.type==='unset')
+            return false;
+        if(!condition.displayText || condition.displayText==='')
+            return false;
+        if(!condition.type === 'complex')
+            return validateCondition(condition.op1) && validateCondition(condition.op2);
+        return true;        
+    };
+
+</script>
+<style>
+ li {
+    list-style:none;
+ }
+ .rule, .condition{
+    display:none;
+ }
+
+ .clickable{
+     cursor:pointer;
+ }
+
+ .chosen{
+     color: grey;
+ }
+</style>
