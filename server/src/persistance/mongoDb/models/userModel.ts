@@ -51,4 +51,4 @@ try {
   UserModel =  mongoose.model('User',userScheme);
 }
 
-const a =new UserModel({});
+const a = new UserModel({});

@@ -6,12 +6,16 @@
         <hr class="my-4">
         <h2 class="display-6" style="color:grey">Sales</h2>
         <div style="display:flex; justify-content: space-between; margin-bottom:15px">
-            dddd
+            <div id="saleRules" style="padding-left:10px">
+
+            </div>
         </div>
         <hr class="my-4">
         <h2 class="display-6" style="color:grey">Buying Rules</h2>
         <div style="display:flex; justify-content: space-between; margin-bottom:15px">
-                ddd
+            <div id="purchaseRules" style="padding-left:10px">
+
+            </div>
         </div>
         <hr class="my-4">
         <a class="btn btn-primary btn-lg" href="/stores/<%=store.id%>/products"> Our Products </a>
@@ -21,5 +25,125 @@
     <%# include ../partials/footer %>
 </footer>
 
+
+<script>
+
+    $().ready(onStart);
+
+    function onStart(){
+        
+        postData(`/storesApi/<%=store.id%>/purchaseRules`, {})
+        .then(data => {
+            if(data.status<0)
+                $("#register-error").text(data.err);
+            else{
+                data.purchaseRules.forEach((rule,ind) => {
+                    appendPurchaseRule(rule,"#purchaseRules",ind);
+                });
+            }
+            
+        }) // JSON-string from `response.json()` call
+        .catch(error => console.error(error));
+
+         postData(`/storesApi/<%=store.id%>/saleRules`, {})
+        .then(data => {
+            if(data.status<0)
+                $("#register-error").text(data.err);
+            else{
+                data.saleRules.forEach((saleRule,ind) => {
+                    appendSaleRule(saleRule,"#saleRules",ind);
+                });
+            }
+            
+        }) // JSON-string from `response.json()` call
+        .catch(error => console.error(error));
+    };
+
+     function appendSaleRule(saleRule,parentId,ind){
+        $(parentId).append(`
+        <div>
+            <span class="clickable" id="t-${saleRule.id}" onclick="toggleItem(this.id)"><i class="far fa-gem ic-w mx-1"></i>${saleRule.name}</span>
+            <ul class="rule" id="${saleRule.id}" style="display:${ind!==0?'none':'block'}">
+                <div>
+                    <span class="clickable" id="t-${saleRule.condition.id}" onclick="toggleItem(this.id)"><i class="far fa-circle ic-w mx-1"></i>Condition</span>
+                    <ul class="condition" id="${saleRule.condition.id}">
+                        ${appendCondition(saleRule.condition)}
+                    </ul>
+                </div>
+                <div>
+                <span class="clickable" id="t-d${saleRule.id}" onclick="toggleItem(this.id)"><i class="far fa-circle ic-w mx-1"></i>Discounts</span>
+                <ul class="condition" id="d${saleRule.id}">
+                    ${appendDiscounts(saleRule.discounts)}
+                </ul>
+                </div>
+            </ul>
+        </div>
+        `);
+    }
+
+
+    function appendDiscounts(discounts){
+        return discounts.reduce((str,discount) => str+appendDiscount(discount),'');
+    }
+
+    function appendDiscount(discount){
+        const productsList = discount.products.reduce((str,product)=>str+
+            `<li class="clickable">
+                    <i class="fas fa-desktop ic-w mr-1"></i>
+                    ${product.name}
+            </li>`,'');
+        return `<span class="clickable" id="t-${discount.id}" onclick="toggleItem(this.id)"><i class="far fa-circle ic-w mx-1"></i>${discount.displayText}</span>
+                <ul class="condition" id="${discount.id}">
+                   ${productsList}
+                </ul>`
+    }
+
+    function appendPurchaseRule(rule,parentId,ind){
+        $(parentId).append(`
+        <div>
+            <span class="clickable" id="t-${rule.id}" onclick="toggleItem(this.id)"><i class="far fa-gem ic-w mx-1"></i>${rule.name}</span>
+            <ul class="rule" id="${rule.id}" style="display:${ind!==0?'none':'block'}">
+                ${appendCondition(rule.condition)}
+            </ul>
+        </div>
+        `);
+    }
+
+    function appendCondition(condition){
+        if(condition.type == 'complex'){
+            return `
+                <span class="clickable" id="t-${condition.id}" onclick="toggleItem(this.id)"><i class="far fa-circle ic-w mx-1"></i>${condition.displayText}</span>
+                <ul class="condition" id="${condition.id}">
+                    ${appendCondition(condition.op1)}
+                    ${appendCondition(condition.op2)}
+                </ul>
+            `;
+        }else
+
+        return`<li class="clickable" id="#${condition.id}">
+                    <i class="fas fa-desktop ic-w mr-1"></i>
+                    ${condition.displayText}
+                </li>
+            `; 
+        
+    };
+    
+    function toggleItem(id){
+        $('#'+id.slice(2)).toggle();
+    };
+
+</script>
+<style>
+ li {
+    list-style:none;
+ }
+ .rule, .condition{
+    display:none;
+ }
+
+ .clickable{
+     cursor:pointer;
+ }
+</style>
 </body>
 </html>

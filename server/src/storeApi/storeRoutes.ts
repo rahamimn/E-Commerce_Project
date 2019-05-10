@@ -5,6 +5,7 @@ import {verifyToken} from "../jwt";
 import * as Constants from "../consts";
 import {ERR_GENERAL_MSG} from "../consts";
 import { usersApiRouter } from "../usersApi/userRoutes";
+import { mockSaleRules, mockPurchaseRules, updateIds, deletePurchaseRuleMock } from './mockRules';
 
 export const storesApiRouter = express.Router();
 
@@ -24,7 +25,6 @@ async function addStore(req: Request, res: express.Response) {
             res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
         else {
             const response = await storesApi.addStore(user.id, storeName);
-            console.log(response);
             res.send(response);
         }
     }
@@ -82,7 +82,6 @@ storesApiRouter.post('/storesApi/getWorkers', getWorkers);
 
 async function getWorkers(req: Request, res: express.Response) {
     try {
-        console.log(req.body);
         const user = req.session.user;
         if (!user) {
             res.send({status: Constants.BAD_ACCESS_NO_VISITORS, err: Constants.ERR_Access_MSG});
@@ -198,6 +197,124 @@ async function sendMessage(req: Request, res: express.Response) {
             res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
 
         const response = await storesApi.sendMessage(user.id, storeId, title, body, toName);
+        res.send(response);
+    }
+    catch (err) {
+        res.send({status: Constants.BAD_REQUEST});
+    }
+}
+
+usersApiRouter.post('/storesApi/:storeId/purchaseRules', purchaseRules);
+
+async function purchaseRules(req: Request, res: express.Response) {
+    try {
+        // const user = req.session.user;
+        // if (!user) {
+        //     res.send({status: Constants.BAD_ACCESS_NO_VISITORS, err: Constants.ERR_Access_MSG});
+        //     return;
+        // }
+        // const title = req.body.title;
+        // const body = req.body.body;
+        // const toName = req.body.toName;
+        // const storeId = req.body.storeId;
+
+        // if (!storeId)
+        //     throw Error(ERR_GENERAL_MSG);
+
+        // if (!title || !body || !toName)
+        //     res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
+
+        const response = {status: Constants.OK_STATUS, purchaseRules:mockPurchaseRules};
+        res.send(response);
+    }
+    catch (err) {
+        res.send({status: Constants.BAD_REQUEST});
+    }
+}
+
+
+usersApiRouter.post('/storesApi/:storeId/saleRules', saleRules);
+
+async function saleRules(req: Request, res: express.Response) {
+    try {
+        // const user = req.session.user;
+        // if (!user) {
+        //     res.send({status: Constants.BAD_ACCESS_NO_VISITORS, err: Constants.ERR_Access_MSG});
+        //     return;
+        // }
+        // const title = req.body.title;
+        // const body = req.body.body;
+        // const toName = req.body.toName;
+        // const storeId = req.body.storeId;
+
+        // if (!storeId)
+        //     throw Error(ERR_GENERAL_MSG);
+
+        // if (!title || !body || !toName)
+        //     res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
+
+        const response = {status: Constants.OK_STATUS, saleRules:mockSaleRules};
+        res.send(response);
+    }
+    catch (err) {
+        res.send({status: Constants.BAD_REQUEST});
+    }
+}
+
+
+
+usersApiRouter.post('/storesApi/:storeId/addPurchaseRule', addPurchaseRule);
+
+async function addPurchaseRule(req: Request, res: express.Response) {
+    try {
+        // const user = req.session.user;
+        // if (!user) {
+        //     res.send({status: Constants.BAD_ACCESS_NO_VISITORS, err: Constants.ERR_Access_MSG});
+        //     return;
+        // }
+        // const title = req.body.title;
+        // const body = req.body.body;
+        // const toName = req.body.toName;
+        // const storeId = req.body.storeId;
+
+        // if (!storeId)
+        //     throw Error(ERR_GENERAL_MSG);
+
+        // if (!title || !body || !toName)
+        //     res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
+        updateIds(req.body.rule);//for mock
+        mockPurchaseRules.push(req.body.rule);
+        const response = {status: Constants.OK_STATUS, purchaseRules:mockPurchaseRules};
+        res.send(response);
+    }
+    catch (err) {
+        res.send({status: Constants.BAD_REQUEST});
+    }
+}
+
+
+
+usersApiRouter.post('/storesApi/:storeId/purchaseRules/:ruleId/delete', deletePurchaseRule);
+
+async function deletePurchaseRule(req: Request, res: express.Response) {
+    try {
+        // const user = req.session.user;
+        // if (!user) {
+        //     res.send({status: Constants.BAD_ACCESS_NO_VISITORS, err: Constants.ERR_Access_MSG});
+        //     return;
+        // }
+        // const title = req.body.title;
+        // const body = req.body.body;
+        // const toName = req.body.toName;
+        // const storeId = req.body.storeId;
+
+        // if (!storeId)
+        //     throw Error(ERR_GENERAL_MSG);
+
+        // if (!title || !body || !toName)
+        //     res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
+        deletePurchaseRuleMock(req.params.ruleId);
+        const response = {status: Constants.OK_STATUS};
         res.send(response);
     }
     catch (err) {
