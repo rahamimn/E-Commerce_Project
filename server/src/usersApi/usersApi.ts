@@ -285,6 +285,11 @@ export class UsersApi implements IUsersApi{
             addToErrorLogger("setUserAsStoreOwner no appointer");         
             return ({status: Constants.BAD_REQUEST, err: "bad role for appointor"});
         }
+
+        if (!appointedUser){
+            return ({status: Constants.BAD_REQUEST, err: "Appointed user was not found"});
+        }
+
         const existRole = await RoleCollection.findOne({ofUser:appointedUser.id, store:storeId});
         if(existRole && existRole.name === STORE_OWNER){
             addToErrorLogger("setUserAsStoreOwner no valid role");         

@@ -31,6 +31,8 @@ describe('AcceptanceTest',()=>{
 
     const chance = new Chance();
     jest.setTimeout(10000);
+
+
     
     beforeAll(()=>{
             connectDB();       
@@ -43,18 +45,20 @@ describe('AcceptanceTest',()=>{
 
 
     afterEach(async() => { //in order two see snapshot of data in database shadow this function
+
         await StoreCollection.drop();
         await ProductCollection.drop();
         await UserCollection.drop();
         await RoleCollection.drop();
         await CartCollection.drop();
+        
     });
 
-    it('uc1.1',async () => {
+    it('UC 1.1 - System setup',async () => {
         expect((await usersApi.login(data.admin.username,data.admin.pass)).status).toBe(OK_STATUS);
     });
 
-    it('uc2.1 - may add product to cart',async () => {
+    it('UC 2.1 - Registered user adds product to cart',async () => {
 
         let res :any = await usersApi.getCarts(null,"sid");
         expect(res.status).toBe(OK_STATUS);
@@ -68,38 +72,38 @@ describe('AcceptanceTest',()=>{
         expect(res.carts.length).toBe(1);
     });
 
-    it('uc2.2 - registeration (good)',async () => {
+    it('UC 2.2 - Registeration (good)',async () => {
         const res = await usersApi.register({userName:'someUserName',password: 'somePassword'},chance.guid());
         expect((await usersApi.login('someUserName','somePassword')).status).toBe(OK_STATUS);
         expect(res.status).toBe(OK_STATUS);
     });
 
-    it('uc2.2 - registeration (user name occupy)',async () => {
+    it('UC 2.2 - Registeration (user name occupy)',async () => {
         const res = await usersApi.register({userName:data.admin.username,password: 'somePassword'},chance.guid());
         expect(res.status).toBe(BAD_USERNAME);
     });
 
-    it('uc2.2 - registeration (bad password)', async() => {
+    it('UC 2.2 - Registeration (bad password)', async() => {
         const res = await usersApi.register({userName:"someUserName",password: 'somep'},chance.guid());
         expect(res.status).toBe(BAD_PASSWORD);
     });
 
-    it('uc2.3 - login (good)',async () => {
+    it('UC 2.3 - Login (good)',async () => {
         const res = await usersApi.login(data.user.username,data.user.pass);
         expect(res.status).toBe(OK_STATUS);
     });
 
-    it('uc2.3 - login (user name not correct )',async () => {
+    it('UC 2.3 - Login (bad username)',async () => {
         const res = await usersApi.login("some-user-name",data.user.pass);
         expect(res.status).toBe(BAD_USERNAME);
     });
 
-    it('uc2.3 - login (password not correct',async () => {
+    it('UC 2.3 - Login (bad password)',async () => {
         const res = await usersApi.login(data.user.username,"incorrectPass");
         expect(res.status).toBe(BAD_PASSWORD);
     });
 
-    it('uc2.5 - find product by name, type, category ',async () => {
+    it('UC 2.5 - Find product by name, type, category (good)',async () => {
         let res = await productsApi.getProducts({name:'prod2'});
         expect(res.status).toBe(OK_STATUS);
         expect(res.products.length).toBe(2);
@@ -117,38 +121,38 @@ describe('AcceptanceTest',()=>{
         expect(res.products.length).toBe(1);
     });
 
-    it('uc2.5 - no products exists ',async () => {
+    it('UC 2.5 - Find: no products exists',async () => {
         let res = await productsApi.getProducts({name:'prod222'});
         expect(res.status).toBe(OK_STATUS);
         expect(res.products.length).toBe(0);
     });
 
-    it('uc2.6 - add product to cart (good)',async () => {
+    it('UC 2.6 - Add product to cart (good)',async () => {
         const res = await usersApi.addProductToCart(data.user.id,data.productId1,2);
         expect(res.status).toBe(OK_STATUS);
     });
 
-    it('uc2.6 - add product to cart (negative amount)',async () => {
+    it('UC 2.6 - Add product to cart (negative amount)',async () => {
         const res = await usersApi.addProductToCart(data.user.id,data.productId1,-1);
         expect(res.status).toBe(BAD_REQUEST);
     });
 
-    it('uc2.6 - add product to cart (amount too big)',async () => {
+    it('UC 2.6 - Add product to cart (amount too large)',async () => {
         const res = await usersApi.addProductToCart(data.user.id,data.productId1,3);
         expect(res.status).toBe(BAD_REQUEST);
     });
 
-    it('uc2.7 - update cart',async () => {
+    it('UC 2.7 - Update cart (good)',async () => {
         const res = await usersApi.updateCart({id: data.cartId,items:[{product:data.productId1,amount:1}]});
         expect(res.status).toBe(OK_STATUS);
     });
 
-    it('uc2.7 - update cart (amount too big)',async () => {
+    it('UC 2.7 - Update cart (amount too large)',async () => {
         const res = await usersApi.updateCart({id: data.cartId,items:[{product:data.productId1,amount:1000}]});
         expect(res.status).toBe(BAD_REQUEST);
     });
     //------------Sagi------------------
-    it('uc2.8- regular purchase',async () => {
+    it('UC 2.8 - Regular purchase',async () => {
         // in order to override external system behaviour 
         // before each test using them , mock them;
         //you may abstract by function.
@@ -159,7 +163,7 @@ describe('AcceptanceTest',()=>{
         expect(1).toBe(1);
     });
 
-    it('uc2.8- regular purchase -  Success',async () => {
+    it('UC 2.8 - Regular purchase -  Success',async () => {
         const user = data.userWithCart;
         const cartId = data.cartId;
         const payment = fakePayment();
@@ -180,7 +184,7 @@ describe('AcceptanceTest',()=>{
     });
 
 
-    it('uc2.8- regular purchase -  not enaugh items in inventory',async () => {
+    it('UC 2.8 - Regular purchase - not enaugh items in inventory',async () => {
 
         //set bad data for specific case
         const userWithBadCartId = (await insertRegisterdUser('userWithBadCart','pass55')).id;
@@ -211,7 +215,7 @@ describe('AcceptanceTest',()=>{
         expect(res2.carts).not.toMatchObject([]);
     });
 
-    it('uc2.8- regular purchase - AddressCheck Failure: supply details not valid',async () => {
+    it('UC 2.8 - Regular purchase - AddressCheck Failure: supply details not valid',async () => {
         const user = data.userWithCart;
         const cartId = data.cartId;
         const country = fakeCountry();
@@ -230,7 +234,7 @@ describe('AcceptanceTest',()=>{
         expect(res3.carts).not.toMatchObject([]);
     });
 
-    it('uc2.8- regular purchase - AddressCheck Failure: supply system not working',async () => {
+    it('UC 2.8 - Regular purchase - AddressCheck Failure: supply system not working',async () => {
         const user = data.userWithCart;
         const cartId = data.cartId;
         const country = fakeCountry();
@@ -250,7 +254,7 @@ describe('AcceptanceTest',()=>{
         supplySystemAdapter.checkForSupplyPrice = jest.fn(() => 70);
     });
 
-    it('uc2.8- regular purchase - payment details not valid',async () => {
+    it('UC 2.8 - Regular purchase - payment details not valid',async () => {
         const user = data.userWithCart;
         const cartId = data.cartId;
         const payment = fakeBadPayment();
@@ -270,7 +274,7 @@ describe('AcceptanceTest',()=>{
         expect(res3.carts).not.toMatchObject([]);
     });
 
-    it('uc2.8- regular purchase - payment system not working',async () => {
+    it('UC 2.8 - Regular purchase - payment system not working',async () => {
         const user = data.userWithCart;
         const cartId = data.cartId;
         const payment = fakePayment();
@@ -295,7 +299,7 @@ describe('AcceptanceTest',()=>{
         paymentSystemAdapter.takePayment = jest.fn(() => true);
     });
 
-    it('uc2.8- regular purchase - supply system not working (During the Pay time)',async () => {
+    it('UC 2.8 - Regular purchase - supply system not working (During the Pay time)',async () => {
         const user = data.userWithCart;
         const cartId = data.cartId;
         const payment = fakePayment();
@@ -324,7 +328,7 @@ describe('AcceptanceTest',()=>{
         supplySystemAdapter.supply = jest.fn(() => true);
     });
 
-    it('uc3.2- add store',async () => {
+    it('UC 3.2 - Add store',async () => {
         let res : any = await storesApi.addStore(data.user.id,"new-store-name");
         expect(res.status).toBe(OK_STATUS);
 
@@ -333,128 +337,147 @@ describe('AcceptanceTest',()=>{
         expect(res.storeWorkers.length).toBe(1);
     });
 
-    it('uc3.2- add store with not valid name(in use)',async () => {
-        let res : any = await storesApi.addStore(data.user.id,"store1");
+    it('UC 3.2 - Add store with invalid name (in use)',async () => {
+        let res : any = await storesApi.addStore(data.user.id, "store1");
         expect(res.status).toBe(BAD_REQUEST);
     });
 
     //-----------Shoval---------------
-    it('uc4.1 add product ',async () => {
+    it('UC 4.1 - Add product',async () => {
         //TODO
         expect(1).toBe(1);
     });
 
-    it('uc4.1 add product with not valid data ',async () => {
+    it('UC 4.1 - Add product with invalid data',async () => {
         //TODO
         expect(1).toBe(1);
     });
 
-    it('uc4.1 update product ',async () => {
+    it('UC 4.1 - Update product details',async () => {
         //TODO
         expect(1).toBe(1);
     });
 
-    it('uc4.1 update product with not valid data ',async () => {
+    it('UC 4.1 - Ipdate product details with invalid data',async () => {
         //TODO
         expect(1).toBe(1);
     });
 
-    it('uc4.1 delete product ',async () => {
+    it('UC 4.1 - Delete product ',async () => {
         let res : any = await productsApi.setProdactActivation(data.storeOwner.id,data.productId1,false);
         expect(res.status).toBe(OK_STATUS);
         res = await productsApi.getProducts({storeId:data.store1.id});
         expect(res.products.length).toBe(1);
     });
 
-    it('uc4.1 delete product - (not exists) ',async () => {
+    it('UC 4.1 - Delete product - (not exists) ',async () => {
         let res : any = await productsApi.setProdactActivation(data.storeOwner.id,"some-product-id",false);
         expect(res.status).toBe(BAD_REQUEST);
         res = await productsApi.getProducts({storeId:data.store1.id});
         expect(res.products.length).toBe(2);
     });
 
-    //-------------Nir---------------
-    it('uc4.3 set user as store owner with (good) ',async () => {
+     it('UC 4.3 - Set user as store owner (good) ',async () => {
+        let currOwner = await data.storeOwner;
+        let userToBeOwner = await data.userWithCart;
+        let store = await data.store1;
+        
+        let res : any = await usersApi.setUserAsStoreOwner((currOwner.id), userToBeOwner.username, store.id);
+        let workers : any = await storesApi.getWorkers(currOwner.id, store.id);
+        expect(res.status).toBe(OK_STATUS);
+        expect(workers.storeWorkers.length).toEqual(3);
+    });
+
+    it('UC 4.3 - Set user as store owner which was store manager (good) ',async () => {
+        let currOwner = await data.storeOwner;
+        let managerToBeOwner = await data.storeManager;
+        let store = await data.store1;
+        
+        let res : any = await usersApi.setUserAsStoreOwner(currOwner.id, managerToBeOwner.username, store.id);
+        let workers : any = await storesApi.getWorkers(currOwner.id, store.id);
+        expect(res.status).toBe(OK_STATUS);
+        expect(workers.storeWorkers.length).toEqual(2);
+    });
+
+    it('UC 4.3 - Set user as store owner with (already store owner)',async () => {
+        let currOwner = await data.storeOwner;
+        let ownerToBeOwner = await data.storeOwner;
+        let store = await data.store1;
+        
+        let res : any = await usersApi.setUserAsStoreOwner(currOwner.id, ownerToBeOwner.username, store.id);
+        let workers : any = await storesApi.getWorkers(currOwner.id, store.id);
+        expect(res.status).toBe(BAD_REQUEST);
+        expect(workers.storeWorkers.length).toEqual(2);
+    });
+    
+
+    // it('UC 4.3 - Set user as store owner with (invalid username)',async () => {
+    //     let currOwner = await data.storeOwner;
+    //     let store = await data.store1;
+        
+    //     let res : any = await usersApi.setUserAsStoreOwner(currOwner.id, 'USERNAME_NOT_EXIST_STORE_OWNER', store.id);
+    //     expect(res.status).toBe(BAD_REQUEST);
+    // });
+
+    it('UC 4.4 - Remove role from user that is store owner (good)',async () => {
         //TODO
         expect(1).toBe(1);
     });
 
-    it('uc4.3 set user as store owner which was store manager (good) ',async () => {
+    it('UC 4.4 - Remove role from user that is store owner - but user isn\'t appointed by commiter',async () => {
         //TODO
         expect(1).toBe(1);
     });
 
-    it('uc4.3 set user as store owner with (already store owner) ',async () => {
+    it('UC 4.5 - Set user as store manager (good)',async () => {
         //TODO
         expect(1).toBe(1);
     });
     
-
-    it('uc4.3 set user as store owner with (name which isn\'t of valid user)',async () => {
+    it('UC 4.5 - Set user as store manager (already store owner) ',async () => {
         //TODO
         expect(1).toBe(1);
     });
 
-    it('uc4.4 remove role of store owner from user - (good)',async () => {
+    it('UC 4.5 - Set user as store manager (already store manager) ',async () => {
         //TODO
         expect(1).toBe(1);
     });
 
-    it('uc4.4 remove role of store owner from user - (user isn\'t appointed by commiter)',async () => {
-        //TODO
-        expect(1).toBe(1);
-    });
-
-    it('uc4.5 set user as store manage (good)',async () => {
+    it('UC 4.5 - Set user as store manager (invalid username)',async () => {
         //TODO
         expect(1).toBe(1);
     });
     
-    it('uc4.5 set user as store manage with (already store owner) ',async () => {
+    it('UC 4.6 - Remove role of store manager from user - (good)',async () => {
         //TODO
         expect(1).toBe(1);
     });
 
-    it('uc4.5 set user as store manage with (already store manager) ',async () => {
+    it('UC 4.6 - Remove role from user that is store manager - but user isn\'t appointed by commiter',async () => {
         //TODO
         expect(1).toBe(1);
     });
 
-    it('uc4.5 set user as store manager with (name which isn\'t of valid user)',async () => {
-        //TODO
-        expect(1).toBe(1);
-    });
-    
-    it('uc4.6 remove role of store manager from user - (good)',async () => {
-        //TODO
-        expect(1).toBe(1);
-    });
-
-    it('uc4.6 remove role of store manager from user - (user isn\'t appointed by commiter)',async () => {
-        //TODO
-        expect(1).toBe(1);
-    });
-
-    it('uc5.1 store manager commit action that he is permitted to do - (good)',async () => {
+    it('UC 5.1 - Store manager commit action that he is permitted to do - (good)',async () => {
         let res = await productsApi.setProdactActivation(data.storeManager.id,data.productId1,false);
         expect(res.status).toBe(OK_STATUS);
     });
 
-    it('uc5.1 store manager commit action that he is\'nt permitted to do - (good)',async () => {
+    it('UC 5.1 - Store manager commit action that he is\'nt permitted to do - (bad)',async () => {
         let res = await storesApi.getWorkers(data.storeManager.id,data.store1.id);
         expect(res.status).toBe(BAD_REQUEST);
     });
 
-    it('uc6.1 remove user - (good)',async () => {
+    it('UC 6.1 - Remove user (good)',async () => {
         let res:any = await usersApi.setUserActivation(data.admin.id,data.user.username,false);
         expect(res.status).toBe(OK_STATUS);
         res = await usersApi.login(data.user.username,data.user.pass);
         expect(res.status).toBe(BAD_REQUEST);
     });
 
-    it('uc6.1 remove user - (username doesn\'t exists)',async () => {
+    it('UC 6.1 - Remove user (invalid username)',async () => {
         const res = await usersApi.setUserActivation(data.admin.id,"some-userrrr",false);
         expect(res.status).toBe(BAD_REQUEST);
-    
     });
 })
