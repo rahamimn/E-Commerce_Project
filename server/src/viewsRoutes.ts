@@ -2,11 +2,10 @@ import express = require('express');
 import { Request } from '../types/moongooseArray';
 import { Response } from 'express-serve-static-core';
 // import { verifyToken, createToken } from './jwt';
-import { MISSING_PARAMETERS, BAD_REQUEST, STORE_OWNER, STORE_MANAGER, APPOINT_STORE_MANAGER, ADD_PRODUCT_PERMISSION, EMPTY_PERMISSION, SEND_STORE_MESSAGE_PERMISSION, GET_STORE_MESSAGE_PERMISSION, REMOVE_ROLE_PERMISSION, REMOVE_PRODUCT_PERMISSION, UPDATE_PRODUCT_PERMISSION, WATCH_WORKERS_PERMISSION } from './consts';
+import { MISSING_PARAMETERS, BAD_REQUEST, STORE_OWNER, STORE_MANAGER, APPOINT_STORE_MANAGER, ADD_PRODUCT_PERMISSION, EMPTY_PERMISSION, SEND_STORE_MESSAGE_PERMISSION, GET_STORE_MESSAGE_PERMISSION, REMOVE_ROLE_PERMISSION, REMOVE_PRODUCT_PERMISSION, UPDATE_PRODUCT_PERMISSION, WATCH_WORKERS_PERMISSION, MANAGE_SALES_PERMISSION, MANAGE_PURCHASE_POLICY_PERMISSION } from './consts';
 import { UsersApi } from './usersApi/usersApi';
 import { ProductsApi } from './productApi/productsApi';
 import { StoresApi } from './storeApi/storesApi';
-import { mockPurchaseRules } from './storeApi/mockRules';
 
 export const webRoutes = express.Router();
 
@@ -32,24 +31,34 @@ const adminSection = (req:Request,res:Response, next) =>{
         next();
 }
 
+const checkPermission = (role,permission) => {
+    return (permission && role.name === STORE_MANAGER &&
+        permission && !role.permissions.some(perm => perm === permission ))
+                    
+
+}
+
 const storeSection = (permission = undefined) =>
     async (req:Request,res:Response, next) => {
             if(!req.session.user.role || req.session.user.role.store !== req.params.storeId){
                 const response =  await usersApi.getUserRole(req.session.user.id, req.params.storeId)
-                if(response.status < 0 || 
-                    (permission &&
-                        response.role.name === STORE_MANAGER &&
-                        permission && !response.role.permissions.some(perm => perm === permission )
-                    ))
-                    res.redirect('/');
-                else{
-                const role = response.role;
-                req.session.user.role = role;
-                next();
+                if(response.status < 0) {
+                    res.redirect(`/user-panel`);
                 }
-            } 
-            else
+
+                else {
+                    const role = response.role;
+                    req.session.user.role = role;
+                }
+            }
+                    
+            if(checkPermission(req.session.user.role, permission)){
+                res.redirect(`/store-panel/${req.params.storeId}/no-permission`);
+            }
+            else{
                 next();
+            }
+            
         };
 
 webRoutes.get('/' ,async (req:Request,res:express.Response)=>{
@@ -259,7 +268,7 @@ webRoutes.get('/store-panel/:storeId/workers/updatePermissions/:workerId', login
     const worker = await usersApi.getUserDetails(req.params.workerId);
     const role = await usersApi.getUserRole(req.params.workerId, req.params.storeId);
     const currPermissions = role.role.permissions;
-    const allPermissions = [APPOINT_STORE_MANAGER, ADD_PRODUCT_PERMISSION, SEND_STORE_MESSAGE_PERMISSION ,GET_STORE_MESSAGE_PERMISSION ,REMOVE_ROLE_PERMISSION ,REMOVE_PRODUCT_PERMISSION ,UPDATE_PRODUCT_PERMISSION, WATCH_WORKERS_PERMISSION];
+    const allPermissions = [APPOINT_STORE_MANAGER, ADD_PRODUCT_PERMISSION, SEND_STORE_MESSAGE_PERMISSION ,GET_STORE_MESSAGE_PERMISSION ,REMOVE_ROLE_PERMISSION ,REMOVE_PRODUCT_PERMISSION ,UPDATE_PRODUCT_PERMISSION, WATCH_WORKERS_PERMISSION, MANAGE_SALES_PERMISSION,MANAGE_PURCHASE_POLICY_PERMISSION];
 
     res.render('pages/storePages/permissionsPage',{
         user: req.session.user,
@@ -318,7 +327,7 @@ webRoutes.get('/store-panel/:storeId/update-product/:productId', loginSection, s
     });
 });
 
-webRoutes.get('/store-panel/:storeId/purchase-rules', loginSection, storeSection(), async (req:Request,res:express.Response)=>{
+webRoutes.get('/store-panel/:storeId/purchase-rules', loginSection, storeSection(MANAGE_PURCHASE_POLICY_PERMISSION), async (req:Request,res:express.Response)=>{
     const response = await productApi.getProducts({
         storeId: req.params.storeId
     },false);
@@ -329,7 +338,7 @@ webRoutes.get('/store-panel/:storeId/purchase-rules', loginSection, storeSection
     });
 });
 
-webRoutes.get('/store-panel/:storeId/sale-rules', loginSection, storeSection(), async (req:Request,res:express.Response)=>{
+webRoutes.get('/store-panel/:storeId/sale-rules', loginSection, storeSection(MANAGE_SALES_PERMISSION), async (req:Request,res:express.Response)=>{
     const response = await productApi.getProducts({
         storeId: req.params.storeId
     },false);
@@ -340,3 +349,9 @@ webRoutes.get('/store-panel/:storeId/sale-rules', loginSection, storeSection(), 
     });
 });
 
+webRoutes.get('/store-panel/:storeId/no-permission', loginSection, storeSection(), async (req:Request,res:express.Response)=>{
+    res.render('pages/storePages/noPermission',{
+        user: req.session.user,
+        storeId: req.params.storeId,
+    });
+});

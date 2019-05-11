@@ -5,7 +5,7 @@ import {verifyToken} from "../jwt";
 import * as Constants from "../consts";
 import {ERR_GENERAL_MSG} from "../consts";
 import { usersApiRouter } from "../usersApi/userRoutes";
-import { mockSaleRules, mockPurchaseRules, updateIds, deletePurchaseRuleMock, updateSaleIds, findSaleRelevantProduct, findRuleRelevantProduct } from './mockRules';
+import { mockSaleRules, mockPurchaseRules, updateIds, deletePurchaseRuleMock, updateSaleIds, findSaleRelevantProduct, findRuleRelevantProduct, deleteSaleRuleMock } from './mockRules';
 
 export const storesApiRouter = express.Router();
 
@@ -371,7 +371,7 @@ async function deleteSaleRule(req: Request, res: express.Response) {
 
         // if (!title || !body || !toName)
         //     res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
-        deletePurchaseRuleMock(req.params.ruleId);
+        deleteSaleRuleMock(req.params.ruleId);
         const response = {status: Constants.OK_STATUS};
         res.send(response);
     }
@@ -379,3 +379,4 @@ async function deleteSaleRule(req: Request, res: express.Response) {
         res.send({status: Constants.BAD_REQUEST});
     }
 }
+
