@@ -132,7 +132,6 @@ const isSaleRelevant = (productId) => (sale) => {
 }
 
 export const findRuleRelevantProduct = (productId) => {
-    console.log(mockPurchaseRules.filter(isRuleRelevant(productId)));
     return mockPurchaseRules.filter(isRuleRelevant(productId));
 }
 const isRuleRelevant = (productId) => (rule) => {

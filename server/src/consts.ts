@@ -56,6 +56,8 @@ export const REMOVE_ROLE_PERMISSION = "remove-role";
 export const WATCH_WORKERS_PERMISSION = "watch-workers";
 export const GET_STORE_MESSAGE_PERMISSION = "get-store-message";
 export const SEND_STORE_MESSAGE_PERMISSION = "send-store-message";
+export const MANAGE_SALES_PERMISSION = "manage-sales";
+export const MANAGE_PURCHASE_POLICY_PERMISSION = "manage-purchase-policy";
 export const EMPTY_PERMISSION = " ";
 
 
