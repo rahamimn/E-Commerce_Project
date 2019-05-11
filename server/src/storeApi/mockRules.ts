@@ -84,14 +84,22 @@ export let id = 900;
 export const updateIds = (rule) => {
     rule.id =`aaa${id++}`;
     updateCondIds(rule.condition);
+};
 
+export const updateSaleIds = (rule) => {
+    rule.id =`aaa${id++}`;
+    updateCondIds(rule.condition);
+    updateDiscounts(rule.discounts);
+}
+export const updateDiscounts = (discounts) => {
+    discounts.forEach(disc => disc.id =`aaa${id++}`);
 }
 
 export const updateCondIds = (condition) => {
     condition.id =`aaa${id++}`;
     if(condition.type === 'complex'){
-        updateIds(condition.op1);
-        updateIds(condition.op2);
+        updateCondIds(condition.op1);
+        updateCondIds(condition.op2);
     }
 }
 
@@ -101,5 +109,40 @@ export const deletePurchaseRuleMock = (id) => {
             mockPurchaseRules.splice(i,1);
             break;
         }
+    }
+}
+
+export const deleteSaleRuleMock = (id) => {
+    for(let i = 0 ; i < mockPurchaseRules.length ; i++ ){
+        if(mockSaleRules[i].id === id){
+            mockSaleRules.splice(i,1);
+            break;
+        }
+    }
+}
+
+export const findSaleRelevantProduct = (productId) => {
+    return mockSaleRules.filter(isSaleRelevant(productId));
+}
+
+const isSaleRelevant = (productId) => (sale) => {
+    return sale.discounts.some(discount=>
+        discount.products.some(product => product.id === productId)
+    )
+}
+
+export const findRuleRelevantProduct = (productId) => {
+    console.log(mockPurchaseRules.filter(isRuleRelevant(productId)));
+    return mockPurchaseRules.filter(isRuleRelevant(productId));
+}
+const isRuleRelevant = (productId) => (rule) => {
+    return isCondRelevant(rule.condition,productId);
+}
+
+const isCondRelevant = (cond,productId) => {
+    if(cond.type === 'complex')
+        return isCondRelevant(cond.op1,productId) || isCondRelevant(cond.op2,productId);
+    else{
+        return cond.product && cond.product === productId;
     }
 }

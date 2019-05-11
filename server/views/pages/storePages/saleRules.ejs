@@ -1,7 +1,7 @@
  <%- include('./storeHeader',{user, storeId})%>
-        <h2 class="display-6" style="color:grey">Sale Rules</h2>
+        <h2 class="display-6" style="color:grey">Sales</h2>
         <div style="display:flex; justify-content: space-between; margin-bottom:15px">
-            <div id="purchaseRules" style="padding-left:10px; width:100%">
+            <div id="saleRules" style="padding-left:10px; width:100%">
 
             </div>
         </div>
@@ -67,7 +67,59 @@
 
                         <div class="col-md-6 offset-md-4">
                             <button id="newConditionB" class="btn btn-outline-secondary" type="button" onclick="updateCondition(event)">
-                                Add Pre Condition
+                                Update Pre Condition
+                            </button>
+                            <p id="add-condition-error"> </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="newDiscountForm">
+                <div class="card">
+                    <div class="card-header">Add Discount</div>
+                    <div class="card-body">
+                        <div class="form-group row">
+                            <label for="disc_type" class="col-md-4 col-form-label text-md-right">Type</label>
+                            <div class="col-md-6">
+                                <select class="custom-select" id="disc_type" name="disc_type" onchange="onChangeDiscountType(event)">
+                                    <option value="percentage" label="Percentage" selected></option>
+                                    <option value="onePlusOne" label="One Plus One"></option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group row" id="disc_products_view">
+                            <label for="disc_products" class="col-md-4 col-form-label text-md-right">Products</label>
+                            <div class="col-md-6">
+                                <select multiple class="custom-select" id="disc_products" name="disc_products">
+                                    <%products.forEach((product)=>{%>
+                                        <option value="<%= product.id%>"><%= product.name%></option>
+                                    <%});%>
+                                </select>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group row" id="disc_percentage_view" >
+                            <label for="disc_percentage" class="col-md-4 col-form-label text-md-right">Percentage</label>
+                            <div class="col-md-6">
+                                <input type="number" id="disc_percentage" class="form-control" name="disc_percentage">
+                            </div>
+                        </div>
+
+                        <div class="form-group row" id="disc_displayText_view">
+                            <label for="disc_displayText" class="col-md-4 col-form-label text-md-right">Display Text</label>
+                            <div class="col-md-6">
+                                <input type="text" id="disc_displayText" class="form-control" name="disc_displayText">
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 offset-md-4">
+                            <button id="newDiscountB" class="btn btn-outline-secondary" type="button" onclick="updateDiscount(event)">
+                                Update Discount
+                            </button>
+                            <button id="removeDiscountB" class="btn btn-outline-secondary" type="button" onclick="removeDiscount(event)">
+                                remove Discount
                             </button>
                             <p id="add-condition-error"> </p>
                         </div>
@@ -84,7 +136,7 @@
                 </div>
             </div>
         </div>
-        <p id="purchaseRule-error"></p>
+        <p id="saleRule-error"></p>
 
     
     </div>
@@ -98,6 +150,8 @@
     let condId=0;
     var newRule;
     var condition;
+    var discount;
+
 
     $().ready(onStart);
 
@@ -109,23 +163,55 @@
             $('#newRuleView').show();
             $('#newRuleForm').hide();
             newRule={
-                id:'newRule-rule',
+                id:'newSaleRule-rule',
                 name:ruleName,
-                condition:{id:`new-${condId++}`, type:'unset'}
+                condition:{id:`new-${condId++}`, type:'unset'},
+                discounts:[{
+                    id:`new-${condId++}`,
+                    type: 'unset',
+                    products:[],
+                }]
             };
             condition = newRule.condition
-            appendPurchaseRule(newRule,'#newRule',0,true);
+            discount = newRule.discounts[0];
+            appendSaleRule(newRule,'#newRule',0,true);
+            setConditionFields(condition);
+            setDiscountFields(condition);
         }
         else{
-            $('#purchaseRule-error').text('rule name is empty');
+            $('#saleRule-error').text('rule name is empty');
         }
 
     };
 
     function openConditionForm(aId){
         const id = aId.slice(2);
+        $('.chosen').removeClass('chosen');
+        $(`#t-${id}`).addClass('chosen');
+
         findCondition(newRule.condition,id);
         setConditionFields(condition);
+    };
+
+    function openDiscountForm(aId){
+        const id = aId.slice(2);
+        $('.chosenDiscount').removeClass('chosenDiscount');
+        $(`#g-${id}`).addClass('chosenDiscount');
+
+        findDiscount(newRule.discounts,id);
+        setDiscountFields(discount);
+    };
+
+    function openNewDiscount(aId){
+        newRule.discounts.push({
+                    id:`new-${condId++}`,
+                    type: 'unset',
+                    products:[],
+        });
+        discount = newRule.discounts[newRule.discounts.length-1];
+        $('#newRule').html('');
+        appendSaleRule(newRule,'#newRule',0,true);
+        setDiscountFields(discount);
     };
 
     function findCondition(cond,id){
@@ -136,6 +222,14 @@
                 findCondition(cond.op2,id)
             
         }
+        
+    };
+
+     function findDiscount(discounts,id){
+        discounts.forEach(disc =>{
+            if(disc.id === id)
+                discount = disc;
+        })
         
     };
 
@@ -172,26 +266,74 @@
         condition.displayText = displayText;
  
         $('#newRule').html('');
-        appendPurchaseRule(newRule,'#newRule',0,true);
+        appendSaleRule(newRule,'#newRule',0,true);
     };
 
+    function updateDiscount(){
+        event.preventDefault();
+        let type = $('#disc_type')[0].value;
+
+        let products = $('#disc_products').val();
+        let prodsuctNames = $("#disc_products option:selected")
+        products = products.map((prod,ind)=> ({id:prod, name:prodsuctNames[ind].label }));
+
+        let percentage = $('#disc_percentage')[0].value;
+        let displayText = $('#disc_displayText')[0].value;
+        delete discount.displayText;
+        delete discount.percentage;
+        delete discount.products;
+
+        discount.type = type;
+
+        switch(type){
+            case 'percentage':
+                  console.log(percentage);
+                discount.percentage = percentage;
+                discount.products = products;
+                break;
+            case 'onePlusOne': 
+                discount.products = products;
+                break;
+        }
+      
+        discount.displayText = displayText;
+ 
+        $('#newRule').html('');
+        appendSaleRule(newRule,'#newRule',0,true);
+    };
+    function removeDiscount(event){
+        event.preventDefault();
+        newRule.discounts.splice(newRule.discounts.indexOf(discount),1);
+        $('#newRule').html('');
+        appendSaleRule(newRule,'#newRule',0,true);
+    }
 
     function onChangeType(){
-        setFieldsByFields();
+        setFieldsByType();
+    };
+
+    function onChangeDiscountType(){
+        setFieldsByType_disc();
     };
 
     function setConditionFields(){
-        debugger;
         condition.type && condition.type !== 'unset' ? $('#type')[0].value = condition.type : null;
         condition.bin_op ? $('#bin_op')[0].value = condition.bin_op : null;
-
+        condition.product ?   $('#product')[0].value = condition.product: null;
         $('#amount')[0].value = condition.amount?condition.amount:0;
-        $('#product')[0].value = condition.product;
         $('#displayText')[0].value = condition.displayText;
-        setFieldsByFields();
+        setFieldsByType();
     }
 
-    function setFieldsByFields(){
+    function setDiscountFields(){
+        discount.type && discount.type !== 'unset' ? $('#disc_type')[0].value = discount.type : null;
+        discount.products ? $('#disc_products').val(discount.products.map( prod => prod.id)): null;
+        $('#disc_percentage')[0].value = discount.percentage?discount.percentage:0;
+        $('#disc_displayText')[0].value = discount.displayText;
+        setFieldsByType_disc();
+    }
+
+    function setFieldsByType(){
         switch($('#type')[0].value){
             case 'complex':
                 $('#bin_op_input_view').show();
@@ -216,17 +358,28 @@
         } 
     }
 
+    function setFieldsByType_disc(){
+        switch($('#disc_type')[0].value){
+            case 'percentage':
+                $('#disc_percentage_view').show();  
+                break;
+            case 'onePlusOne': 
+                $('#disc_percentage_view').hide(); 
+                break;
+        } 
+    }
+
 
     function onStart(){
-        postData(`/storesApi/<%=storeId%>/purchaseRules`, {})
+        postData(`/storesApi/<%=storeId%>/saleRules`, {})
         .then(data => {
             if(data.status<0)
-                $("#purchaseRule-error").text(data.err);
+                $("#saleRule-error").text(data.err);
             else{
-                data.purchaseRules.forEach((rule,ind) => {
-                    appendPurchaseRule(rule,"#purchaseRules",ind);
+                data.saleRules.forEach((rule,ind) => {
+                    appendSaleRule(rule,"#saleRules",ind);
                 });
-                console.log(data.purchaseRules);
+                console.log(data.saleRules);
             }
             
         }) // JSON-string from `response.json()` call
@@ -234,14 +387,17 @@
     };
 
     function addRule(){
-        //checkTreeValid
-        postData(`/storesApi/<%=storeId%>/addPurchaseRule`, {rule: newRule})
+        if(!validateNewRule(newRule)){
+             $("#saleRule-error").text('new rule doesn\'t valid');
+             return;
+        }
+        postData(`/storesApi/<%=storeId%>/addSaleRule`, {rule: newRule})
         .then(data => {
             if(data.status<0){
-                $("#purchaseRule-error").text(data.err);
+                $("#saleRule-error").text(data.err);
             }
             else{
-                document.location.href = '/store-panel/<%=storeId%>/purchase-rules';
+                document.location.href = '/store-panel/<%=storeId%>/sale-rules';
             }
             
         }) // JSON-string from `response.json()` call
@@ -251,13 +407,13 @@
     function deleteRule(d_id){
         if(!confirm("Are you sure ?"))
             return;
-        postData(`/storesApi/<%=storeId%>/purchaseRules/${d_id.slice(2)}/delete`, {})
+        postData(`/storesApi/<%=storeId%>/saleRules/${d_id.slice(2)}/delete`, {})
         .then(data => {
             if(data.status<0){
-                $("#purchaseRule-error").text(data.err);
+                $("#saleRule-error").text(data.err);
             }
             else{
-                document.location.href = '/store-panel/<%=storeId%>/purchase-rules';
+                document.location.href = '/store-panel/<%=storeId%>/sale-rules';
             }
             
         }) // JSON-string from `response.json()` call
@@ -265,22 +421,53 @@
     };
 
 
-    function appendPurchaseRule(rule,parentId,ind,newRule=false){
+     function appendSaleRule(saleRule,parentId,ind,newRule=false){
         $(parentId).append(`
-        <div style="display:flex; justify-content:space-between;width:100%">
-            <div>
-                <span class="clickable" id="t-${rule.id}" onclick="toggleItem(this.id)"><i class="far fa-gem ic-w mx-1"></i>${rule.name}</span>
-                <ul class="rule" id="${rule.id}" style="display:${ind!==0?'none':'block'}">
-                    ${appendCondition(rule.condition,newRule,)}
-                </ul>
+        <div>
+            <div style="display:flex; justify-content: space-between">
+                <div><span class="clickable" id="t-${saleRule.id}" onclick="toggleItem(this.id)"><i class="far fa-gem ic-w mx-1"></i>${saleRule.name}</span></div>
+                ${!newRule?`<div id="d_${saleRule.id}" onclick="deleteRule(this.id)" class="clickable"><i class="fas fa-trash"></i></div>`:''}
             </div>
-            ${!newRule?`<div id="d_${rule.id}" onclick="deleteRule(this.id)" class="clickable">
-                <i class="fas fa-trash"></i>
-            </div>`:''}
-            
+            <ul class="rule" id="${saleRule.id}" style="display:${ind!==0?'none':'block'}">
+                <div>
+                    <span class="clickable" id="t-${saleRule.id}-c" onclick="toggleItem(this.id)"><i class="far fa-circle ic-w mx-1"></i>Condition</span>
+                    <ul class="condition" id="${saleRule.id}-c" style="display:${newRule?'block':'none'}">
+                        ${appendCondition(saleRule.condition,newRule)}
+                    </ul>
+                </div>
+                <div>
+                <span class="clickable" id="t-d${saleRule.id}" onclick="toggleItem(this.id)"><i class="far fa-circle ic-w mx-1"></i>Discounts</span>
+                    ${newRule?`<span id="a-${condition.id}" class="clickable" onclick="openNewDiscount(this.id)"><i class="fas fa-plus-circle ic-w mx-1"></i></span>`:''}
+                <ul class="condition" id="d${saleRule.id}" style="display:${newRule?'block':'none'}">
+                    ${appendDiscounts(saleRule.discounts,newRule)}
+                </ul>
+                </div>
+            </ul>
         </div>
         `);
     }
+
+
+    function appendDiscounts(discounts, newRule = false){
+        return discounts.reduce((str,discount) => str+appendDiscount(discount,newRule),'');
+    }
+
+    function appendDiscount(discount,newRule = false){
+        const productsList = discount.products.reduce((str,product)=>str+
+            `<li class="clickable">
+                    <i class="fas fa-desktop ic-w mr-1"></i>
+                    ${product.name}
+            </li>`,'');
+            
+        return `<li id="g-${discount.id}">
+                    <span class="clickable" id="t-${discount.id}" onclick="toggleItem(this.id)"><i class="far fa-circle ic-w mx-1"></i>${discount.displayText}</span>
+                        ${newRule?`<span id="a-${discount.id}" class="clickable" onclick="openDiscountForm(this.id)"><i class="far fa-edit ic-w mx-1""></i></span>`:''}
+                    <ul class="discount" id="${discount.id}" style="display:${newRule?'block':'none'}">
+                    ${productsList}
+                    </ul>
+                </li>`
+    }
+
 
     function appendCondition(condition,newRule=false){
         if(!condition)
@@ -289,7 +476,7 @@
             return `
                 <div>
                     <span class="clickable" id="t-${condition.id}" onclick="toggleItem(this.id)"><i class="far fa-circle ic-w mx-1"></i>${condition.displayText}</span>
-                        ${newRule?'<span id="a-${condition.id}" class="clickable" onclick="openConditionForm(this.id)"><i class="fas fa-plus-circle ic-w mx-1"></i></span>':''}
+                        ${newRule?`<span id="a-${condition.id}" class="clickable" onclick="openConditionForm(this.id)"><i class="far fa-edit ic-w mx-1""></i></span>`:''}
                     <ul class="condition" id="${condition.id}" style="display:${newRule?'block':'none'}">
                         ${appendCondition(condition.op1,newRule)}
                         ${appendCondition(condition.op2,newRule)}
@@ -298,10 +485,10 @@
             `;
         }else
 
-        return`<li class="clickable" id="#${condition.id}" >
+        return`<li class="clickable" id="t-${condition.id}" >
                     <div><i class="fas fa-desktop ic-w mr-1"></i>
                     ${condition.displayText}
-                    ${newRule?`<span id="a-${condition.id}" class="clickable" onclick="openConditionForm(this.id)"><i class="fas fa-plus-circle ic-w mx-1"></i></span>`:''}
+                    ${newRule?`<span id="a-${condition.id}" class="clickable" onclick="openConditionForm(this.id)"><i class="far fa-edit ic-w mx-1""></i></span>`:''}
                     </div>
                 </li>
             `; 
@@ -313,16 +500,50 @@
         
     };
 
+    function validateNewRule(){
+       return validateCondition(newRule.condition) &&
+        validateDiscounts(newRule.discounts);
+    };
+
+    function validateCondition(cond){
+        if(cond.type==='unset')
+            return false;
+        if(!cond.displayText || cond.displayText==='')
+            return false;
+        if(!cond.type === 'complex')
+            return validateCondition(cond.op1) && validateCondition(cond.op2);
+        return true;        
+    };
+
+    function validateDiscounts(discs){
+        return discs.every(validateDiscount)      
+    };
+
+    function validateDiscount(disc){
+        if(disc.type==='unset')
+            return false;
+        if(!disc.displayText || disc.displayText==='')
+            return false;
+        return true;        
+    };
+
 </script>
 <style>
  li {
     list-style:none;
  }
- .rule, .condition{
+ .rule, .condition, .discount{
     display:none;
  }
 
  .clickable{
      cursor:pointer;
+ }
+
+.chosen{
+     color: grey;
+ }
+.chosenDiscount{
+     color: grey;
  }
 </style>
