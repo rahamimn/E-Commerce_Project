@@ -328,3 +328,15 @@ webRoutes.get('/store-panel/:storeId/purchase-rules', loginSection, storeSection
         products: response.products.map(product => ({id: product.id, name:product.name}))
     });
 });
+
+webRoutes.get('/store-panel/:storeId/sale-rules', loginSection, storeSection(), async (req:Request,res:express.Response)=>{
+    const response = await productApi.getProducts({
+        storeId: req.params.storeId
+    },false);
+    res.render('pages/storePages/saleRules',{
+        user: req.session.user,
+        storeId: req.params.storeId,
+        products: response.products.map(product => ({id: product.id, name:product.name}))
+    });
+});
+

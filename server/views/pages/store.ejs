@@ -91,6 +91,7 @@
             `<li class="clickable">
                     <i class="fas fa-desktop ic-w mr-1"></i>
                     ${product.name}
+                    <a href="/products/${product.id}"><i class="fas fa-external-link-alt ic-w mx-1"></i></a>
             </li>`,'');
         return `<span class="clickable" id="t-${discount.id}" onclick="toggleItem(this.id)"><i class="far fa-circle ic-w mx-1"></i>${discount.displayText}</span>
                 <ul class="condition" id="${discount.id}">
@@ -119,10 +120,11 @@
                 </ul>
             `;
         }else
-
+        console.log(condition.product);
         return`<li class="clickable" id="#${condition.id}">
                     <i class="fas fa-desktop ic-w mr-1"></i>
                     ${condition.displayText}
+                    ${condition.product?`<a href="/products/${condition.product}"><i class="fas fa-external-link-alt ic-w mx-1"></i></a>`:''}
                 </li>
             `; 
         

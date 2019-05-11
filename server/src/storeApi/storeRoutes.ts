@@ -5,7 +5,7 @@ import {verifyToken} from "../jwt";
 import * as Constants from "../consts";
 import {ERR_GENERAL_MSG} from "../consts";
 import { usersApiRouter } from "../usersApi/userRoutes";
-import { mockSaleRules, mockPurchaseRules, updateIds, deletePurchaseRuleMock } from './mockRules';
+import { mockSaleRules, mockPurchaseRules, updateIds, deletePurchaseRuleMock, updateSaleIds, findSaleRelevantProduct, findRuleRelevantProduct } from './mockRules';
 
 export const storesApiRouter = express.Router();
 
@@ -223,8 +223,8 @@ async function purchaseRules(req: Request, res: express.Response) {
 
         // if (!title || !body || !toName)
         //     res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
-
-        const response = {status: Constants.OK_STATUS, purchaseRules:mockPurchaseRules};
+        const purchaseRules = req.body.product? findRuleRelevantProduct(req.body.product): mockPurchaseRules;
+        const response = {status: Constants.OK_STATUS, purchaseRules};
         res.send(response);
     }
     catch (err) {
@@ -252,8 +252,8 @@ async function saleRules(req: Request, res: express.Response) {
 
         // if (!title || !body || !toName)
         //     res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
-
-        const response = {status: Constants.OK_STATUS, saleRules:mockSaleRules};
+        const saleRules = req.body.product? findSaleRelevantProduct(req.body.product): mockSaleRules;
+        const response = {status: Constants.OK_STATUS, saleRules};
         res.send(response);
     }
     catch (err) {
@@ -284,7 +284,37 @@ async function addPurchaseRule(req: Request, res: express.Response) {
         //     res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
         updateIds(req.body.rule);//for mock
         mockPurchaseRules.push(req.body.rule);
-        const response = {status: Constants.OK_STATUS, purchaseRules:mockPurchaseRules};
+        const response = {status: Constants.OK_STATUS};
+        res.send(response);
+    }
+    catch (err) {
+        res.send({status: Constants.BAD_REQUEST});
+    }
+}
+
+
+usersApiRouter.post('/storesApi/:storeId/addSaleRule', addSaleRule);
+
+async function addSaleRule(req: Request, res: express.Response) {
+    try {
+        // const user = req.session.user;
+        // if (!user) {
+        //     res.send({status: Constants.BAD_ACCESS_NO_VISITORS, err: Constants.ERR_Access_MSG});
+        //     return;
+        // }
+        // const title = req.body.title;
+        // const body = req.body.body;
+        // const toName = req.body.toName;
+        // const storeId = req.body.storeId;
+
+        // if (!storeId)
+        //     throw Error(ERR_GENERAL_MSG);
+
+        // if (!title || !body || !toName)
+        //     res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
+        updateSaleIds(req.body.rule);//for mock
+        mockSaleRules.push(req.body.rule);
+        const response = {status: Constants.OK_STATUS};
         res.send(response);
     }
     catch (err) {
@@ -297,6 +327,34 @@ async function addPurchaseRule(req: Request, res: express.Response) {
 usersApiRouter.post('/storesApi/:storeId/purchaseRules/:ruleId/delete', deletePurchaseRule);
 
 async function deletePurchaseRule(req: Request, res: express.Response) {
+    try {
+        // const user = req.session.user;
+        // if (!user) {
+        //     res.send({status: Constants.BAD_ACCESS_NO_VISITORS, err: Constants.ERR_Access_MSG});
+        //     return;
+        // }
+        // const title = req.body.title;
+        // const body = req.body.body;
+        // const toName = req.body.toName;
+        // const storeId = req.body.storeId;
+
+        // if (!storeId)
+        //     throw Error(ERR_GENERAL_MSG);
+
+        // if (!title || !body || !toName)
+        //     res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
+        deletePurchaseRuleMock(req.params.ruleId);
+        const response = {status: Constants.OK_STATUS};
+        res.send(response);
+    }
+    catch (err) {
+        res.send({status: Constants.BAD_REQUEST});
+    }
+}
+
+usersApiRouter.post('/storesApi/:storeId/saleRules/:ruleId/delete', deleteSaleRule);
+
+async function deleteSaleRule(req: Request, res: express.Response) {
     try {
         // const user = req.session.user;
         // if (!user) {
