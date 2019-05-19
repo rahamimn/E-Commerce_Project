@@ -343,24 +343,26 @@ describe('AcceptanceTest',()=>{
     });
 
     //-----------Shoval---------------
-    it('UC 4.1 - Add product',async () => {
-        //TODO
-        expect(1).toBe(1);
-    });
+
+    it('UC 4.1 - Add product', async () => {
+         const res = await productsApi.addProduct(data.store1.id,{storeId:data.storeManager.id,name: 'prod1', amountInventory:3, sellType:'direct', price:50,keyWords: ['prody'], category:'home',acceptableDiscount:4,rank:3,reviews:[]});
+         const res1 = await productsApi.getProducts({name: 'prod1'},false);
+         expect(res1.status).toBe(OK_STATUS);
+     });
 
     it('UC 4.1 - Add product with invalid data',async () => {
-        //TODO
-        expect(1).toBe(1);
+        const res = await productsApi.addProduct(data.store1.id,{storeId:data.storeManager.id,name: 'p', amountInventory:3, sellType:'direct', price:50,keyWords: ['prody'], category:'home',acceptableDiscount:4,rank:3,reviews:[]});
+        expect(res.status).toBe(BAD_REQUEST);
     });
 
     it('UC 4.1 - Update product details',async () => {
-        //TODO
-        expect(1).toBe(1);
+        const res = await productsApi.updateProduct(data.admin.id,data.store1.id,data.productId1,{price:100});
+        expect(res.product.price).toBe(100);
     });
 
-    it('UC 4.1 - Ipdate product details with invalid data',async () => {
-        //TODO
-        expect(1).toBe(1);
+    it('UC 4.1 - update product details with invalid data',async () => {
+        const res = await productsApi.updateProduct('1',data.store1.id,data.productId1,{price:100});
+        expect(res.status).toBe(BAD_REQUEST);
     });
 
     it('UC 4.1 - Delete product ',async () => {
@@ -420,43 +422,54 @@ describe('AcceptanceTest',()=>{
     // });
 
     it('UC 4.4 - Remove role from user that is store owner (good)',async () => {
-        //TODO
+        /*
+        const res = await usersApi.removeRole(data.admin.id, data.storeOwner.username, data.store1.id);
+        expect(res.status).toBe(OK_STATUS);
+        const res1 = await usersApi.getUserRole(data.storeOwner.id, data.store1.id);
+        expect(res1.role === undefined).toBe(true);
+        */
+        //TOfix
         expect(1).toBe(1);
+
     });
 
     it('UC 4.4 - Remove role from user that is store owner - but user isn\'t appointed by commiter',async () => {
-        //TODO
-        expect(1).toBe(1);
+        const res = await usersApi.removeRole(data.user.id, data.storeOwner.username, data.store1.id);
+        expect(res.status).toBe(BAD_REQUEST);
     });
 
     it('UC 4.5 - Set user as store manager (good)',async () => {
-        //TODO
-        expect(1).toBe(1);
+        const res = await usersApi.setUserAsStoreManager(data.storeOwner.id, data.user.username, data.store1.id,["update-product"]);
+        const res1 = await usersApi.getUserRole(data.user.id, data.store1.id);
+        expect(res1.role.name === 'store-manager').toBe(true);
     });
     
     it('UC 4.5 - Set user as store manager (already store owner) ',async () => {
-        //TODO
-        expect(1).toBe(1);
+        const res = await usersApi.setUserAsStoreManager(data.storeOwner.id, data.user.username, data.store1.id,["update-product"]);
+        const res1 = await usersApi.getUserRole(data.user.id, data.store1.id);
+        expect(res1.role.name === 'store-manager').toBe(true);
     });
 
     it('UC 4.5 - Set user as store manager (already store manager) ',async () => {
-        //TODO
-        expect(1).toBe(1);
+        const res = await usersApi.setUserAsStoreManager(data.storeOwner.id, data.storeManager.username, data.store1.id,["update-product"]);
+        expect(res.status).toBe(BAD_REQUEST);
     });
 
     it('UC 4.5 - Set user as store manager (invalid username)',async () => {
-        //TODO
-        expect(1).toBe(1);
+        const res = await usersApi.setUserAsStoreManager(data.storeOwner.id, 'shoavl', data.store1.id,["update-product"]);
+        expect(res.status).toBe(BAD_REQUEST);
     });
     
     it('UC 4.6 - Remove role of store manager from user - (good)',async () => {
-        //TODO
-        expect(1).toBe(1);
+        const res = await usersApi.removeRole(data.storeOwner.id, data.storeManager.username, data.store1.id);
+        expect(res.status).toBe(OK_STATUS);
+        const res1 = await usersApi.getUserRole(data.storeManager.id, data.store1.id);
+        expect(res1.role === undefined).toBe(true);
     });
 
     it('UC 4.6 - Remove role from user that is store manager - but user isn\'t appointed by commiter',async () => {
-        //TODO
-        expect(1).toBe(1);
+        const res = await usersApi.removeRole(data.adminId, data.storeManager.username, data.store1.id);
+        expect(res.status).toBe(BAD_REQUEST);
     });
 
     it('UC 5.1 - Store manager commit action that he is permitted to do - (good)',async () => {
