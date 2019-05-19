@@ -4,6 +4,7 @@ import {Request} from "../../types/moongooseArray";
 import {verifyToken} from "../jwt";
 import * as Constants from "../consts";
 import {ERR_GENERAL_MSG} from "../consts";
+import { addToSystemFailierLogger } from "../utils/addToLogger";
 
 export const productsApiRouter = express.Router();
 
@@ -43,6 +44,7 @@ async function addProduct(req: Request, res: express.Response) {
         res.send(response);
     }
     catch (err) {
+        addToSystemFailierLogger(" add product  ");
         console.log(err);
         res.send({status: Constants.BAD_REQUEST});
     }
@@ -84,6 +86,7 @@ async function updateProduct(req: Request, res: express.Response) {
         res.send(response);
     }
     catch (err) {
+        addToSystemFailierLogger(" update product  ");
         console.log(err);
         res.send({status: Constants.BAD_REQUEST});
     }
@@ -127,6 +130,7 @@ async function removeProduct(req: Request, res: express.Response) {
         res.send(response);
     }
     catch (err) {
+        addToSystemFailierLogger(" remove product  ");
         res.send({status: Constants.BAD_REQUEST});
     }
 }
@@ -150,6 +154,7 @@ async function activeProduct(req: Request, res: express.Response) {
         res.send(response);
     }
     catch (err) {
+        addToSystemFailierLogger(" active product  ");
         res.send({status: Constants.BAD_REQUEST});
     }
 }
@@ -173,6 +178,7 @@ async function addReview(req: Request, res: express.Response) {
         res.send(response);
     }
     catch (err) {
+        addToSystemFailierLogger(" add review ");
         res.send({status: Constants.BAD_REQUEST});
     }
 }

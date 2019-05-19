@@ -2,6 +2,7 @@ import { Order } from "../../orderApi/models/order";
 import { Product } from "../../productApi/models/product";
 import { ProductCollection, CartCollection } from "../../persistance/mongoDb/Collections";
 import { asyncForEach } from "../../utils/utils";
+import { addToSystemFailierLogger } from "../../utils/addToLogger";
 
 export class Cart{
 
@@ -58,6 +59,7 @@ export class Cart{
         return true;
       }
       catch(error){
+        addToSystemFailierLogger(" cart   ");
         return false;
       } 
 

@@ -4,6 +4,7 @@ import {UsersApi} from "./usersApi";
 import {createToken, verifyToken} from "../jwt";
 import * as Constants from "../consts";
 import {ERR_GENERAL_MSG, EMPTY_PERMISSION} from "../consts";
+import { addToSystemFailierLogger } from '../utils/addToLogger';
 
 export const usersApiRouter = express.Router();
 
@@ -45,6 +46,7 @@ async function register(req: Request, res: express.Response) {
         }
     }
     catch (err) {
+        addToSystemFailierLogger(" register   ");
         res.send({status: Constants.BAD_REQUEST});
     }
 }
@@ -79,7 +81,8 @@ async function updateUser(req: Request, res: express.Response) {
         const response = await usersApi.updateUser(user.id, userUpdated);
         res.send(response);
     }
-    catch (err) {
+    catch (err) { 
+        addToSystemFailierLogger(" update user  from user routers  ");
         res.send({status: Constants.BAD_REQUEST});
     }
 }
@@ -98,6 +101,8 @@ async function getUserDetails(req: Request, res: express.Response) {
         res.send(response);
     }
     catch (err) {
+        addToSystemFailierLogger(" get user details  from user routers  ");
+
         res.send({status: Constants.BAD_REQUEST});
     }
 }
@@ -115,6 +120,8 @@ async function getUserDetailsByName(req: Request, res: express.Response) {
         res.send(response);
     }
     catch (err) {
+        addToSystemFailierLogger(" get user details by name  from user routers  ");
+
         res.send({status: Constants.BAD_REQUEST});
     }
 }
@@ -128,6 +135,7 @@ async function getCarts(req: Request, res: express.Response) {
         res.send(response);
     }
     catch (err) {
+        addToSystemFailierLogger(" get carts  from user routers  ");
         res.send({status: Constants.BAD_REQUEST});
     }
 }
@@ -147,6 +155,7 @@ async function getCart(req: Request, res: express.Response) {
         }
     }
     catch (err) {
+        addToSystemFailierLogger(" get cart from user routers  ");
         res.send({status: Constants.BAD_REQUEST});
     }
 }
@@ -165,6 +174,7 @@ async function updateCart(req: Request, res: express.Response) {
         }
     }
     catch (err) {
+        addToSystemFailierLogger(" update cart  from user routers  ");
         res.send({status: Constants.BAD_REQUEST});
     }
 }
@@ -185,6 +195,7 @@ async function addProductToCart(req: Request, res: express.Response) {
         }
     }
     catch (err) {
+        addToSystemFailierLogger(" add product to cart  from user routers  ");
         console.log(err);
         res.send({status: Constants.BAD_REQUEST, err:"something went wrong"});
     }
@@ -209,6 +220,7 @@ async function setUserAsSystemAdmin(req: Request, res: express.Response) {
         }
     }
     catch (err) {
+        addToSystemFailierLogger(" set user as system admin  from user routers  ");
         console.log(err);
         res.send({status: Constants.BAD_REQUEST, err: err.toString()});
     }
@@ -240,6 +252,7 @@ async function setUserAsStoreOwner(req: Request, res: express.Response) {
         }
     }
     catch (err) {
+        addToSystemFailierLogger(" set user as store owner  from user routers  ");
         res.send({status: Constants.BAD_REQUEST});
     }
 }
@@ -270,6 +283,7 @@ async function setUserAsStoreManager(req: Request, res: express.Response) {
         }
     }
     catch (err) {
+        addToSystemFailierLogger(" set user as store manager  from user routers  ");
         res.send({status: Constants.BAD_REQUEST});
     }
 }
@@ -297,6 +311,7 @@ async function removeRole(req: Request, res: express.Response) {
         }
     }
     catch (err) {
+        addToSystemFailierLogger(" remove role  from user routers  ");
         res.send({status: Constants.BAD_REQUEST, err});
     }
 }
@@ -324,6 +339,7 @@ async function updatePermissions(req: Request, res: express.Response) {
         }
     }
     catch (err) {
+        addToSystemFailierLogger(" update permissions  from user routers  ");
         res.send({status: Constants.BAD_REQUEST});
     }
 }
@@ -340,6 +356,7 @@ async function popNotifications(req: Request, res: express.Response) {
         res.send(response);
     }
     catch (err) {
+        addToSystemFailierLogger(" pop notifications  from user routers  ");
         res.send({status: Constants.BAD_REQUEST});
     }
 }
@@ -357,6 +374,7 @@ async function getMessages(req: Request, res: express.Response) {
         res.send(response);
     }
     catch (err) {
+        addToSystemFailierLogger(" get messages  from user routers  ");
         res.send({status: Constants.BAD_REQUEST});
     }
 }
@@ -379,6 +397,7 @@ async function setUserActivation(req: Request, res: express.Response) {
         res.send(response);
     }
     catch (err) {
+        addToSystemFailierLogger(" set user activation  from user routers  ");
         res.send({status: Constants.BAD_REQUEST});
     }
 }
@@ -404,6 +423,7 @@ async function sendMessage(req: Request, res: express.Response) {
         res.send(response);
     }
     catch (err) {
+        addToSystemFailierLogger(" send message  from user routers  ");
         res.send({status: Constants.BAD_REQUEST});
     }
 }

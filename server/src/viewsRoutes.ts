@@ -6,6 +6,7 @@ import { MISSING_PARAMETERS, BAD_REQUEST, STORE_OWNER, STORE_MANAGER, APPOINT_ST
 import { UsersApi } from './usersApi/usersApi';
 import { ProductsApi } from './productApi/productsApi';
 import { StoresApi } from './storeApi/storesApi';
+import { addToSystemFailierLogger } from './utils/addToLogger';
 
 export const webRoutes = express.Router();
 
@@ -194,6 +195,7 @@ webRoutes.post('/login', async (req:Request,res:express.Response)=>{
         }
     }
     catch (err) {
+        addToSystemFailierLogger(" view routes  ");
         res.send({status: BAD_REQUEST});
     }
 });

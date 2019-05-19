@@ -9,7 +9,7 @@ import { Role } from "./models/role";
 import { User } from "./models/user";
 import { Message } from "./models/message";
 import { asyncForEach } from "../utils/utils";
-import { addToRegularLogger, addToErrorLogger } from "../utils/addToLogger";
+import { addToRegularLogger, addToErrorLogger, addToSystemFailierLogger } from "../utils/addToLogger";
 import { sendNotification } from "../notificationApi/notifiactionApi";
 
 
@@ -59,7 +59,7 @@ export class UsersApi implements IUsersApi{
             }
         }
         catch(err){
-            addToErrorLogger(" login  ");
+            addToSystemFailierLogger(" login  ");
             return {status: Constants.BAD_USERNAME, err:"bad username"};
         }
     }
@@ -106,7 +106,7 @@ export class UsersApi implements IUsersApi{
         }
         catch(err){
             //console.log(err);
-            addToErrorLogger(" register ");
+            addToSystemFailierLogger(" register  ");
             return {status:Constants.BAD_USERNAME, err:"bad username"};
         }
     }

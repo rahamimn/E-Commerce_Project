@@ -6,6 +6,7 @@ import * as Constants from "../consts";
 import {ERR_GENERAL_MSG} from "../consts";
 import { usersApiRouter } from "../usersApi/userRoutes";
 import { mockSaleRules, mockPurchaseRules, updateIds, deletePurchaseRuleMock, updateSaleIds, findSaleRelevantProduct, findRuleRelevantProduct, deleteSaleRuleMock } from './mockRules';
+import { addToSystemFailierLogger } from '../utils/addToLogger';
 
 export const storesApiRouter = express.Router();
 
@@ -29,6 +30,7 @@ async function addStore(req: Request, res: express.Response) {
         }
     }
     catch (err) {
+        addToSystemFailierLogger(" addStore from routes  ");
         res.send({status: Constants.BAD_REQUEST});
     }
 }
@@ -52,6 +54,7 @@ async function disableStore(req: Request, res: express.Response) {
         res.send(response);
     }
     catch (err) {
+        addToSystemFailierLogger(" disableStore from routes  ");
         res.send({status: Constants.BAD_REQUEST});
     }
 }
@@ -74,6 +77,8 @@ async function closeStore(req: Request, res: express.Response) {
         res.send(response);
     }
     catch (err) {
+        addToSystemFailierLogger(" closeStore from routes  ");
+
         res.send({status: Constants.BAD_REQUEST});
     }
 }
@@ -96,6 +101,7 @@ async function getWorkers(req: Request, res: express.Response) {
         res.send(response);
     }
     catch (err) {
+        addToSystemFailierLogger(" get workers from routes  ");
         res.send({status: Constants.BAD_REQUEST});
     }
 }
@@ -123,6 +129,7 @@ async function addReview(req: Request, res: express.Response) {
         }
     }
     catch (err) {
+        addToSystemFailierLogger(" add review from routes  ");
         res.send({status: Constants.BAD_REQUEST});
     }
 }
@@ -146,6 +153,7 @@ async function getStoreMessages(req: Request, res: express.Response) {
         res.send(response);
     }
     catch (err) {
+        addToSystemFailierLogger(" get store messages from routes  ");
         res.send({status: Constants.BAD_REQUEST});
     }
 }
@@ -171,6 +179,7 @@ async function getStore(req: Request, res: express.Response) {
         }
     }
     catch (err) {
+        addToSystemFailierLogger(" get store from routes  ");
         res.send({status: Constants.BAD_REQUEST});
     }
 }
@@ -200,6 +209,7 @@ async function sendMessage(req: Request, res: express.Response) {
         res.send(response);
     }
     catch (err) {
+        addToSystemFailierLogger(" send message from routes  ");
         res.send({status: Constants.BAD_REQUEST});
     }
 }
@@ -228,6 +238,7 @@ async function purchaseRules(req: Request, res: express.Response) {
         res.send(response);
     }
     catch (err) {
+        addToSystemFailierLogger(" purchase rules from routes  ");
         res.send({status: Constants.BAD_REQUEST});
     }
 }
@@ -257,6 +268,7 @@ async function saleRules(req: Request, res: express.Response) {
         res.send(response);
     }
     catch (err) {
+        addToSystemFailierLogger(" sales rules from routes  ");
         res.send({status: Constants.BAD_REQUEST});
     }
 }
@@ -288,6 +300,7 @@ async function addPurchaseRule(req: Request, res: express.Response) {
         res.send(response);
     }
     catch (err) {
+        addToSystemFailierLogger(" add purchase rules from routes  ");
         res.send({status: Constants.BAD_REQUEST});
     }
 }
@@ -318,6 +331,7 @@ async function addSaleRule(req: Request, res: express.Response) {
         res.send(response);
     }
     catch (err) {
+        addToSystemFailierLogger(" add sale rule from routes  ");
         res.send({status: Constants.BAD_REQUEST});
     }
 }
@@ -348,6 +362,7 @@ async function deletePurchaseRule(req: Request, res: express.Response) {
         res.send(response);
     }
     catch (err) {
+        addToSystemFailierLogger(" delete purchase rule from routes  ");
         res.send({status: Constants.BAD_REQUEST});
     }
 }
@@ -376,6 +391,8 @@ async function deleteSaleRule(req: Request, res: express.Response) {
         res.send(response);
     }
     catch (err) {
+        addToSystemFailierLogger(" delete sale rule from routes  ");
+
         res.send({status: Constants.BAD_REQUEST});
     }
 }
