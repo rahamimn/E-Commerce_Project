@@ -323,6 +323,8 @@ export class UsersApi implements IUsersApi{
             addToErrorLogger("setUserAsStoreManager no valid appointer");         
             return ({status: Constants.BAD_REQUEST, err:'dont have permission'});
         }
+        if(appointedUser == null)
+            return ({status: Constants.BAD_REQUEST, err:'user to appoint not found'});
 
         if(await RoleCollection.findOne({ofUser:appointedUser.id, store:storeId})){
             addToErrorLogger("setUserAsStoreManager no valid appointer");         

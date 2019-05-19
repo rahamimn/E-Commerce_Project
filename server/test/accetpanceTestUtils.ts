@@ -17,7 +17,8 @@ export const insertRegisterdUser = async (userName:String, password:String,isAdm
     if(isAdmin){
         await RoleCollection.insert(fakeRole({
             name: ADMIN,
-            ofUser: user.id
+            ofUser: user.id,
+            permissions: ['remove-role'],
         }));
     }
     return user;
@@ -66,6 +67,7 @@ export const setData= async () =>{
 
      //admin and normal user
      adminId = (await insertRegisterdUser(adminUsername,adminPassword,true)).id;
+
      userId = (await insertRegisterdUser(userUsername,userPassword)).id;
      userWithCartId = (await insertRegisterdUser(userWithCartUsername,userWithCartPassword)).id;
      //store
@@ -74,7 +76,7 @@ export const setData= async () =>{
      //store owner
      const storeOwner = await insertRegisterdUser(storeOwnerUsername,storeOwnerPassword);
      storeOwnerId= storeOwner.id;
-     const storeOwnerRole = await setupRoleToUser(storeOwnerId,{name: STORE_OWNER, store: storeId1 });
+     const storeOwnerRole = await setupRoleToUser(storeOwnerId,{name: STORE_OWNER, store: storeId1, appointor: adminId });
    
      //store manager which appointed by storeOwner
      const storeManager = await insertRegisterdUser(storeManagerIdUsername,storeManagerIdPassword);
