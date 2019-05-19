@@ -4,7 +4,7 @@ import { OK_STATUS, BAD_REQUEST, BAD_AMOUNT, BAD_PRICE, BAD_STORE_ID, OPEN_STORE
 import { IProductApi } from "./productsApiInterface";
 import { Review } from "../storeApi/models/review";
 import { Role } from "../usersApi/models/role";
-import { addToErrorLogger, addToRegularLogger } from "../utils/addToLogger";
+import { addToErrorLogger, addToRegularLogger, addToSystemFailierLogger } from "../utils/addToLogger";
 export class ProductsApi implements IProductApi{
 
     async addProduct(userId,newProduct: {storeId: String, name:String, amountInventory: Number, sellType: String, price: Number, keyWords: String[], category: String,coupons?: String,description?: String,imageUrl?: String,acceptableDiscount: number,discountPrice?: number,rank:number,reviews: any[]}){
@@ -64,7 +64,7 @@ export class ProductsApi implements IProductApi{
             return {status: OK_STATUS , product: productToInsert}
 
         } catch(err) {
-            addToErrorLogger("addProduct");
+            addToSystemFailierLogger(" add Product  ");
             return ({status: BAD_REQUEST, err: "cannot add the product with the details provided.."});
         }
     }
@@ -103,7 +103,7 @@ export class ProductsApi implements IProductApi{
             return {status: OK_STATUS ,product: product_AfterRemove}
 
         } catch(err) {
-            addToErrorLogger("setProdactActivation");
+            addToSystemFailierLogger(" setProdactActivation  ");
             return ({status: BAD_REQUEST});
         }
     }
@@ -143,7 +143,7 @@ export class ProductsApi implements IProductApi{
 
         } catch(err) {
             //console.log(err);
-            addToErrorLogger("updateProduct");
+            addToSystemFailierLogger(" updateProduct  ");
             return ({status: BAD_REQUEST, err: "bad product update details"});
         }
     }
@@ -162,7 +162,8 @@ export class ProductsApi implements IProductApi{
             return {status: OK_STATUS ,product: productToUpdate}
 
         } catch(err) {
-            addToErrorLogger("updateProduct");
+
+            addToSystemFailierLogger(" add review  ");
             return ({status: BAD_REQUEST, err:"cannot add review"});
         }
     }
@@ -191,7 +192,7 @@ export class ProductsApi implements IProductApi{
             return {status: OK_STATUS ,products: productsToReturn}
 
         } catch(err) {
-            addToErrorLogger("getProducts");
+            addToSystemFailierLogger(" getProducts  ");
             return ({status: BAD_REQUEST});
         }
     }
@@ -215,8 +216,7 @@ export class ProductsApi implements IProductApi{
 
                
         } catch(err) {
-            addToErrorLogger("getProductDetails");
-
+            addToSystemFailierLogger(" getProductDetails  ");
             return ({status: BAD_REQUEST});
         }
         
@@ -255,6 +255,7 @@ export class ProductsApi implements IProductApi{
                 return true;
                 
         } catch(err) {
+            addToSystemFailierLogger(" isProductVaild  ");
             return false;
         }      
     }
@@ -282,7 +283,7 @@ export class ProductsApi implements IProductApi{
                 return false;
 
         } catch(err) {
-            addToErrorLogger("doesStoreHaveThisProduct");
+            addToSystemFailierLogger(" doesStoreHaveThisProduct  ");
             return ({status: BAD_REQUEST, err: "the product does not exist"});
         }       
     }

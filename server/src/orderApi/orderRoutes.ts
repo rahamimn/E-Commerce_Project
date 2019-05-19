@@ -5,6 +5,7 @@ import {verifyToken} from "../jwt";
 import * as Constants from "../consts";
 import {ERR_GENERAL_MSG} from "../consts";
 import { usersApiRouter } from "../usersApi/userRoutes";
+import { addToSystemFailierLogger } from '../utils/addToLogger';
 
 export const ordersApiRouter = express.Router();
 
@@ -27,6 +28,7 @@ async function pay(req: Request, res: express.Response) {
         }
     }
     catch (err) {
+        addToSystemFailierLogger(" pay  ");
         res.send({status: Constants.BAD_REQUEST});
     }
 }
@@ -50,6 +52,8 @@ async function checkSupply(req: Request, res: express.Response) {
         }
     }
     catch (err) {
+        addToSystemFailierLogger(" check supply  ");
+
         res.send({status: Constants.BAD_REQUEST});
     }
 }
@@ -93,6 +97,7 @@ async function addComplaint(req: Request, res: express.Response) {
         }
     }
     catch (err) {
+        addToSystemFailierLogger(" add complaint  ");
         res.send({status: Constants.BAD_REQUEST});
     }
 }
@@ -116,6 +121,7 @@ async function getStoreOrderHistory(req: Request, res: express.Response) {
         }
     }
     catch (err) {
+        addToSystemFailierLogger(" get order history ");
         res.send({status: Constants.BAD_REQUEST});
     }
 }
@@ -142,6 +148,7 @@ async function addOrder(req: Request, res: express.Response) {
         }
     }
     catch (err) {
+        addToSystemFailierLogger(" add order ");
         res.send({status: Constants.BAD_REQUEST});
     }
 }

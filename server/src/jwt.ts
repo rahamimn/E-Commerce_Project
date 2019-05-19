@@ -1,3 +1,5 @@
+import { addToSystemFailierLogger } from "./utils/addToLogger";
+
 const jwt  = require('jsonwebtoken');
 const fs = require ('fs');
 
@@ -26,6 +28,7 @@ export function createToken (userId){
         return jwt.sign(payload, privateKEY, signOptions);
     }
     catch (err){
+        addToSystemFailierLogger(" create token");
         console.log(err);
         return null
     }
@@ -38,6 +41,7 @@ export function verifyToken (token){
         return legit
     }
     catch (err){
+        addToSystemFailierLogger(" verifyToken  ");
         console.log(err);
         throw err;
     }

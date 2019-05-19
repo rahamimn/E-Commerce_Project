@@ -8,7 +8,7 @@ import { IStoresApi } from './storesApiInterface';
 import { Message } from '../usersApi/models/message';
 import { asyncForEach } from '../utils/utils';
 import { UsersApi } from '../usersApi/usersApi';
-import { addToRegularLogger, addToErrorLogger } from '../utils/addToLogger';
+import { addToRegularLogger, addToErrorLogger, addToSystemFailierLogger } from '../utils/addToLogger';
 
 export class StoresApi implements IStoresApi {
     //works after test
@@ -45,7 +45,7 @@ export class StoresApi implements IStoresApi {
             return {status: OK_STATUS, store: new_store_added};
         }
         catch(err){
-            addToErrorLogger(" add store  ");
+            addToSystemFailierLogger(" add store  ");
             return {status: BAD_REQUEST, err:"bad details"};
         }
     }
