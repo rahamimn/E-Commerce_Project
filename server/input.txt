@@ -1,0 +1,15 @@
+admin1234
+123456
+storeOwner
+pass33
+storeManager
+pass44
+user4
+123456
+user5
+123456
+store1
+diapers
+30
+20
+storeManager store1

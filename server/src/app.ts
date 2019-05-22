@@ -17,6 +17,7 @@ import cors from 'cors';
 import { setDefaultData, setData } from '../test/accetpanceTestUtils';
 import { webRoutes } from './viewsRoutes';
 import { connectWsServer } from './notificationApi/notifiactionApi';
+import { read_from_input_file } from "../test/readFromFile";
 
 require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
 const dbHost = process.env.DB_HOST;
@@ -43,7 +44,8 @@ if(process.argv.some( arg => arg === '-init')){
 if(process.argv.some( arg => arg === '-initWithSomeData')){
     console.log(`init database with admin`);
     await mongoose.connection.db.dropDatabase();
-    await setData();
+    //await setData();
+    await read_from_input_file();
 }
 })();
 
