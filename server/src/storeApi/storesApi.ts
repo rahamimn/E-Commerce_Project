@@ -3,7 +3,7 @@ import { BAD_REQUEST, STORE_OWNER, CLOSE_STORE_BY_OWNER, CLOSE_STORE_BY_ADMIN, S
 import { StoreCollection, UserCollection, RoleCollection, MessageCollection } from '../persistance/mongoDb/Collections';
 import {
     OK_STATUS, BAD_USERNAME, OPEN_STORE, ADMIN, BAD_STORE_ID, ERR_STORE_PROBLEM,
-    UPDATE_PRODUCT_PERMISSION, MANAGE_PURCHASE_POLICY_PERMISSION
+    UPDATE_PRODUCT_PERMISSION, MANAGE_PURCHASE_POLICY_PERMISSION, MANAGE_SALES_PERMISSION
 } from "../consts";
 import { Store } from './models/store';
 import { Role } from '../usersApi/models/role';
@@ -13,7 +13,8 @@ import { asyncForEach } from '../utils/utils';
 import { UsersApi } from '../usersApi/usersApi';
 import { addToRegularLogger, addToErrorLogger, addToSystemFailierLogger } from '../utils/addToLogger';
 import * as Constants from "../consts";
-import {mockPurchaseRules, updateIds} from "./mockRules";
+import {updateSaleIds} from "./mockRules";
+const uuidv4 = require('uuid/v4');
 
 export class StoresApi implements IStoresApi {
     //works after test
@@ -242,7 +243,7 @@ export class StoresApi implements IStoresApi {
                 return ({status: BAD_REQUEST, err: "You have no permission for this action (User ID: " + userId + ")."});
             }
 
-            updateIds(purchaseRule);//for mock
+            purchaseRule.id = uuidv4();
             const purchaseRules = store.purchaseRules;
             if (!validatePurchaseRule(purchaseRule, purchaseRules)){
                 addToErrorLogger("addPurchaseRule");
@@ -250,7 +251,7 @@ export class StoresApi implements IStoresApi {
             }
 
             store.purchaseRules = [...purchaseRules, purchaseRule] ;
-            const store_curr = await StoreCollection.updateOne(store);
+            await StoreCollection.updateOne(store);
             return ({status: OK_STATUS});
 
         }
@@ -267,7 +268,7 @@ export class StoresApi implements IStoresApi {
         try{
             const store = await StoreCollection.findOne({_id: storeId});
             if(!store){
-                addToErrorLogger(" addPurchaseRule -> the store does not exist! ");
+                addToErrorLogger(" deletePurchaseRule -> the store does not exist! ");
                 return ({status: ERR_STORE_PROBLEM, err: BAD_STORE_ID});
             }
 
@@ -275,7 +276,7 @@ export class StoresApi implements IStoresApi {
             const isUserPermitted = await RoleCollection.findOne({ofUser:userId, store:storeId });
 
             if(!isUserAdmin && (!isUserPermitted ||  !isUserPermitted.checkPermission(MANAGE_PURCHASE_POLICY_PERMISSION ))){
-                addToErrorLogger("addPurchaseRule");
+                addToErrorLogger("deletePurchaseRule");
                 return ({status: BAD_REQUEST, err: "You have no permission for this action (User ID: " + userId + ")."});
             }
 
@@ -291,10 +292,95 @@ export class StoresApi implements IStoresApi {
         }
 
     };
+
+    async getSaleRules(storeId: string) {
+        addToRegularLogger(" get discount rules from store ", {storeId });
+
+        const store = await StoreCollection.findOne({_id: storeId});
+        if(!store){
+            addToErrorLogger(" getSaleRules -> the store does not exist! ");
+            return ({status: ERR_STORE_PROBLEM, err: BAD_STORE_ID });
+        }
+
+        const saleRules = store.saleRules;
+        return ({status: OK_STATUS,  saleRules: saleRules});
+    };
+
+    async addSaleRule(userId: string, storeId: string, newSaleRule: any) {
+        addToRegularLogger(" add sale rule to store ", {userId, storeId, newSaleRule });
+
+        try{
+            const store = await StoreCollection.findOne({_id: storeId});
+            if(!store){
+                addToErrorLogger(" addSaleRule -> the store does not exist! ");
+                return ({status: ERR_STORE_PROBLEM, err: BAD_STORE_ID});
+            }
+
+            const isUserAdmin = await RoleCollection.findOne({ofUser:userId, name:ADMIN})
+            const isUserPermitted = await RoleCollection.findOne({ofUser:userId, store:storeId });
+
+            if(!isUserAdmin && (!isUserPermitted ||  !isUserPermitted.checkPermission(MANAGE_SALES_PERMISSION ))){
+                addToErrorLogger("addSaleRule");
+                return ({status: BAD_REQUEST, err: "You have no permission for this action (User ID: " + userId + ")."});
+            }
+
+            newSaleRule.id = uuidv4();
+            updateSaleIds(newSaleRule);
+            const saleRules = store.saleRules;
+            if (!validateSaleRule(newSaleRule, saleRules)){
+                addToErrorLogger("addSaleRule");
+                return ({status: BAD_REQUEST});
+            }
+
+            store.saleRules = [...saleRules, newSaleRule] ;
+            await StoreCollection.updateOne(store);
+            return ({status: OK_STATUS});
+        }
+        catch (err) {
+            addToSystemFailierLogger(" add sale rules -> from routes  ");
+            return ({status: Constants.BAD_REQUEST});
+        }
+
+    };
+
+    async deleteSaleRule(userId: string, storeId: string, saleRuleId: string) {
+        addToRegularLogger(" delete sale rules from store ", {userId, storeId, saleRuleId });
+        try{
+            const store = await StoreCollection.findOne({_id: storeId});
+            if(!store){
+                addToErrorLogger(" deleteSaleRule -> the store does not exist! ");
+                return ({status: ERR_STORE_PROBLEM, err: BAD_STORE_ID});
+            }
+
+            const isUserAdmin = await RoleCollection.findOne({ofUser:userId, name:ADMIN})
+            const isUserPermitted = await RoleCollection.findOne({ofUser:userId, store:storeId });
+
+            if(!isUserAdmin && (!isUserPermitted ||  !isUserPermitted.checkPermission(MANAGE_SALES_PERMISSION ))){
+                addToErrorLogger("deleteSaleRule");
+                return ({status: BAD_REQUEST, err: "You have no permission for this action (User ID: " + userId + ")."});
+            }
+
+            //delete rule
+            store.saleRules = store.saleRules.filter( rule => rule.id !== saleRuleId);
+            const store_curr = await StoreCollection.updateOne(store);
+            return ({status: OK_STATUS});
+
+        }
+        catch (err) {
+            addToSystemFailierLogger(" deleteSaleRule rules -> from routes  ");
+            return ({status: Constants.BAD_REQUEST});
+        }
+
+    };
 }
 
 
 const validatePurchaseRule = (newPurchaseRule:any, PurchaseRules: any[]) => {
+    //todo check rule name is unique and the rule is syntactically legal
+    return true;
+};
+
+const validateSaleRule = (newSaleRule:any, saleRules: any[]) => {
     //todo check rule name is unique and the rule is syntactically legal
     return true;
 };

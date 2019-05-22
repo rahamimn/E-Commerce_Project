@@ -5,6 +5,7 @@ export class Store {
     this._name = base.name;
     this._workers = base.workers;
     this._purchaseRules = base.purchaseRules;
+    this._saleRules = base.saleRules;
     this._rank = base.rank;
     this._review = base.reviews;
     this._purchasePolicy = base.purchasePolicy;
@@ -16,6 +17,7 @@ export class Store {
   private _name: string;
   private _workers: any[]; //already an array of users
   private _purchaseRules: any[];
+  private _saleRules: any[];
   private _rank: number;
   private _review: any[]; //array of review
   private _purchasePolicy: string;
@@ -48,6 +50,10 @@ export class Store {
 
   public get purchaseRules(): any[] {
       return this._purchaseRules;
+  }
+
+  public get saleRules(): any[] {
+      return this._saleRules;
   }
 
   /**
@@ -116,6 +122,10 @@ export class Store {
 
   public set purchaseRules(value: any[]) {
     this._purchaseRules = value;
+  }
+
+  public set saleRules(value: any[]) {
+    this._saleRules = value;
   }
 
 

@@ -1,10 +1,9 @@
 import { UserCollection, RoleCollection, StoreCollection, CartCollection, ProductCollection } from "../src/persistance/mongoDb/Collections";
 import { fakeUser, fakeRole, fakeStore, fakeCart, fakeProduct } from "./fakes";
-import { RoleModel } from "../src/persistance/mongoDb/models/roleModel";
 import { ADMIN, STORE_OWNER, STORE_MANAGER, REMOVE_PRODUCT_PERMISSION, WATCH_WORKERS_PERMISSION } from "../src/consts";
 import bcrypt = require('bcryptjs');
 import { Role } from "../src/usersApi/models/role";
-import {mockPurchaseRules} from "../src/storeApi/mockRules";
+import {mockPurchaseRules, mockSaleRules} from "../src/storeApi/mockRules";
 
 
 export const insertRegisterdUser = async (userName:String, password:String,isAdmin:Boolean = false) => {
@@ -72,7 +71,7 @@ export const setData= async () =>{
      userId = (await insertRegisterdUser(userUsername,userPassword)).id;
      userWithCartId = (await insertRegisterdUser(userWithCartUsername,userWithCartPassword)).id;
      //store
-     storeId1 = (await StoreCollection.insert(fakeStore({name:storeName1, purchaseRules:mockPurchaseRules }))).id;
+     storeId1 = (await StoreCollection.insert(fakeStore({name:storeName1, purchaseRules:mockPurchaseRules, saleRules: mockSaleRules}))).id;
      storeId2 = (await StoreCollection.insert(fakeStore({name:storeName2}))).id;
      //store owner
      const storeOwner = await insertRegisterdUser(storeOwnerUsername,storeOwnerPassword);

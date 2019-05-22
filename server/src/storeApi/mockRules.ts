@@ -1,4 +1,5 @@
 import {DTYPE_SIMPLE_DISCOUNT_PRECENTAGE, PTYPE_COMPLEX, PTYPE_SIMPLE_MAX_PRODUCT} from "../consts";
+const uuidv4 = require('uuid/v4');
 
 export const  mockSaleRules = [{
     name:"sale1",
@@ -81,46 +82,24 @@ export const mockPurchaseRules = [{
         }
 }];
 
-export let id = 900;
-export const updateIds = (rule) => {
-    rule.id =`aaa${id++}`;
-    updateCondIds(rule.condition);
-};
-
 export const updateSaleIds = (rule) => {
-    rule.id =`aaa${id++}`;
+    rule.id = uuidv4();
     updateCondIds(rule.condition);
     updateDiscounts(rule.discounts);
 }
 export const updateDiscounts = (discounts) => {
-    discounts.forEach(disc => disc.id =`aaa${id++}`);
+    discounts.forEach(disc => disc.id = uuidv4());
 }
 
 export const updateCondIds = (condition) => {
-    condition.id =`aaa${id++}`;
+    condition.id = uuidv4();
     if(condition.type === PTYPE_COMPLEX){
         updateCondIds(condition.op1);
         updateCondIds(condition.op2);
     }
-}
+};
 
-export const deletePurchaseRuleMock = (id) => {
-    for(let i = 0 ; i <mockPurchaseRules.length ; i++ ){
-        if(mockPurchaseRules[i].id === id){
-            mockPurchaseRules.splice(i,1);
-            break;
-        }
-    }
-}
 
-export const deleteSaleRuleMock = (id) => {
-    for(let i = 0 ; i < mockPurchaseRules.length ; i++ ){
-        if(mockSaleRules[i].id === id){
-            mockSaleRules.splice(i,1);
-            break;
-        }
-    }
-}
 
 export const findSaleRelevantProduct = (productId) => {
     return mockSaleRules.filter(isSaleRelevant(productId));

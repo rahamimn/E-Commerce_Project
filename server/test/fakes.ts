@@ -54,6 +54,7 @@ export const fakeStore = (opt: any = {}) => {
         name: opt.name || chance.name() ,
         workers : opt.workers || [],
         purchaseRules : opt.purchaseRules || [],
+        saleRules : opt.saleRules || [],
         rank: opt.rank || chance.integer(),
         review : opt.review || [],
         purchasePolicy: "everyone can buy",

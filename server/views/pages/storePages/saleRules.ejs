@@ -391,7 +391,7 @@
              $("#saleRule-error").text('new rule doesn\'t valid');
              return;
         }
-        postData(`/storesApi/<%=storeId%>/addSaleRule`, {rule: newRule})
+        postData(`/storesApi/<%=storeId%>/addSaleRule`, {saleRule: newRule})
         .then(data => {
             if(data.status<0){
                 $("#saleRule-error").text(data.err);

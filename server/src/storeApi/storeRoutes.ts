@@ -1,11 +1,9 @@
 import express = require('express');
 import {Request} from "../../types/moongooseArray";
 import {StoresApi} from "./storesApi";
-import {verifyToken} from "../jwt";
 import * as Constants from "../consts";
 import {ERR_GENERAL_MSG} from "../consts";
 import { usersApiRouter } from "../usersApi/userRoutes";
-import { mockSaleRules, mockPurchaseRules, updateIds, deletePurchaseRuleMock, updateSaleIds, findSaleRelevantProduct, findRuleRelevantProduct, deleteSaleRuleMock } from './mockRules';
 import { addToSystemFailierLogger } from '../utils/addToLogger';
 
 export const storesApiRouter = express.Router();
@@ -218,7 +216,6 @@ usersApiRouter.post('/storesApi/:storeId/purchaseRules', purchaseRules);
 
 async function purchaseRules(req: Request, res: express.Response) {
     try {
-
         const response = await storesApi.getPurchaseRules(req.params.storeId);
         res.send(response);
     }
@@ -233,8 +230,7 @@ usersApiRouter.post('/storesApi/:storeId/saleRules', saleRules);
 
 async function saleRules(req: Request, res: express.Response) {
     try {
-        const saleRules = req.body.product? findSaleRelevantProduct(req.body.product): mockSaleRules;
-        const response = {status: Constants.OK_STATUS, saleRules};
+        const response = await storesApi.getSaleRules(req.params.storeId);
         res.send(response);
     }
     catch (err) {
@@ -272,9 +268,17 @@ usersApiRouter.post('/storesApi/:storeId/addSaleRule', addSaleRule);
 
 async function addSaleRule(req: Request, res: express.Response) {
     try {
-        updateSaleIds(req.body.rule);//for mock
-        mockSaleRules.push(req.body.rule);
-        const response = {status: Constants.OK_STATUS};
+
+        const user = req.session.user;
+        if (!user) {
+            res.send({status: Constants.BAD_ACCESS_NO_VISITORS, err: Constants.ERR_Access_MSG});
+            return;
+        }
+        const userId = user.id;
+        const storeId = req.params.storeId;
+        const saleRule = req.body.saleRule;
+
+        const response =await storesApi.addSaleRule(userId, storeId, saleRule);
         res.send(response);
     }
     catch (err) {
@@ -311,8 +315,16 @@ usersApiRouter.post('/storesApi/:storeId/saleRules/:ruleId/delete', deleteSaleRu
 
 async function deleteSaleRule(req: Request, res: express.Response) {
     try {
-        deleteSaleRuleMock(req.params.ruleId);
-        const response = {status: Constants.OK_STATUS};
+        const user = req.session.user;
+        if (!user) {
+            res.send({status: Constants.BAD_ACCESS_NO_VISITORS, err: Constants.ERR_Access_MSG});
+            return;
+        }
+        const userId = user.id;
+        const storeId = req.params.storeId;
+        const saleRuleId = req.params.ruleId;
+
+        const response =await storesApi.deleteSaleRule(userId, storeId, saleRuleId);
         res.send(response);
     }
     catch (err) {
