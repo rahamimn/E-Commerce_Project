@@ -28,6 +28,7 @@
 
 <script>
 
+    const PTYPE_COMPLEX = 'complex';
     $().ready(onStart);
 
     function onStart(){
@@ -111,7 +112,7 @@
     }
 
     function appendCondition(condition){
-        if(condition.type == 'complex'){
+        if(condition.type == PTYPE_COMPLEX){
             return `
                 <span class="clickable" id="t-${condition.id}" onclick="toggleItem(this.id)"><i class="far fa-circle ic-w mx-1"></i>${condition.displayText}</span>
                 <ul class="condition" id="${condition.id}">

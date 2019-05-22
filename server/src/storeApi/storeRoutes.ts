@@ -218,23 +218,8 @@ usersApiRouter.post('/storesApi/:storeId/purchaseRules', purchaseRules);
 
 async function purchaseRules(req: Request, res: express.Response) {
     try {
-        // const user = req.session.user;
-        // if (!user) {
-        //     res.send({status: Constants.BAD_ACCESS_NO_VISITORS, err: Constants.ERR_Access_MSG});
-        //     return;
-        // }
-        // const title = req.body.title;
-        // const body = req.body.body;
-        // const toName = req.body.toName;
-        // const storeId = req.body.storeId;
 
-        // if (!storeId)
-        //     throw Error(ERR_GENERAL_MSG);
-
-        // if (!title || !body || !toName)
-        //     res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
-        const purchaseRules = req.body.product? findRuleRelevantProduct(req.body.product): mockPurchaseRules;
-        const response = {status: Constants.OK_STATUS, purchaseRules};
+        const response = await storesApi.getPurchaseRules(req.params.storeId);
         res.send(response);
     }
     catch (err) {
@@ -248,21 +233,6 @@ usersApiRouter.post('/storesApi/:storeId/saleRules', saleRules);
 
 async function saleRules(req: Request, res: express.Response) {
     try {
-        // const user = req.session.user;
-        // if (!user) {
-        //     res.send({status: Constants.BAD_ACCESS_NO_VISITORS, err: Constants.ERR_Access_MSG});
-        //     return;
-        // }
-        // const title = req.body.title;
-        // const body = req.body.body;
-        // const toName = req.body.toName;
-        // const storeId = req.body.storeId;
-
-        // if (!storeId)
-        //     throw Error(ERR_GENERAL_MSG);
-
-        // if (!title || !body || !toName)
-        //     res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
         const saleRules = req.body.product? findSaleRelevantProduct(req.body.product): mockSaleRules;
         const response = {status: Constants.OK_STATUS, saleRules};
         res.send(response);
@@ -279,28 +249,20 @@ usersApiRouter.post('/storesApi/:storeId/addPurchaseRule', addPurchaseRule);
 
 async function addPurchaseRule(req: Request, res: express.Response) {
     try {
-        // const user = req.session.user;
-        // if (!user) {
-        //     res.send({status: Constants.BAD_ACCESS_NO_VISITORS, err: Constants.ERR_Access_MSG});
-        //     return;
-        // }
-        // const title = req.body.title;
-        // const body = req.body.body;
-        // const toName = req.body.toName;
-        // const storeId = req.body.storeId;
+        const user = req.session.user;
+        if (!user) {
+            res.send({status: Constants.BAD_ACCESS_NO_VISITORS, err: Constants.ERR_Access_MSG});
+            return;
+        }
+        const userId = user.id;
+        const storeId = req.params.storeId;
+        const purchaseRule = req.body.purchaseRule;
 
-        // if (!storeId)
-        //     throw Error(ERR_GENERAL_MSG);
-
-        // if (!title || !body || !toName)
-        //     res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
-        updateIds(req.body.rule);//for mock
-        mockPurchaseRules.push(req.body.rule);
-        const response = {status: Constants.OK_STATUS};
+        const response =await storesApi.addPurchaseRule(userId, storeId, purchaseRule);
         res.send(response);
     }
     catch (err) {
-        addToSystemFailierLogger(" add purchase rules from routes  ");
+        addToSystemFailierLogger(" add purchase rules -> from routes  ");
         res.send({status: Constants.BAD_REQUEST});
     }
 }
@@ -310,21 +272,6 @@ usersApiRouter.post('/storesApi/:storeId/addSaleRule', addSaleRule);
 
 async function addSaleRule(req: Request, res: express.Response) {
     try {
-        // const user = req.session.user;
-        // if (!user) {
-        //     res.send({status: Constants.BAD_ACCESS_NO_VISITORS, err: Constants.ERR_Access_MSG});
-        //     return;
-        // }
-        // const title = req.body.title;
-        // const body = req.body.body;
-        // const toName = req.body.toName;
-        // const storeId = req.body.storeId;
-
-        // if (!storeId)
-        //     throw Error(ERR_GENERAL_MSG);
-
-        // if (!title || !body || !toName)
-        //     res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
         updateSaleIds(req.body.rule);//for mock
         mockSaleRules.push(req.body.rule);
         const response = {status: Constants.OK_STATUS};
@@ -342,23 +289,16 @@ usersApiRouter.post('/storesApi/:storeId/purchaseRules/:ruleId/delete', deletePu
 
 async function deletePurchaseRule(req: Request, res: express.Response) {
     try {
-        // const user = req.session.user;
-        // if (!user) {
-        //     res.send({status: Constants.BAD_ACCESS_NO_VISITORS, err: Constants.ERR_Access_MSG});
-        //     return;
-        // }
-        // const title = req.body.title;
-        // const body = req.body.body;
-        // const toName = req.body.toName;
-        // const storeId = req.body.storeId;
+        const user = req.session.user;
+        if (!user) {
+            res.send({status: Constants.BAD_ACCESS_NO_VISITORS, err: Constants.ERR_Access_MSG});
+            return;
+        }
+        const userId = user.id;
+        const storeId = req.params.storeId;
+        const purchaseRuleId = req.params.ruleId;
 
-        // if (!storeId)
-        //     throw Error(ERR_GENERAL_MSG);
-
-        // if (!title || !body || !toName)
-        //     res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
-        deletePurchaseRuleMock(req.params.ruleId);
-        const response = {status: Constants.OK_STATUS};
+        const response =await storesApi.deletePurchaseRule(userId, storeId, purchaseRuleId);
         res.send(response);
     }
     catch (err) {
@@ -371,21 +311,6 @@ usersApiRouter.post('/storesApi/:storeId/saleRules/:ruleId/delete', deleteSaleRu
 
 async function deleteSaleRule(req: Request, res: express.Response) {
     try {
-        // const user = req.session.user;
-        // if (!user) {
-        //     res.send({status: Constants.BAD_ACCESS_NO_VISITORS, err: Constants.ERR_Access_MSG});
-        //     return;
-        // }
-        // const title = req.body.title;
-        // const body = req.body.body;
-        // const toName = req.body.toName;
-        // const storeId = req.body.storeId;
-
-        // if (!storeId)
-        //     throw Error(ERR_GENERAL_MSG);
-
-        // if (!title || !body || !toName)
-        //     res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
         deleteSaleRuleMock(req.params.ruleId);
         const response = {status: Constants.OK_STATUS};
         res.send(response);

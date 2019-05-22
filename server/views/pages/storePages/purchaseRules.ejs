@@ -98,6 +98,8 @@
     let condId=0;
     var newRule;
     var condition;
+    const PTYPE_COMPLEX = 'complex';
+
 
     $().ready(onStart);
 
@@ -135,7 +137,7 @@
     function findCondition(cond,id){
         if(cond.id === id)
             condition = cond;
-        else if(cond.type === "complex") {
+        else if(cond.type === PTYPE_COMPLEX) {
                 findCondition(cond.op1,id);
                 findCondition(cond.op2,id)
             
@@ -159,7 +161,7 @@
 
         condition.type=type;
         switch(type){
-            case 'complex':
+            case PTYPE_COMPLEX:
                 condition.bin_op = bin_op;
                 condition.op1={id:`new-${condId++}`,type:"unset", parentId: condition.id };
                 condition.op2={id:`new-${condId++}`,type:"unset", parentId: condition.id };
@@ -196,7 +198,7 @@
 
     function setFieldsByType(){
         switch($('#type')[0].value){
-            case 'complex':
+            case PTYPE_COMPLEX:
                 $('#bin_op_input_view').show();
                 $('#product_input_view').hide();
                 $('#amount_input_view').hide();    
@@ -241,7 +243,7 @@
              $("#purchaseRule-error").text('new rule doesn\'t valid');
              return;
         }
-        postData(`/storesApi/<%=storeId%>/addPurchaseRule`, {rule: newRule})
+        postData(`/storesApi/<%=storeId%>/addPurchaseRule`, {purchaseRule: newRule})
         .then(data => {
             if(data.status<0){
                 $("#purchaseRule-error").text(data.err);
@@ -255,6 +257,7 @@
     };
 
     function deleteRule(d_id){
+        console.log(`/storesApi/<%=storeId%>/purchaseRules/${d_id.slice(2)}/delete`);
         if(!confirm("Are you sure ?"))
             return;
         postData(`/storesApi/<%=storeId%>/purchaseRules/${d_id.slice(2)}/delete`, {})
@@ -291,7 +294,7 @@
     function appendCondition(condition,newRule=false){
         if(!condition)
             return '';
-        if(condition.type == 'complex'){
+        if(condition.type == PTYPE_COMPLEX){
             return `
                 <div>
                     <span class="clickable" id="t-${condition.id}" onclick="toggleItem(this.id)"><i class="far fa-circle ic-w mx-1"></i>${condition.displayText}</span>
@@ -328,7 +331,7 @@
             return false;
         if(!condition.displayText || condition.displayText==='')
             return false;
-        if(!condition.type === 'complex')
+        if(!condition.type === PTYPE_COMPLEX)
             return validateCondition(condition.op1) && validateCondition(condition.op2);
         return true;        
     };

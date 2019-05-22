@@ -12,6 +12,9 @@ export interface IStoresApi{
     getStore: (storeId: string) => Promise <{status: number,  err?: string, store?:any}>
     getAllStores: () => Promise <{status: number,  err?: string, stores?:any}>
     sendMessage:(workerId: string,storeId: string, title:string, body:string, userName:string) => Promise <{status: number,  err?: string, message?:any}>
+    getPurchaseRules:(storeId: string) => Promise <{status: number,  err?: string, rules?:any}>
+    addPurchaseRule:(userId: string, storedId: string, purchaseRule: any) => Promise <{status: number,  err?: string}>
+    deletePurchaseRule:(userId: string, storeId: string, purchaseRuleId: string) => Promise <{status: number,  err?: string}>
     // AddDiscount: (ProductID: string, discountPercentage: string)=> Boolean,
     // addCondDiscount: (ProductID: string, discountPercentage: string, expirationDate: Date, condID: string) =>void,
 }

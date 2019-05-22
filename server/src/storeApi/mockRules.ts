@@ -1,10 +1,11 @@
+import {DTYPE_SIMPLE_DISCOUNT_PRECENTAGE, PTYPE_COMPLEX, PTYPE_SIMPLE_MAX_PRODUCT} from "../consts";
 
 export const  mockSaleRules = [{
     name:"sale1",
     id:'1123',
     condition:{
         id:'11',
-        type:'simple-max-amount-product',
+        type:PTYPE_SIMPLE_MAX_PRODUCT,
         productId:'123',
         amount:5,
         displayText:'At most 5 cucambers'
@@ -12,7 +13,7 @@ export const  mockSaleRules = [{
     discounts:[
         {
             id:'21332bgg1',
-            type: 'discountPercentage',
+            type: DTYPE_SIMPLE_DISCOUNT_PRECENTAGE,
             percentage:15,
             products:[{id:'2131435f23',name:'tomato'},{id:'3145352313',name:'cucamber'}],
             displayText:'on the following products 15% discount.'
@@ -24,7 +25,7 @@ export const  mockSaleRules = [{
     id:'112gdfg3',
     condition:{
         id:'1dasda1',
-        type:'simple-max-amount-product',
+        type:PTYPE_SIMPLE_MAX_PRODUCT,
         productId:'gfdg123',
         amount:5,
         displayText:'At most 5 cucambers'
@@ -32,7 +33,7 @@ export const  mockSaleRules = [{
     discounts:[
         {
             id:'21fdg33fdsfsdf21',
-            type: 'discountPercentage',
+            type: DTYPE_SIMPLE_DISCOUNT_PRECENTAGE,
             percentage:10,
             products:[{id:'213123',name:'tomato'},{id:'312313',name:'cucamber'},{id:'2131fdfs23',name:'pizza'}],
             displayText:'on the following products 10% discount.'
@@ -46,7 +47,7 @@ export const mockPurchaseRules = [{
     id:'1',
     condition:{
         id:'11',
-        type:'simple-max-amount-product',
+        type:PTYPE_SIMPLE_MAX_PRODUCT,
         productId:'123',
         amount:5,
         displayText:'At most 5 cucambers'
@@ -58,12 +59,12 @@ export const mockPurchaseRules = [{
     condition:
         {
         id:'2321321313',
-        type:'complex',
+        type:PTYPE_COMPLEX,
         bin_op:'or',
         op1:{
             parentId:'2321321313',
             id:'2321332132',
-            type:'simple-max-amount-product',
+            type:PTYPE_SIMPLE_MAX_PRODUCT,
             productId:'12321334',
             amount:5,
             displayText:'At most 5 tomatos'
@@ -71,7 +72,7 @@ export const mockPurchaseRules = [{
         op2:{
             parentId:'2321321313',
             id:'23213213',
-            type:'simple-max-amount-product',
+            type:PTYPE_SIMPLE_MAX_PRODUCT,
             productId:'13213234',
             amount:5,
             displayText:'At most 5 tomatos'
@@ -97,7 +98,7 @@ export const updateDiscounts = (discounts) => {
 
 export const updateCondIds = (condition) => {
     condition.id =`aaa${id++}`;
-    if(condition.type === 'complex'){
+    if(condition.type === PTYPE_COMPLEX){
         updateCondIds(condition.op1);
         updateCondIds(condition.op2);
     }
@@ -139,7 +140,7 @@ const isRuleRelevant = (productId) => (rule) => {
 }
 
 const isCondRelevant = (cond,productId) => {
-    if(cond.type === 'complex')
+    if(cond.type === PTYPE_COMPLEX)
         return isCondRelevant(cond.op1,productId) || isCondRelevant(cond.op2,productId);
     else{
         return cond.product && cond.product === productId;

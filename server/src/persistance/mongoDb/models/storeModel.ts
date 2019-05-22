@@ -19,6 +19,7 @@ export interface IStoreModel extends IStore, Document {} //add methods here
 export const storeScheme = new Schema({
   name: { type: String, unique: true },
   workers: [{ type: Schema.Types.ObjectId, ref: "User", default: [] }],
+  purchaseRules: [],
   rank: Number,
   review: [{ type: Schema.Types.ObjectId, ref: "Review", default: [] }],
   purchasePolicy: String,

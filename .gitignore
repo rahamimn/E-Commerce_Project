@@ -18,6 +18,8 @@
 
 /server/E_Commerce_system_logger.log
 
+/server/E_Commerce_system_failier_logger.log
+
 /acceptanceTest/package-lock.json
 
 .env
@@ -27,3 +29,5 @@ private.key
 .idea
 
 .vscode
+
+*.log

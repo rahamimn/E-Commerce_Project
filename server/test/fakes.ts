@@ -16,6 +16,7 @@ import { StoresApi } from '../src/storeApi/storesApi';
 import { StoreCollection } from '../src/persistance/mongoDb/Collections';
 import bcrypt = require('bcryptjs');
 import { Order } from '../src/orderApi/models/order';
+import {mockPurchaseRules} from "../src/storeApi/mockRules";
 
 const chance = new Chance();
 var mongoose = require('mongoose');
@@ -52,6 +53,7 @@ export const fakeStore = (opt: any = {}) => {
         id : genObjectId(),
         name: opt.name || chance.name() ,
         workers : opt.workers || [],
+        purchaseRules : opt.purchaseRules || [],
         rank: opt.rank || chance.integer(),
         review : opt.review || [],
         purchasePolicy: "everyone can buy",
