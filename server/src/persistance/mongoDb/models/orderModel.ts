@@ -3,9 +3,9 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 interface IOrder {
-    storeId: String,
-    userId: String,
-    description: String,
+    storeId: string,
+    userId: string,
+    description: string,
     totalPrice: number,
     supplyPrice: number,
 }

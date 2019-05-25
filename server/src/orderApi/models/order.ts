@@ -3,9 +3,9 @@ export class Order {
     private _id: any;
     private _storeId: any;
     private _userId: any;
-    private _description: String;
+    private _description: string;
     private _totalPrice: number;
-    private _state: String;
+    private _state: string;
     private _supplyPrice: number;
 
     /**
@@ -112,17 +112,17 @@ export class Order {
 
     /**
      * Getter state
-     * @return {String}
+     * @return {string}
      */
-	public get state(): String {
+	public get state(): string {
 		return this._state;
 	}
 
     /**
      * Getter description
-     * @return {String}
+     * @return {string}
      */
-	public get description(): String {
+	public get description(): string {
 		return this._description;
 	}
 
@@ -137,17 +137,17 @@ export class Order {
 
     /**
      * Setter state
-     * @param {String} value
+     * @param {string} value
      */
-	public set state(value: String) {
+	public set state(value: string) {
 		this._state = value;
 	}
 
     /**
      * Setter description
-     * @param {String} value
+     * @param {string} value
      */
-	public set description(value: String) {
+	public set description(value: string) {
 		this._description = value;
 	}
 

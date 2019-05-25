@@ -10,6 +10,7 @@ export const BAD_REQUEST = -1;
 export const MISSING_PARAMETERS = -2;
 export const BAD_ACCESS_NO_VISITORS = -3;
 export const BAD_ACCESS_NOT_USER = -4;
+export const CONNECTION_LOST = -5;
 
 export const USER_EXIST = -101;
 export const BAD_PASSWORD = -102;

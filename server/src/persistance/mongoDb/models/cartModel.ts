@@ -11,8 +11,7 @@ interface ICart {
   store: ObjectID;
   items:  MonArray<{ product:ObjectId,amount: number}>;
   supplyPrice: number,
-  state: String,
-  ofSession: String,
+  state: string,
 }
 export interface ICartModel extends ICart, Document{
 	addItem(productId:ObjectID, amount:number ): Promise<void>
@@ -25,7 +24,6 @@ const cartScheme = new Schema({
     product: {type: Schema.Types.ObjectId, ref: 'Product', required: true },
     amount:  {type: Number, required: true ,validation: value => value > 0 }
   }],
-  ofSession: {type:String},
   state: {type:String, default: NORMAL_CART},
   supplyPrice:{type:Number,validation: value => value > 0 ,default:0}
 });

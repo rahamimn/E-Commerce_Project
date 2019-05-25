@@ -4,21 +4,21 @@ import { Review } from "../../storeApi/models/review";
 
 export class Product {
     private _id: any;
-    private _name: String;
+    private _name: string;
     private _storeId: any;
     private _amountInventory: number;
-    private _sellType: String;
-    private _description: String;
+    private _sellType: string;
+    private _description: string;
     private _price: number;
-    private _coupons: String;
+    private _coupons: string;
     private _acceptableDiscount: number;
     private _discountPrice: number;
     private _rank: number;
     private _reviews: string[];
-    private _keyWords: String[];
-    private _category: String;
+    private _keyWords: string[];
+    private _category: string;
     private _isActivated: Boolean;
-    private _imageUrl: String;
+    private _imageUrl: string;
 
     constructor(base:any){
         this._id = base.id;
@@ -102,41 +102,41 @@ export class Product {
 
     /**
      * Getter description
-     * @return {String}
+     * @return {string}
      */
-	public get description(): String {
+	public get description(): string {
 		return this._description;
 	}
 
     /**
      * Setter description
-     * @param {String} value
+     * @param {string} value
      */
-	public set description(value: String) {
+	public set description(value: string) {
 		this._description = value;
 	}
 
      /**
      * Getter name
-     * @return {String}
+     * @return {string}
      */
-	public get name(): String {
+	public get name(): string {
 		return this._name;
 	}
 
     /**
      * Setter name
-     * @param {String} value
+     * @param {string} value
      */
-	public set name(value: String) {
+	public set name(value: string) {
 		this._name = value;
 	}
 
     /**
      * Getter id
-     * @return {String}
+     * @return {string}
      */
-	public get id(): String {
+	public get id(): string {
 		return this._id;
 	}
 
@@ -150,24 +150,24 @@ export class Product {
 
       /**
      * Getter imageUrl
-     * @return {String}
+     * @return {string}
      */
-	public get imageUrl(): String {
+	public get imageUrl(): string {
 		return this._imageUrl;
 	}
 
     /**
      * Setter imageUrl
-     * @param {String} value
+     * @param {string} value
      */
-	public set imageUrl(value: String) {
+	public set imageUrl(value: string) {
 		this._imageUrl = value;
 	}
     /**
      * Getter sellType
-     * @return {String}
+     * @return {string}
      */
-	public get sellType(): String {
+	public get sellType(): string {
 		return this._sellType;
 	}
 
@@ -181,9 +181,9 @@ export class Product {
 
     /**
      * Getter coupons
-     * @return {String}
+     * @return {string}
      */
-	public get coupons(): String {
+	public get coupons(): string {
 		return this._coupons;
 	}
 
@@ -221,17 +221,17 @@ export class Product {
 
     /**
      * Getter keyWords
-     * @return {String[]}
+     * @return {string[]}
      */
-	public get keyWords(): String[] {
+	public get keyWords(): string[] {
 		return this._keyWords;
 	}
 
     /**
      * Getter category
-     * @return {String}
+     * @return {string}
      */
-	public get category(): String {
+	public get category(): string {
 		return this._category;
 	}
 
@@ -245,9 +245,9 @@ export class Product {
 
     /**
      * Setter id
-     * @param {String} value
+     * @param {string} value
      */
-	public set id(value: String) {
+	public set id(value: string) {
 		this._id = value;
 	}
 
@@ -263,9 +263,9 @@ export class Product {
 
     /**
      * Setter sellType
-     * @param {String} value
+     * @param {string} value
      */
-	public set sellType(value: String) {
+	public set sellType(value: string) {
 		this._sellType = value;
 	}
 
@@ -279,9 +279,9 @@ export class Product {
 
     /**
      * Setter coupons
-     * @param {String} value
+     * @param {string} value
      */
-	public set coupons(value: String) {
+	public set coupons(value: string) {
 		this._coupons = value;
 	}
 
@@ -319,30 +319,30 @@ export class Product {
 
     /**
      * Setter keyWords
-     * @param {String[]} value
+     * @param {string[]} value
      */
-	public set keyWords(value: String[]) {
+	public set keyWords(value: string[]) {
 		this._keyWords = value;
 	}
 
     /**
      * Setter category
-     * @param {String} value
+     * @param {string} value
      */
-	public set category(value: String) {
+	public set category(value: string) {
 		this._category = value;
     }
     
 
     /**
      * Setter storeId
-     * @param {String} value
+     * @param {string} value
      */
-	public set storeId(value: String) {
+	public set storeId(value: string) {
 		this._storeId = value;
     }
     
-    public get storeId(): String {
+    public get storeId(): string {
 		return this._storeId;
 	}
 

@@ -6,28 +6,19 @@ import { addToSystemFailierLogger } from "../../utils/addToLogger";
 
 export class Cart{
 
-	public set supplyPrice(value: number) {
-    if(value<0)
-      throw new Error('supply price not valid');
-		this._supplyPrice = value;
-	}
 
     private _id: string;
     private _ofUser: any;
-    private _ofSession: String;
+    private _ofSession: string;
     private _store: any;
     private _items:  {product:any, amount:number}[];
-    private _state: String; 
-    private _supplyPrice: number; //in order state
-
+ 
     constructor(opt: any){
         this._ofSession = opt.ofSession
         this._id = opt.id;
         this._items = opt.items;
         this._store = opt.store;
         this._ofUser = opt.ofUser;
-        this._state = opt.state;
-        this._supplyPrice = opt.supplyPrice;
     }
   
     get productsIds(){
@@ -66,7 +57,8 @@ export class Cart{
     }
   
     public addItem = function (productId, amount){
-      const item = this._items.filter( item =>item.product.equals(productId));
+      const item = this._items.filter( item =>item.product.toString() === productId.toString());
+      
       if(item.length > 1)
         return -1;
       if(item.length === 0){
@@ -86,8 +78,6 @@ export class Cart{
         _id,
         _items,
         _store,
-        _supplyPrice,
-        _state
     } = this;
     let newItems=[];
 
@@ -100,8 +90,6 @@ export class Cart{
       id:_id,
       items: newItems,
       store:_store,
-      supplyPrice:_supplyPrice,
-      state: _state,
     totalPrice: await this.totalPrice()
     });
   } 
@@ -111,7 +99,6 @@ export class Cart{
       userId: this.ofUser,
       storeId: this.store,
       totalPrice: await this.totalPrice(),
-      supplyPrice : this.supplyPrice,
       description: await this.toString()
     });
   }
@@ -163,29 +150,15 @@ export class Cart{
 		return this._store;
 	}
 
-    /**
-     * Getter state
-     * @return {String}
-     */
-	public get state(): String {
-		return this._state;
-  }
   
      /**
      * Getter ofSession
-     * @return {String}
+     * @return {string}
      */
-	public get ofSession(): String {
+	public get ofSession(): string {
 		return this._ofSession;
 	}
 
-    /**
-     * Getter supplyPrice
-     * @return {number}
-     */
-	public get supplyPrice(): number {
-		return this._supplyPrice;
-	}
 
     /**
    * Setter id
@@ -218,29 +191,18 @@ public set items(value:  {product:any, amount:number}[]) {
 		this._store = value;
 	}
 
-    /**
-     * Setter state
-     * @param {String} value
-     */
-	public set state(value: String) {
-		this._state = value;
-  }
 
 
   /**
    * Setter ofSession
-   * @param {String} value
+   * @param {string} value
    */
-	public set ofSession(value: String) {
+	public set ofSession(value: string) {
 		this._ofSession = value;
   }
   
 
 
-    /**
-     * Setter supplyPrice
-     * @param {number} value
-     */
 
 
      private async validItems(itemsToCheck){

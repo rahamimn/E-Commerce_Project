@@ -6,16 +6,16 @@ var mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 interface IUser{
-  userName?:   String,
-  password?:   String,
-  salt?: String,
-  firstName?:  String,
-  lastName?:  String,
-  phone?:  String,
-  email?: String,
+  userName?:   string,
+  password?:   string,
+  salt?: string,
+  firstName?:  string,
+  lastName?:  string,
+  phone?:  string,
+  email?: string,
   isRegisteredUser?: Boolean,
   isDeactivated?: Boolean,
-  notifications: {header:String, message:String}[],
+  notifications: {header:string, message:string}[],
   messages: MonArray<ObjectID>,
 }
 

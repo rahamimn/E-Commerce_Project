@@ -36,6 +36,9 @@
                     <% }); %>
                     <!-- END PRODUCT -->
                 </div>
+                <div class="pull-right" style="margin: 5px">
+                    <strong>Total price: <b id="total-price"><%=cart.totalPrice%></b></strong>
+                </div>
                 <div class="card-footer">
                     <form id="addressForm" onsubmit="onSubmitAddress(event)">
 
@@ -47,17 +50,19 @@
                                 <input id="address" name="address" class="form-control" placeholder="address" type="text">
                                 <input id="country" name="country" class="form-control" placeholder="country" type="text">
                             </div> <!-- input-group.// -->
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"> <i class="fa fa-user"></i> </span>
+                                </div>
+                                <input id="city" name="city" class="form-control" placeholder="city" type="text">
+                                <input id="zip" name="zip" class="form-control" placeholder="zip" type="text">
+                                <input id="contact" name="contact" class="form-control" placeholder="contact" type="text">
+                            </div> <!-- input-group.// -->
                         </div> <!-- form-group// -->
 
                         <div class="form-group">
-                            <button type="submit" class="btn btn-primary"> Check Total price</button>
+                            <button type="submit" class="btn btn-primary"> Address Correct? </button>
                             <p id="address-error"></p>
-                            <div class="pull-right" style="margin: 5px">
-                                <strong>Shipping price: <b id="supply-price"></b></strong>
-                            </div>
-                            <div class="pull-right" style="margin: 5px">
-                                <strong>Total price: <b id="total-price"></b></strong>
-                            </div>
                         </div> <!-- form-group// -->
                     </form>
                     <form id="paymentForm" style="visibility: hidden" onsubmit="onSubmitPay(event)">
@@ -94,6 +99,13 @@
                                     <option value='24'>2024</option>
                                 </select>
                             </div> <!-- input-group.// -->
+                             <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"> <i class="fa fa-user"></i> </span>
+                                </div>
+                                <input id="holderName" name="holderName" class="form-control" placeholder="holder name" type="text">
+                                <input id="holderId" name="holderId" class="form-control" placeholder="holder id" type="text">
+                            </div> <!-- input-group.// -->
                         </div> <!-- form-group// -->
 
                         <div class="form-group">
@@ -114,50 +126,42 @@
 
     var addressGlobal = '';
     var countryGlobal = '';
-    var paymentErrorMessage = ''
+    var errorMessage = ''
 
     function onSubmitAddress(event) {
         event.preventDefault();
         var address = $("#address").val();
         var country = $("#country").val();
-        if (checkAddressSyntax(country, address)) {
-            $("#address-error").text('')
-            postData('/ordersApi/checkSupply', {cartId:cartId,country:country ,address:address})
-                .then(data => {
-                    if(data.status < 0){
-                        $("#total-price").text('');
-                        $("#address-error").text(data.err);
-                    }
-                     else{        //cart return in data
-                        addressGlobal = address
-                        countryGlobal = country
-                        const supplyPrice = data.cart.supplyPrice;
-                        const totalPrice = data.totalPrice;
-                        $("#supply-price").text(supplyPrice + '$');
-                        $("#total-price").text(totalPrice + '$');
-                        document.getElementById("paymentForm").style.visibility = 'visible';
-            }}) // JSON-string from `response.json()` call
-                    .catch(error => console.error(error));
+        var zip = $("#zip").val();
+        var city = $("#city").val();
+        var name = $("#contact").val();
+        if (checkAddressSyntax(country, address, zip, city, name)) {
+            document.getElementById("paymentForm").style.visibility = 'visible';
+            $("#address-error").text("");
         }
         else
             $("#address-error").text("please enter legal address");
     };
 
     function checkAddressSyntax(country, address) {
-        return address != '' && country != '';
+        const isValid = !(address === ''|| country === '');
+        if(!isValid)
+            errorMessage = 'address details incorrect';
+        return isValid
+
     }
 
-    function checkPaymentSyntax(cardNumber, csv, expireMM, expireYY) {
+    function checkPaymentSyntax(card_number, ccv, month, year) {
         try {
-            const isVaildLength = cardNumber.length == 16 && csv.length == 3;
+            const isVaildLength = card_number.length == 16 && ccv.length == 3;
             if (!isVaildLength)
-                paymentErrorMessage = 'credit card number should be 16 chars, csv should be 3 chars'
-            const isNotNumber = isNaN(Number(cardNumber)) || isNaN(Number(csv));
+                errorMessage = 'credit card number should be 16 chars, csv should be 3 chars'
+            const isNotNumber = isNaN(Number(card_number)) || isNaN(Number(ccv));
             if(isNotNumber)
-                paymentErrorMessage = 'credit card number, csv should contains only numbers'
-            const isEnteredExpiration = expireMM!= '' && expireYY != '';
+                errorMessage = 'credit card number, csv should contains only numbers'
+            const isEnteredExpiration = month!= '' && year != '';
             if (!isEnteredExpiration)
-                paymentErrorMessage = 'please fill all of the fields'
+                errorMessage = 'please fill all of the fields'
             return isVaildLength && !isNotNumber && isEnteredExpiration;
         }
         catch (err){
@@ -168,27 +172,34 @@
 
     function onSubmitPay(event) {
         event.preventDefault();
-        const cardNumber = $("#cardNumber").val();
-        const csv = $("#csv").val();
-        const expireMM = $("#expireMM").val();
-        const expireYY = $("#expireYY").val();
-        if (checkPaymentSyntax(cardNumber, csv, expireMM, expireYY)) {
+        var address = $("#address").val();
+        var country = $("#country").val();
+        var zip = $("#zip").val();
+        var city = $("#city").val();
+        var name = $("#contact").val();
+        const card_number = $("#cardNumber").val();
+        const ccv = $("#csv").val();
+        const holder_id = $("#holderId").val();
+        const holder = $("#holderName").val();
+        const month = $("#expireMM").val();
+        const year = $("#expireYY").val();
+        if (checkPaymentSyntax(card_number, ccv, expireMM, expireYY) && (checkAddressSyntax(country, address, zip, city, name)) ) {
             $("#payment-error").text('');
-            const payment = {cardNumber:cardNumber, csv:csv, expireMM:expireMM, expireYY:expireYY}
-            const address = addressGlobal
-            const country = countryGlobal
-            postData('/ordersApi/pay', {cartId:cartId, address:address,country:country, payment:payment})
+            const payment = {card_number, ccv, month, year, holder, id:holder_id}
+            postData('/ordersApi/pay', {cartId:cartId, address:{address,country,zip,name,city}, payment})
                 .then(data => {
                 if(data.status < 0)
                     $("#payment-error").text(data.err);
                 else{
-                    alert("Mazal Tov, your cart is on the way");
+                    alert(` Mazal Tov, your cart is on the way \n
+                            payment transactin id: ${data.paymentTransaction} \n
+                            supply transactin id: ${data.supplyTransaction} \n`);
                     document.location.href = '/';
             }}) // JSON-string from `response.json()` call
                 .catch(error => console.error(error));
         }
         else{
-            $("#payment-error").text(paymentErrorMessage);
+            $("#payment-error").text(errorMessage);
         }
         //todo else alert invalid syntax
     };

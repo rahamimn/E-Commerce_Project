@@ -7,19 +7,19 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 interface IProduct {
-    name:String,
+    name:string,
     amountInventory: number,
-    sellType?: String,
+    sellType?: string,
     price: number,
-    coupons?: String,
-    description?: String,
-    imageUrl?: String,
+    coupons?: string,
+    description?: string,
+    imageUrl?: string,
     acceptableDiscount: number,
     discountPrice?: number,
     rank?: number,
     reviews?: any[],
-    keyWords?: String[],
-    category?: String,
+    keyWords?: string[],
+    category?: string,
     isActivated: boolean
 }
 export interface IProductModel extends IProduct, Document{

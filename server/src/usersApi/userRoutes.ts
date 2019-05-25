@@ -41,12 +41,12 @@ async function register(req: Request, res: express.Response) {
             res.send({status: Constants.MISSING_PARAMETERS, err: 'did not received user or password'});
         else {
             const response = await usersApi.register(
-                req.body);
+                req.body,req.session.id);
             res.send(response);
         }
     }
     catch (err) {
-        addToSystemFailierLogger(" register   ");
+        addToSystemFailierLogger(" register   ");   
         res.send({status: Constants.BAD_REQUEST});
     }
 }
@@ -361,23 +361,7 @@ async function popNotifications(req: Request, res: express.Response) {
     }
 }
 
-usersApiRouter.post('/usersApi/getMessages', getMessages);
 
-async function getMessages(req: Request, res: express.Response) {
-    try {
-        const user = req.session.user;
-        if (!user) {
-            res.send({status: Constants.BAD_ACCESS_NO_VISITORS, err: Constants.ERR_Access_MSG});
-            return;
-        }
-        const response = await usersApi.getMessages(user.id);
-        res.send(response);
-    }
-    catch (err) {
-        addToSystemFailierLogger(" get messages  from user routers  ");
-        res.send({status: Constants.BAD_REQUEST});
-    }
-}
 
 usersApiRouter.post('/usersApi/setUserActivation', setUserActivation);
 
@@ -403,27 +387,45 @@ async function setUserActivation(req: Request, res: express.Response) {
 }
 
 
-usersApiRouter.post('/usersApi/sendMessage', sendMessage);
+// usersApiRouter.post('/usersApi/sendMessage', sendMessage);
 
-async function sendMessage(req: Request, res: express.Response) {
-    try {
-        const user = req.session.user;
-        if (!user) {
-            res.send({status: Constants.BAD_ACCESS_NO_VISITORS, err: Constants.ERR_Access_MSG});
-            return;
-        }
-        const title = req.body.title;
-        const body = req.body.body;
-        const toName = req.body.toName;
-        const toIsStore = req.body.toIsStore;
-        if (!title || !body || !toName || !toIsStore)
-            res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
+// async function sendMessage(req: Request, res: express.Response) {
+//     try {
+//         const user = req.session.user;
+//         if (!user) {
+//             res.send({status: Constants.BAD_ACCESS_NO_VISITORS, err: Constants.ERR_Access_MSG});
+//             return;
+//         }
+//         const title = req.body.title;
+//         const body = req.body.body;
+//         const toName = req.body.toName;
+//         const toIsStore = req.body.toIsStore;
+//         if (!title || !body || !toName || !toIsStore)
+//             res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
 
-        const response = await usersApi.sendMessage(user.id, title, body, toName, toIsStore);
-        res.send(response);
-    }
-    catch (err) {
-        addToSystemFailierLogger(" send message  from user routers  ");
-        res.send({status: Constants.BAD_REQUEST});
-    }
-}
+//         const response = await usersApi.sendMessage(user.id, title, body, toName, toIsStore);
+//         res.send(response);
+//     }
+//     catch (err) {
+//         addToSystemFailierLogger(" send message  from user routers  ");
+//         res.send({status: Constants.BAD_REQUEST});
+//     }
+// }
+
+// usersApiRouter.post('/usersApi/getMessages', getMessages);
+
+// async function getMessages(req: Request, res: express.Response) {
+//     try {
+//         const user = req.session.user;
+//         if (!user) {
+//             res.send({status: Constants.BAD_ACCESS_NO_VISITORS, err: Constants.ERR_Access_MSG});
+//             return;
+//         }
+//         const response = await usersApi.getMessages(user.id);
+//         res.send(response);
+//     }
+//     catch (err) {
+//         addToSystemFailierLogger(" get messages  from user routers  ");
+//         res.send({status: Constants.BAD_REQUEST});
+//     }
+// }
