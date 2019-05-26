@@ -58,13 +58,14 @@ export const read_from_input_file= async () => {
 
 
 
-     //store
-     storeId1 = (await StoreCollection.insert(fakeStore({name:storeName1}))).id;
+
 
      const storeOwner = await insertRegisterdUser(storeOwnerUsername,storeOwnerPassword);
      storeOwnerId= storeOwner.id;
      const storeOwnerRole = await setupRoleToUser(storeOwnerId,{name: STORE_OWNER, store: storeId1, appointor: adminId });
-   
+    //store
+    storeId1 = (await StoreCollection.insert(fakeStore({name:storeName1,workers:[storeOwnerId] }))).id;
+
      //store manager which appointed by storeOwner
      const storeManager = await insertRegisterdUser(storeManagerUsername,storeManagerPassword);
      storeManagerId= storeManager.id;

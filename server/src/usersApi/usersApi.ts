@@ -420,6 +420,7 @@ export class UsersApi implements IUsersApi{
 
         if(role.appointor.equals(roleUserId.id)){
             await role.delete(true);
+            await sendNotification(userofRoleToDelete.id, 'Remove role', `Your role has been remove`);
             return {status: Constants.OK_STATUS };
         }
         else{

@@ -4,15 +4,22 @@ import {
     ERR_PAYMENT_SYSTEM, ERR_SUPPLY_MSG,
     OK_STATUS,
     ORDER_SUPPLY_APPROVED,
-    BAD_SUPPLY, ERR_SUPPLY_SYSTEM
+    BAD_SUPPLY, ERR_SUPPLY_SYSTEM,
 } from "../consts";
 import { IOrderApi } from "./ordersApiInterface";
 import { Complaint } from "../storeApi/models/complaint";
-import { OrderCollection, CartCollection, UserCollection } from "../persistance/mongoDb/Collections";
+import {
+    OrderCollection,
+    CartCollection,
+    UserCollection,
+    StoreCollection,
+    RoleCollection
+} from "../persistance/mongoDb/Collections";
 import { Order } from "./models/order";
 import supplySystem from "../supplySystemAdapter";
 import paymentSystem from "../paymentSystemAdapter";
 import { addToRegularLogger, addToErrorLogger } from "../utils/addToLogger";
+import { sendNotification } from "../notificationApi/notifiactionApi";
 
 const validateUserCart = function(userId,cart){
     addToRegularLogger("validateUserCart", {userId, cart});
@@ -176,11 +183,24 @@ export class OrdersApi implements IOrderApi{
             }
 
             //we can assume here that order completed succesfully
+            const cartDetails = await cart.getDetails();
+            const store = await StoreCollection.findById(cartDetails.store);
+            if(store) {
+                const workersRole = store.workers;
+                let role, i;
+                for (i = 0; i < workersRole.length; i++) {
+                    role = await RoleCollection.findById(workersRole[i]);
+                    console.log('3');
+                    console.log(role);
+                    if (role.name === 'store-owner') {
+                        await sendNotification(role.ofUser, 'New order', `New order from store ${store.name}`);
+                    }
+                }
+            }
 
             const order = await OrderCollection.insert(await cart.makeOrder());
             await CartCollection.delete({_id:cartId});
-
-            return {status: OK_STATUS , order}
+            return {status: OK_STATUS , order};
             
         } catch(error) {
             addToErrorLogger("pay");
