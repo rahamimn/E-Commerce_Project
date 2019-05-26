@@ -9,6 +9,7 @@ import { Message } from '../usersApi/models/message';
 import { asyncForEach } from '../utils/utils';
 import { UsersApi } from '../usersApi/usersApi';
 import { addToRegularLogger, addToErrorLogger, addToSystemFailierLogger } from '../utils/addToLogger';
+import {sendNotification} from "../notificationApi/notifiactionApi";
 
 export class StoresApi implements IStoresApi {
     //works after test
@@ -68,6 +69,17 @@ export class StoresApi implements IStoresApi {
         }
         store_object_from_db.storeState = CLOSE_STORE_BY_OWNER;
         const store_curr = await StoreCollection.updateOne(store_object_from_db);
+
+        const store = await StoreCollection.findById(storeId);
+        const workersRole = store.workers;
+        let role,i;
+        for (i = 0; i < workersRole.length; i++) {
+            role = await RoleCollection.findById(workersRole[i]);
+            if (role.name === 'store-owner'){
+                await sendNotification(role.ofUser, 'Close store', `${store.name} has been closed `);
+            }
+        }
+
         return ({status: OK_STATUS});
     }
 
