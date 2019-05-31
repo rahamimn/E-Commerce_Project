@@ -1,15 +1,30 @@
+add admin
 admin1234
 123456
+add user
 storeOwner
 pass33
+add user
 storeManager
 pass44
+add user
 user4
 123456
+add user
 user5
 123456
+add store
+storeOwner
+store1
+add product
 store1
 diapers
 30
 20
-storeManager store1
+add store manager with permission
+storeOwner
+storeManager
+store1
+2
+REMOVE_PRODUCT_PERMISSION
+UPDATE_PRODUCT_PERMISSION
