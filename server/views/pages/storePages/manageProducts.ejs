@@ -11,15 +11,21 @@
                 </div>
 
                 <div style="margin: auto 0" >
-                    <a href="/store-panel/<%=storeId%>/update-product/<%=prod.id%>" class="btn btn-warning"> Update Details</a>
+                    <%if(user.role.name === 'store-owner' || user.role.permissions.includes('update-product')){%>
+                    <a href="/store-panel/<%=storeId%>/update-product/<%=prod.id%>" class="btn btn-warning">
+                        Update Details
+                    </a>
+                    <%}%>
                     <%if(!prod.isActivated){%>
                         <button  type="button" id="a<%=prod.id%>" class="btn btn-outline-success btn-xs" onclick="onActive(this.id)">
                             <i class="fas fa-plus"></i>
                         </button>
                     <%} else {%>
+                        <%if(user.role.name === 'store-owner' || user.role.permissions.includes('remove-product')){%>
                         <button  type="button" id="d<%=prod.id%>" class="btn btn-outline-danger btn-xs" onclick="onDeactive(this.id)">
                             <i class="fa fa-trash" aria-hidden="true"></i>
                         </button>
+                        <%}%>
                     <%}%>
                 </div>
                 
