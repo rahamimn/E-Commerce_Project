@@ -1,13 +1,13 @@
 import { ProductCollection, StoreCollection, UserCollection, RoleCollection } from "../persistance/mongoDb/Collections";
 import { Product } from "./models/product";
-import { OK_STATUS, BAD_REQUEST, BAD_AMOUNT, BAD_PRICE, BAD_STORE_ID, OPEN_STORE, BAD_USER_ID, STORE_OWNER, STORE_MANAGER, ADMIN, ADD_PRODUCT_PERMISSION, REMOVE_PRODUCT_PERMISSION, UPDATE_PRODUCT_PERMISSION } from "../consts";
+import { OK_STATUS, BAD_REQUEST, BAD_AMOUNT, BAD_PRICE, BAD_STORE_ID, OPEN_STORE, BAD_USER_ID, STORE_OWNER, STORE_MANAGER, ADMIN, ADD_PRODUCT_PERMISSION, REMOVE_PRODUCT_PERMISSION, UPDATE_PRODUCT_PERMISSION, CONNECTION_LOST } from "../consts";
 import { IProductApi } from "./productsApiInterface";
 import { Review } from "../storeApi/models/review";
 import { Role } from "../usersApi/models/role";
 import { addToErrorLogger, addToRegularLogger, addToSystemFailierLogger } from "../utils/addToLogger";
 export class ProductsApi implements IProductApi{
 
-    async addProduct(userId,newProduct: {storeId: String, name:String, amountInventory: Number, sellType: String, price: Number, keyWords: String[], category: String,coupons?: String,description?: String,imageUrl?: String,acceptableDiscount: number,discountPrice?: number,rank:number,reviews: any[]}){
+    async addProduct(userId,newProduct: {storeId: string, name:string, amountInventory: Number, sellType: string, price: Number, keyWords: string[], category: string,coupons?: string,description?: string,imageUrl?: string,acceptableDiscount: number,discountPrice?: number,rank:number,reviews: any[]}){
 
         addToRegularLogger("addProduct", {} );
         if (!userId){
@@ -65,7 +65,10 @@ export class ProductsApi implements IProductApi{
 
         } catch(err) {
             addToSystemFailierLogger(" add Product  ");
-            return ({status: BAD_REQUEST, err: "cannot add the product with the details provided.."});
+            if(err.message === 'connection lost') 
+                return {status: CONNECTION_LOST, err:"connection Lost"};
+            else
+                return ({status: BAD_REQUEST, err:'data isn\'t valid'});
         }
     }
 
@@ -73,7 +76,7 @@ export class ProductsApi implements IProductApi{
                 (role.name === STORE_MANAGER && role.permissions.some(perm => perm === permission));
     
     
-    async setProdactActivation(userId: String, productId: String, toActivate = false ){
+    async setProdactActivation(userId: string, productId: string, toActivate = false ){
 
         addToRegularLogger("addProduct", {} );
         try{ 
@@ -104,11 +107,13 @@ export class ProductsApi implements IProductApi{
 
         } catch(err) {
             addToSystemFailierLogger(" setProdactActivation  ");
-            return ({status: BAD_REQUEST});
+            if(err.message === "connection Lost")
+                return {status: CONNECTION_LOST, err:"connection lost"};
+            return ({status: BAD_REQUEST, err:'data not valid'});
         }
     }
 
-    async updateProduct(userId: String, storeId: String, productId: String, productDetails: any){ 
+    async updateProduct(userId: string, storeId: string, productId: string, productDetails: any){ 
 
         addToRegularLogger("updateProduct", {userId, storeId, productId,productDetails })
         try{ 
@@ -142,33 +147,34 @@ export class ProductsApi implements IProductApi{
             return {status: OK_STATUS ,product: product_AfterUpdate}
 
         } catch(err) {
-            //console.log(err);
             addToSystemFailierLogger(" updateProduct  ");
-            return ({status: BAD_REQUEST, err: "bad product update details"});
+            if(err.message === "connection lost")
+                return {status: CONNECTION_LOST, err:"connection Lost"};
+            return ({status: BAD_REQUEST, err:'data not valid'});
         }
     }
 
-    //NIR: NOT WORKING. NEED TO FIX.
-    async addReview(productId: String, userId: String, rank: Number, comment: String){
-        addToRegularLogger("addReview", {productId: String, userId: String, rank: Number, comment: String} );
-        try{ 
-            let reviewToAdd = new Review({date: Date.now(), registeredUser: userId, rank: rank, comment: comment})
-            reviewToAdd.id = "tempID"; //NIR: need to generate id ???;
+    // //NIR: NOT WORKING. NEED TO FIX.
+    // async addReview(productId: string, userId: string, rank: Number, comment: string){
+    //     addToRegularLogger("addReview", {productId, userId, rank, comment} );
+    //     try{ 
+    //         let reviewToAdd = new Review({date: Date.now(), registeredUser: userId, rank: rank, comment: comment})
+    //         reviewToAdd.id = "tempID"; //NIR: need to generate id ???;
 
-            let productToUpdate = await ProductCollection.findById(productId);
-            productToUpdate.reviews.push(reviewToAdd.id) //NIR: SOMETHING'S NOT WORKING HERE
+    //         let productToUpdate = await ProductCollection.findById(productId);
+    //         productToUpdate.reviews.push(reviewToAdd.id) //NIR: SOMETHING'S NOT WORKING HERE
 
-            let product_AfterUpdate = await ProductCollection.updateOne(productToUpdate);
-            return {status: OK_STATUS ,product: productToUpdate}
+    //         let product_AfterUpdate = await ProductCollection.updateOne(productToUpdate);
+    //         return {status: OK_STATUS ,product: productToUpdate}
 
-        } catch(err) {
+    //     } catch(err) {
 
-            addToSystemFailierLogger(" add review  ");
-            return ({status: BAD_REQUEST, err:"cannot add review"});
-        }
-    }
+    //         addToSystemFailierLogger(" add review  ");
+    //         return {status: CONNECTION_LOST, err:"connection Lost"};
+    //     }
+    // }
 
-    async getProducts(parmas: {storeName?: String, storeId?: String, category?: String, keyWords?: String[], name?:String},includeDisabled=false){
+    async getProducts(parmas: {storeName?: string, storeId?: string, category?: string, keyWords?: string[], name?:string},includeDisabled=false){
         addToRegularLogger("getProducts", {});
         try{ 
             const filter:any = {};
@@ -193,7 +199,10 @@ export class ProductsApi implements IProductApi{
 
         } catch(err) {
             addToSystemFailierLogger(" getProducts  ");
-            return ({status: BAD_REQUEST});
+            if(err.message === 'connection lost') 
+                return {status: CONNECTION_LOST, err:"connection Lost"};
+            else
+                return ({status: BAD_REQUEST, err:'data isn\'t valid'});
         }
     }
 
@@ -217,13 +226,17 @@ export class ProductsApi implements IProductApi{
                
         } catch(err) {
             addToSystemFailierLogger(" getProductDetails  ");
-            return ({status: BAD_REQUEST});
+            if(err.message === 'connection lost') 
+                return {status: CONNECTION_LOST, err:"connection Lost"};
+            else
+                return ({status: BAD_REQUEST, err:'data isn\'t valid'});
         }
         
 
     }
 
-    async isStoreVaild(storeId: String){
+    async isStoreVaild(storeId: string){
+        try{
         addToRegularLogger("isStoreVaild", {storeId});
 
 
@@ -237,9 +250,14 @@ export class ProductsApi implements IProductApi{
         
         else
             return true;
+        }
+        catch(e){
+            addToSystemFailierLogger(" isStoreVaild : connectionLost  ");
+            return false;
+        }
     }
 
-     async isProductVaild(productId: String){
+     async isProductVaild(productId: string){
 
         addToRegularLogger("isProductVaild", {productId});
 
@@ -255,12 +273,11 @@ export class ProductsApi implements IProductApi{
                 return true;
                 
         } catch(err) {
-            addToSystemFailierLogger(" isProductVaild  ");
             return false;
         }      
     }
 
-    async doesStoreHaveThisProduct(storeId: String, productName: String){
+    async doesStoreHaveThisProduct(storeId: string, productName: string){
         addToRegularLogger("doesStoreHaveThisProduct", {storeId, productName});
 
         try{ 
@@ -284,7 +301,7 @@ export class ProductsApi implements IProductApi{
 
         } catch(err) {
             addToSystemFailierLogger(" doesStoreHaveThisProduct  ");
-            return ({status: BAD_REQUEST, err: "the product does not exist"});
+            return false;
         }       
     }
     

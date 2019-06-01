@@ -9,7 +9,7 @@ export class Message {
   }
 
   private _id: string;
-  private _date: String;
+  private _date: string;
   private _from: any;
   private _to: any;
   private _title: string;
@@ -25,9 +25,9 @@ export class Message {
 
   /**
    * Getter date
-   * @return {  String}
+   * @return {  string}
    */
-  public get date(): String {
+  public get date(): string {
     return this._date;
   }
 
@@ -73,9 +73,9 @@ export class Message {
 
   /**
    * Setter date
-   * @param {  String} value
+   * @param {  string} value
    */
-  public set date(value: String) {
+  public set date(value: string) {
     this._date = value;
   }
 

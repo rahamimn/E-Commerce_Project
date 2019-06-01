@@ -1,7 +1,6 @@
 import {ProductsApi} from "./productsApi";
 import express = require('express');
 import {Request} from "../../types/moongooseArray";
-import {verifyToken} from "../jwt";
 import * as Constants from "../consts";
 import {ERR_GENERAL_MSG} from "../consts";
 import { addToSystemFailierLogger } from "../utils/addToLogger";
@@ -39,9 +38,11 @@ async function addProduct(req: Request, res: express.Response) {
             console.log(name,amountInventory,sellType,price,category);
             res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
         }
-        const newProduct = {storeId, name ,amountInventory, sellType, price, keyWords, category,coupons,acceptableDiscount,discountPrice,rank,reviews,imageUrl,description};
-        const response = await productsApi.addProduct(userId,newProduct);
-        res.send(response);
+        else{
+            const newProduct = {storeId, name ,amountInventory, sellType, price, keyWords, category,coupons,acceptableDiscount,discountPrice,rank,reviews,imageUrl,description};
+            const response = await productsApi.addProduct(userId,newProduct);
+            res.send(response);
+        }
     }
     catch (err) {
         addToSystemFailierLogger(" add product  ");
@@ -81,9 +82,11 @@ async function updateProduct(req: Request, res: express.Response) {
         if (!name || !amountInventory || !sellType || !price || !category ) {
             res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
         }
-        const newProduct = { name ,amountInventory, sellType, price, keyWords, category,coupons,acceptableDiscount,discountPrice,rank,reviews,imageUrl,description};
-        const response = await productsApi.updateProduct(userId, storeId, productId, newProduct);
-        res.send(response);
+        else{
+            const newProduct = { name ,amountInventory, sellType, price, keyWords, category,coupons,acceptableDiscount,discountPrice,rank,reviews,imageUrl,description};
+            const response = await productsApi.updateProduct(userId, storeId, productId, newProduct);
+            res.send(response);
+        }
     }
     catch (err) {
         addToSystemFailierLogger(" update product  ");
@@ -159,26 +162,26 @@ async function activeProduct(req: Request, res: express.Response) {
     }
 }
 
-productsApiRouter.post('/productsApi/addReview', addReview);
+// productsApiRouter.post('/productsApi/addReview', addReview);
 
-async function addReview(req: Request, res: express.Response) {
-    try {
-        const user = req.session.user;
-        if (!user) {
-            res.send({status: Constants.BAD_ACCESS_NO_VISITORS, err: Constants.ERR_Access_MSG});
-            return;
-        }
-        const productId = req.body.productId;
-        const rank = req.body.rank;
-        const comment = req.body.comment;
+// async function addReview(req: Request, res: express.Response) {
+//     try {
+//         const user = req.session.user;
+//         if (!user) {
+//             res.send({status: Constants.BAD_ACCESS_NO_VISITORS, err: Constants.ERR_Access_MSG});
+//             return;
+//         }
+//         const productId = req.body.productId;
+//         const rank = req.body.rank;
+//         const comment = req.body.comment;
 
-        if (!rank)
-            res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
-        const response = await productsApi.addReview(productId, user.id, rank, comment);
-        res.send(response);
-    }
-    catch (err) {
-        addToSystemFailierLogger(" add review ");
-        res.send({status: Constants.BAD_REQUEST});
-    }
-}
+//         if (!rank)
+//             res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
+//         const response = await productsApi.addReview(productId, user.id, rank, comment);
+//         res.send(response);
+//     }
+//     catch (err) {
+//         addToSystemFailierLogger(" add review ");
+//         res.send({status: Constants.BAD_REQUEST});
+//     }
+// }

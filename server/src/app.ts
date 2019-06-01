@@ -24,12 +24,18 @@ const dbHost = process.env.DB_HOST;
 const dbName = process.env.DB_NAME;
 const dbUser = process.env.DB_USER;
 const dbPassword = process.env.DB_PASSWORD;
+const mongooseOpts= {
+    useNewUrlParser: true,
+    autoReconnect: true,
+    reconnectTries: 5,
+    reconnectInterval: 1
+};
 
 // Conenct to DB(
 (async () => {
 if(process.argv.some( arg => arg === 'local')) {
     console.log(`connection to :  ${process.env.DB_TEST_NAME} (locally)`);
-    await mongoose.connect('mongodb://localhost:27017/' + process.env.DB_TEST_NAME, {useNewUrlParser: true});
+    await mongoose.connect(`mongodb://localhost:27017,localhost:27018,localhost:27019/${process.env.DB_TEST_NAME}?replicaSet=rs`, mongooseOpts);
 }
 else {
     console.log(`connection to : ${dbName} remote `);
