@@ -327,17 +327,26 @@ webRoutes.get(
   loginSection,
   storeSection(WATCH_WORKERS_PERMISSION),
   async (req: Request, res: express.Response) => {
-    const response = await storesApi.getWorkers(
-      req.session.user.id,
-      req.params.storeId
-    );
-    if (!dbCheckError(response.status, res)) {
-      if (response.status < 0)
+    const workersRes = await storesApi.getWorkers(req.session.user.id, req.params.storeId);
+    const ownersRes = await usersApi.getStoreOwners(req.params.storeId);
+    const pendingOwnersRes = await usersApi.getPendingOwners(req.params.storeId);
+
+    if (!dbCheckError(workersRes.status, res)) {
+      
+      if(workersRes.status < 0)
         res.redirect(`/store-panel/${req.params.storeId}/`);
+
+      if(ownersRes.status < 0)
+        res.redirect(`/store-panel/${req.params.storeId}/`); 
+        res.redirect(`/store-panel/${req.params.storeId}/`);
+
+        
       res.render("pages/storePages/workersPage", {
         user: req.session.user,
         storeId: req.params.storeId,
-        workers: response.storeWorkers
+        workers: workersRes.storeWorkers,
+        pendingOwners: pendingOwnersRes.pendingOwners,
+        owners: ownersRes.storeOwners
       });
     }
   }

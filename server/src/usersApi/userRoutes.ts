@@ -288,11 +288,132 @@ async function setUserAsStoreManager(req: Request, res: express.Response) {
     }
 }
 
+
+usersApiRouter.post('/usersApi/suggestToBeOwner', suggestToBeOwner);
+
+async function suggestToBeOwner(req: Request, res: express.Response) {
+    try {
+        const user = req.session.user;
+        if (!user) {
+            res.send({status: Constants.BAD_ACCESS_NO_VISITORS, err: Constants.ERR_Access_MSG});
+            return;
+        }
+        const storeId = req.body.storeId;
+        const toBeOwnerName = req.body.toBeOwnerName;
+        const suggestingOwnerName = req.body.suggestingOwnerName;
+
+
+        if (!storeId){
+            throw Error(ERR_GENERAL_MSG);
+        }
+
+        if (!toBeOwnerName){
+            res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
+        }
+
+        else {
+            const response = await usersApi.suggestToBeOwner(storeId, toBeOwnerName, suggestingOwnerName)
+            res.send(response);
+        }
+    }
+    catch (err) {
+        addToSystemFailierLogger("Suggesting user to be owner failed (Routes)");
+        res.send({status: Constants.BAD_REQUEST});
+    }
+}
+
+usersApiRouter.post('/usersApi/declineOwnerToBe', declineOwnerToBe);
+
+async function declineOwnerToBe(req: Request, res: express.Response) {
+    try {
+        const user = req.session.user;
+        if (!user) {
+            res.send({status: Constants.BAD_ACCESS_NO_VISITORS, err: Constants.ERR_Access_MSG});
+            return;
+        }
+
+        const storeId = req.body.storeId;
+        const toBeOwnerName = req.body.toBeOwnerName;
+        const votingOwnerName = req.body.votingOwnerName;
+
+        if (!storeId || !toBeOwnerName  || !votingOwnerName){
+            res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
+        }
+
+        else {
+            const response = await usersApi.declineOwnerToBe(storeId, toBeOwnerName, votingOwnerName)
+            res.send(response);
+        }
+    }
+    catch (err) {
+        addToSystemFailierLogger("decline user to be owner failed (Routes)");
+        res.send({status: Constants.BAD_REQUEST});
+    }
+}
+
+usersApiRouter.post('/usersApi/approveOwnerToBe', approveOwnerToBe);
+
+async function approveOwnerToBe(req: Request, res: express.Response) {
+    try {
+        const user = req.session.user;
+        if (!user) {
+            res.send({status: Constants.BAD_ACCESS_NO_VISITORS, err: Constants.ERR_Access_MSG});
+            return;
+        }
+
+        const storeId = req.body.storeId;
+        const toBeOwnerName = req.body.toBeOwnerName;
+        const votingOwnerName = req.body.votingOwnerName;
+
+        if (!storeId || !toBeOwnerName  || !votingOwnerName){
+            res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
+        }
+
+        else {
+            const response = await usersApi.approveOwnerToBe(storeId, toBeOwnerName, votingOwnerName)
+            res.send(response);
+        }
+    }
+    catch (err) {
+        addToSystemFailierLogger("approve user to be owner failed (Routes)");
+        res.send({status: Constants.BAD_REQUEST});
+    }
+}
+
+
+usersApiRouter.post('/usersApi/voteNuetralOwnerToBe', voteNuetralOwnerToBe);
+
+async function voteNuetralOwnerToBe(req: Request, res: express.Response) {
+    try {
+        const user = req.session.user;
+        if (!user) {
+            res.send({status: Constants.BAD_ACCESS_NO_VISITORS, err: Constants.ERR_Access_MSG});
+            return;
+        }
+
+        const storeId = req.body.storeId;
+        const toBeOwnerName = req.body.toBeOwnerName;
+        const votingOwnerName = req.body.votingOwnerName;
+
+        if (!storeId || !toBeOwnerName  || !votingOwnerName){
+            res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
+        }
+
+        else {
+            const response = await usersApi.voteNuetralOwnerToBe(storeId, toBeOwnerName, votingOwnerName)
+            res.send(response);
+        }
+    }
+    catch (err) {
+        addToSystemFailierLogger("vote nuetral user to be owner failed (Routes)");
+        res.send({status: Constants.BAD_REQUEST});
+    }
+}
+
 usersApiRouter.post('/usersApi/removeRole', removeRole);
 
 async function removeRole(req: Request, res: express.Response) {
     try {
-        console.log(req.body);
         const user = req.session.user;
         if (!user) {
             res.send({status: Constants.BAD_ACCESS_NO_VISITORS, err: Constants.ERR_Access_MSG});

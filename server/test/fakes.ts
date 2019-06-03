@@ -57,6 +57,7 @@ export const fakeStore = (opt: any = {}) => {
         purchasePolicy: "everyone can buy",
         storeState: OPEN_STORE,
         messages: opt.messages || [],
+        pendingOwners: [],
 });
 }
 
