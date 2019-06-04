@@ -254,7 +254,11 @@
                 condition.op1={id:`new-${condId++}`,type:"unset", parentId: condition.id };
                 condition.op2={id:`new-${condId++}`,type:"unset", parentId: condition.id };
                 break;
-            case 'minProductA','maxProductA': 
+            case 'maxProductA':
+                condition.amount = amount;
+                condition.product = product;
+                break;
+            case 'minProductA':
                 condition.amount = amount;
                 condition.product = product;
                 break;
