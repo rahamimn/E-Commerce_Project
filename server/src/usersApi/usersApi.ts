@@ -451,6 +451,9 @@ export class UsersApi implements IUsersApi{
         }
     }
 
+
+
+
     async updatePermissions(userId, appointedUserName, storeId, permissions){
         try {
             addToRegularLogger(" update Permissions ", {userId ,appointedUserName, storeId, permissions });
@@ -645,7 +648,7 @@ export class UsersApi implements IUsersApi{
         }
     }
 
-}
+
 
 // async sendMessage(userId, title, body, toName , toIsStore){
     //     try {
@@ -739,3 +742,331 @@ export class UsersApi implements IUsersApi{
     //         return ({status: Constants.BAD_REQUEST, err:'data isn\'t valid'});
     //     }
     // }
+
+
+    async getStoreOwners(storeID: string) {
+        addToRegularLogger("Get owners of store ", {storeID});
+
+        const roles = await RoleCollection.find({store: storeID});
+        if(!roles){
+            addToErrorLogger("Get store owners failed");
+            return ({status: Constants.BAD_REQUEST, err: "Failed to get owners"});
+        }
+
+        let owners = [];
+        await asyncForEach(roles,async role => {
+            if (role.name === "store-owner"){
+                const userName = (await UserCollection.findById(role.ofUser)).userName;
+                owners.push(userName)
+            }
+        });
+        return ({status: Constants.OK_STATUS,  storeOwners: owners});
+    };
+
+    async getPendingOwners(storeId: string){
+        addToRegularLogger("Get pending owners of store ", {storeId});
+
+        const store = await StoreCollection.findById(storeId);
+        if(!store){
+            addToErrorLogger("getPendingOwners no valid store");         
+            return ({status: Constants.BAD_REQUEST, err: "store doesn't exists"});
+        }
+
+        return ({status: Constants.OK_STATUS,  pendingOwners: store.pendingOwners});
+    }
+
+    // async removePendingOwner(storeId: string, toBeOwnerName: string){
+    //     addToRegularLogger("Remove Pending Owner" , {storeId, toBeOwnerName});
+
+    //     const store = await StoreCollection.findById(storeId);
+    //     if(!store){
+    //         addToErrorLogger("removePendingOwner no valid store");         
+    //         return ({status: Constants.BAD_REQUEST, err: "store doesn't exists"});
+    //     }
+
+    //     let pendingOwners = (await this.getPendingOwners(storeId)).pendingOwners;
+
+    //     for (let i = 0; i < pendingOwners.length; i++) {
+    //         if (pendingOwners[i].toBeOwner === toBeOwnerName){
+    //             console.log("pendingOwnersORIG = ", pendingOwners, "\n"); // NIR
+    //             console.log("i = ", i, "\n"); // NIR
+    //             //pendingOwners = pendingOwners.splice(i,1);
+    //             let afterSlice = pendingOwners.filter( el => el.toBeOwner === toBeOwnerName ); 
+    //             console.log("afterSlice = ", afterSlice, "\n"); // NIR
+    //             store.pendingOwners = afterSlice;
+    //             console.log("store.pendingOwners = ", store.pendingOwners, "\n"); // NIR
+    //             await StoreCollection.updateOne(store);
+    //             break;
+    //         }
+    //     }
+    //     return ({status: Constants.OK_STATUS,  pendingOwners: store.pendingOwners});
+    // }
+    
+
+    async SetAllAnswersAsPending(owners: string[] ,storeID: string) {
+        addToRegularLogger("Set all answers as pending ", {storeID});
+
+        let ownersWithAnsers = [];
+
+        await asyncForEach(owners, async owner => {
+            ownersWithAnsers.push( { owner:owner, answer:"Pending" } );
+        });
+        
+        return ({status: Constants.OK_STATUS,  ownersWithAnswers: ownersWithAnsers});
+    };
+
+    async declineOwnerToBe(storeId: string, toBeOwnerName: string, votingOwnerName: string){
+        addToRegularLogger("Decline owner to be ", {storeId, toBeOwnerName, votingOwnerName });
+
+        const store = await StoreCollection.findById(storeId);
+        if(!store){
+            addToErrorLogger("declineOwnerToBe - store not found");         
+            return ({status: Constants.BAD_REQUEST, err: "Store not found"});
+        }
+
+        let pendingOwners = (await this.getPendingOwners(storeId)).pendingOwners;
+
+        let found = false;
+        for (let i = 0; i < pendingOwners.length && !found; i++) {
+            if (pendingOwners[i].toBeOwner === toBeOwnerName){
+                for (let j = 0; j < pendingOwners[i].ownersAnswers.length && !found; j++){
+                    if (pendingOwners[i].ownersAnswers[j].owner === votingOwnerName){
+                        pendingOwners[i].ownersAnswers[j].answer = "Declined"
+                        pendingOwners[i].status = "Declined"
+                        found = true;
+                    }
+                }
+            }
+        }
+        try
+        {
+            store.pendingOwners = pendingOwners;
+            await StoreCollection.updateOne(store);
+        }
+        catch(err)
+        {
+            addToErrorLogger("Failed to decline pending owner");         
+            return ({status: Constants.BAD_REQUEST, err: "Failed to decline pending-owner"});
+        }
+        
+        return ({status: Constants.OK_STATUS});
+    }
+
+    async voteNuetralOwnerToBe(storeId: string, toBeOwnerName: string, votingOwnerName: string){
+        addToRegularLogger("Vote nuetral owner to be ", {storeId, toBeOwnerName, votingOwnerName });
+
+        const store = await StoreCollection.findById(storeId);
+        if(!store){
+            addToErrorLogger("voteNuetralOwnerToBe - store not found");         
+            return ({status: Constants.BAD_REQUEST, err: "Store not found"});
+        }
+
+        let pendingOwners = (await this.getPendingOwners(storeId)).pendingOwners;
+
+        let found = false;
+        for (let i = 0; i < pendingOwners.length && !found; i++) {
+            if (pendingOwners[i].toBeOwner === toBeOwnerName){
+                for (let j = 0; j < pendingOwners[i].ownersAnswers.length && !found; j++){
+                    if (pendingOwners[i].ownersAnswers[j].owner === votingOwnerName){
+                        pendingOwners[i].ownersAnswers[j].answer = "Pending"
+                        if(!(await this.isPendingOwnerDeclined(storeId, toBeOwnerName))){
+                            pendingOwners[i].status = "Pending"
+                        }
+                        found = true;
+                    }
+                }
+            }
+        }
+        try
+        {
+            store.pendingOwners = pendingOwners;
+            await StoreCollection.updateOne(store);
+        }
+        catch(err)
+        {
+            addToErrorLogger("Failed to vote nuetral for pending owner");         
+            return ({status: Constants.BAD_REQUEST, err: "Failed to vote nuetral for pending owner"});
+        }
+        
+        return ({status: Constants.OK_STATUS});
+    }
+
+    async approveOwnerToBe(storeId: string, toBeOwnerName: string, votingOwnerName: string){
+        addToRegularLogger("Approve owner to be ", {storeId, toBeOwnerName, votingOwnerName });
+
+        const store = await StoreCollection.findById(storeId);
+        if(!store){
+            addToErrorLogger("approveOwnerToBe - store not found");         
+            return ({status: Constants.BAD_REQUEST, err: "Store not found"});
+        }
+
+        let pendingOwners = (await this.getPendingOwners(storeId)).pendingOwners;
+
+        let found = false;
+        let suggestingOwnerName;
+        let i = 0
+
+        for ( ; i < pendingOwners.length && !found; i++) {
+            if (pendingOwners[i].toBeOwner === toBeOwnerName){
+                for (let j = 0; j < pendingOwners[i].ownersAnswers.length && !found; j++){
+                    if (pendingOwners[i].ownersAnswers[j].owner === votingOwnerName){
+                        pendingOwners[i].ownersAnswers[j].answer = "Approved"
+                        suggestingOwnerName = pendingOwners[i].suggestingOwner;
+                        found = true;
+                    }
+                }
+            }
+        }
+        store.pendingOwners = pendingOwners;
+        await StoreCollection.updateOne(store);
+        try
+        {
+                if(!(await this.isStillPending(storeId, toBeOwnerName)) && !(await this.isPendingOwnerDeclined(storeId, toBeOwnerName))){
+                    pendingOwners[--i].status = "Approved";
+                    i = 0;
+                    store.pendingOwners = pendingOwners;
+                    await StoreCollection.updateOne(store);
+                    let suggestingOwner = await UserCollection.findOne({userName: suggestingOwnerName});
+                    await this.setUserAsStoreOwner((suggestingOwner.id), toBeOwnerName, storeId);
+                    await StoreCollection.updateOne(store);
+                    return ({status: Constants.OK_STATUS});
+                }
+
+                store.pendingOwners = pendingOwners;
+                await StoreCollection.updateOne(store);
+            
+        }
+        catch(err)
+        {
+            addToErrorLogger("Failed to approve pending owner");         
+            return ({status: Constants.BAD_REQUEST, err: "Failed to approve pending-owner"});
+        } 
+        return ({status: Constants.OK_STATUS});
+    }
+
+    async isStillPending(storeId: string, toBeOwnerName: string){
+        try
+        {
+            addToRegularLogger("Checks if user is still pending to be owner ", {storeId, toBeOwnerName });
+
+            const store = await StoreCollection.findById(storeId);
+            if(!store){
+                addToErrorLogger("isStillPending - store not found");         
+                return ({status: Constants.BAD_REQUEST, err: "Store not found"});
+            }
+
+            let pendingOwners = (await this.getPendingOwners(storeId)).pendingOwners;
+            let isStillPendnig = false;
+
+            for (let i = 0; i < pendingOwners.length && !isStillPendnig; i++) {
+                if (pendingOwners[i].toBeOwner === toBeOwnerName){
+                    for (let j = 0; j < pendingOwners[i].ownersAnswers.length && !isStillPendnig; j++){
+                        if (pendingOwners[i].ownersAnswers[j].answer === "Pending"){
+                            isStillPendnig = true;
+                        }
+                    }
+                }
+            }
+            return isStillPendnig;
+        }
+        catch(err)
+        {
+            addToErrorLogger("Failed to check if still pending owner");         
+            return ({status: Constants.BAD_REQUEST, err: "Failed to check if still pending owner"});
+        }
+    }
+
+    async isPendingOwnerDeclined(storeId: string, toBeOwnerName: string){
+        try
+        {
+            addToRegularLogger("Checks if user pending to be owner has been declined by some owner", {storeId, toBeOwnerName });
+
+            const store = await StoreCollection.findById(storeId);
+            if(!store){
+                addToErrorLogger("isPendingOwnerDeclined - store not found");         
+                return ({status: Constants.BAD_REQUEST, err: "Store not found"});
+            }
+
+            let pendingOwners = (await this.getPendingOwners(storeId)).pendingOwners;
+            let isDeclined = false;
+
+            for (let i = 0; i < pendingOwners.length && !isDeclined; i++) {
+                if (pendingOwners[i].toBeOwner === toBeOwnerName){
+                    for (let j = 0; j < pendingOwners[i].ownersAnswers.length && !isDeclined; j++){
+                        if (pendingOwners[i].ownersAnswers[j].answer === "Declined"){
+                            isDeclined = true;
+
+                        }
+                    }
+                }
+            }
+            return isDeclined;
+        }
+        catch(err)
+        {
+            addToErrorLogger("Failed to check if pending owner has been declined ");         
+            return ({status: Constants.BAD_REQUEST, err: "Failed to check if pending owner has been declined"});
+        }
+    }
+
+
+    async suggestToBeOwner(storeId: string, toBeOwnerName: string, suggestingOwnerName: string){
+        // Log action
+        addToRegularLogger("Suggest user to be store owner ", {toBeOwnerName ,suggestingOwnerName, storeId });
+
+        // Get Store
+        let store = await StoreCollection.findById(storeId);
+        if(!store){
+            addToErrorLogger("Store not found");         
+            return ({status: Constants.BAD_REQUEST, err: "Store not found"});
+        }
+
+        // Get toBeOwner
+        let toBeOwner = await UserCollection.findOne({userName : toBeOwnerName});
+        if (!toBeOwner){
+            addToErrorLogger("Appointed user was not found");         
+            return ({status: Constants.BAD_REQUEST, err: "Appointed user was not found"});
+        }
+
+        // Get suggesting Owner
+        let suggestingOwner = await UserCollection.findOne({userName : suggestingOwnerName});
+        if (!suggestingOwner){
+            addToErrorLogger("Suggesting user was not found");         
+            return ({status: Constants.BAD_REQUEST, err: "Suggesting owner was not found"});
+        }
+
+        // Make sure user is not already owner
+        let existRole = await RoleCollection.findOne({ofUser:toBeOwner.id, store:storeId});
+        if(existRole && existRole.name === STORE_OWNER){
+            addToErrorLogger("User is already owner in this store");         
+            return ({status: Constants.BAD_REQUEST, err: "User is already owner in this store"});
+        }
+
+        // Add user to "pendingOwners" array of store
+        let defaultStatus = "Pending";
+        let owners = await this.getStoreOwners(storeId);
+        let ownersAnswers = (await this.SetAllAnswersAsPending(owners.storeOwners, storeId)).ownersWithAnswers;
+        
+        let pendingOwner =
+        {
+            toBeOwner : toBeOwner.userName,
+            ownersAnswers : ownersAnswers, 
+            status: defaultStatus,
+            suggestingOwner : suggestingOwner.userName,
+        }
+        
+        if (store.pendingOwners === undefined){
+            store.pendingOwners = [];
+            store.pendingOwners.push(pendingOwner);
+            await StoreCollection.updateOne(store);
+        }
+        else{
+            store.pendingOwners.push(pendingOwner);
+            await StoreCollection.updateOne(store);
+        }
+        return ({status: Constants.OK_STATUS,  ownersWithAnsers: owners});
+    }
+
+
+}
+
