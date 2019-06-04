@@ -333,14 +333,11 @@ webRoutes.get(
 
     if (!dbCheckError(workersRes.status, res)) {
       
-      if(workersRes.status < 0)
+      if(workersRes.status < 0 || ownersRes.status < 0){
         res.redirect(`/store-panel/${req.params.storeId}/`);
+        return;
+      }
 
-      if(ownersRes.status < 0)
-        res.redirect(`/store-panel/${req.params.storeId}/`); 
-        res.redirect(`/store-panel/${req.params.storeId}/`);
-
-        
       res.render("pages/storePages/workersPage", {
         user: req.session.user,
         storeId: req.params.storeId,
