@@ -254,7 +254,11 @@
                 condition.op1={id:`new-${condId++}`,type:"unset", parentId: condition.id };
                 condition.op2={id:`new-${condId++}`,type:"unset", parentId: condition.id };
                 break;
-            case 'minProductA','maxProductA': 
+            case 'maxProductA':
+                condition.amount = amount;
+                condition.product = product;
+                break;
+            case 'minProductA':
                 condition.amount = amount;
                 condition.product = product;
                 break;
@@ -391,7 +395,7 @@
              $("#saleRule-error").text('new rule doesn\'t valid');
              return;
         }
-        postData(`/storesApi/<%=storeId%>/addSaleRule`, {rule: newRule})
+        postData(`/storesApi/<%=storeId%>/addSaleRule`, {saleRule: newRule})
         .then(data => {
             if(data.status<0){
                 $("#saleRule-error").text(data.err);

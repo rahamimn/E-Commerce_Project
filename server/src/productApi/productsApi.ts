@@ -1,8 +1,7 @@
-import { ProductCollection, StoreCollection, UserCollection, RoleCollection } from "../persistance/mongoDb/Collections";
+import { ProductCollection, StoreCollection, RoleCollection } from "../persistance/mongoDb/Collections";
 import { Product } from "./models/product";
-import { OK_STATUS, BAD_REQUEST, BAD_AMOUNT, BAD_PRICE, BAD_STORE_ID, OPEN_STORE, BAD_USER_ID, STORE_OWNER, STORE_MANAGER, ADMIN, ADD_PRODUCT_PERMISSION, REMOVE_PRODUCT_PERMISSION, UPDATE_PRODUCT_PERMISSION, CONNECTION_LOST } from "../consts";
+import {OK_STATUS, BAD_REQUEST, BAD_AMOUNT, BAD_PRICE, BAD_STORE_ID, BAD_USER_ID, STORE_OWNER, STORE_MANAGER, ADMIN, ADD_PRODUCT_PERMISSION, REMOVE_PRODUCT_PERMISSION, UPDATE_PRODUCT_PERMISSION, PTYPE_COMPLEX, CONNECTION_LOST} from "../consts";
 import { IProductApi } from "./productsApiInterface";
-import { Review } from "../storeApi/models/review";
 import { Role } from "../usersApi/models/role";
 import { addToErrorLogger, addToRegularLogger, addToSystemFailierLogger } from "../utils/addToLogger";
 export class ProductsApi implements IProductApi{
@@ -65,7 +64,7 @@ export class ProductsApi implements IProductApi{
 
         } catch(err) {
             addToSystemFailierLogger(" add Product  ");
-            if(err.message === 'connection lost') 
+            if(err.message === 'connection lost')
                 return {status: CONNECTION_LOST, err:"connection Lost"};
             else
                 return ({status: BAD_REQUEST, err:'data isn\'t valid'});
@@ -100,6 +99,12 @@ export class ProductsApi implements IProductApi{
             }
             
             let productToRemove = await ProductCollection.findById(productId);
+            let productStore = await StoreCollection.findById(productToRemove.storeId);
+            if(!toActivate){
+                if(isProductInRules(productToRemove, productStore)){
+                    return ({status: BAD_REQUEST, err: "the prodcut participate in purchase/sales rules, please update the rules before deleting the product"});
+                }
+            }
             productToRemove.isActivated = toActivate;
             let product_AfterRemove = await ProductCollection.updateOne(productToRemove);
 
@@ -113,7 +118,7 @@ export class ProductsApi implements IProductApi{
         }
     }
 
-    async updateProduct(userId: string, storeId: string, productId: string, productDetails: any){ 
+    async updateProduct(userId: string, storeId: string, productId: string, productDetails: any){
 
         addToRegularLogger("updateProduct", {userId, storeId, productId,productDetails })
         try{ 
@@ -157,7 +162,7 @@ export class ProductsApi implements IProductApi{
     // //NIR: NOT WORKING. NEED TO FIX.
     // async addReview(productId: string, userId: string, rank: Number, comment: string){
     //     addToRegularLogger("addReview", {productId, userId, rank, comment} );
-    //     try{ 
+    //     try{
     //         let reviewToAdd = new Review({date: Date.now(), registeredUser: userId, rank: rank, comment: comment})
     //         reviewToAdd.id = "tempID"; //NIR: need to generate id ???;
 
@@ -199,7 +204,7 @@ export class ProductsApi implements IProductApi{
 
         } catch(err) {
             addToSystemFailierLogger(" getProducts  ");
-            if(err.message === 'connection lost') 
+            if(err.message === 'connection lost')
                 return {status: CONNECTION_LOST, err:"connection Lost"};
             else
                 return ({status: BAD_REQUEST, err:'data isn\'t valid'});
@@ -226,7 +231,7 @@ export class ProductsApi implements IProductApi{
                
         } catch(err) {
             addToSystemFailierLogger(" getProductDetails  ");
-            if(err.message === 'connection lost') 
+            if(err.message === 'connection lost')
                 return {status: CONNECTION_LOST, err:"connection Lost"};
             else
                 return ({status: BAD_REQUEST, err:'data isn\'t valid'});
@@ -304,7 +309,42 @@ export class ProductsApi implements IProductApi{
             return false;
         }       
     }
-    
-    
 
 }
+
+const isProductInRules = (product:any, productStore:any) => {
+    const saleRules = productStore.saleRules;
+    const purchaseRules = productStore.purchaseRules;
+    let isFoundInRule = false;
+
+
+    purchaseRules.map( purchaseRule =>{
+        if(isInCondition(product.id, purchaseRule.condition)){
+            isFoundInRule = true;
+        }
+    });
+
+    if(!isFoundInRule){
+        saleRules.map( saleRule =>{
+            if(isInCondition(product.id, saleRule.condition)){
+                isFoundInRule = true;
+            }
+            saleRule.discounts.map( discount =>{
+                discount.products.map( currProduct =>{
+                    if (currProduct.id == product.id) {
+                        isFoundInRule = true;
+                    }
+                });
+            });
+        });
+    }
+    return isFoundInRule;
+};
+
+const isInCondition = (productId:any, condition:any) => {
+    if(condition.type != PTYPE_COMPLEX)
+        return productId == condition.product;
+    else{
+        return isInCondition(productId, condition.op1 ) || isInCondition(productId, condition.op2)
+    }
+};

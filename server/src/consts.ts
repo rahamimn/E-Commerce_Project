@@ -21,8 +21,9 @@ export const BAD_SUPPLY = -102;
 
 export const ERR_PAYMENT_SYSTEM = -103;
 export const ERR_SUPPLY_SYSTEM = -104;
-
 export const ERR_INVENTORY_PROBLEM = -105;
+
+export const ERR_STORE_PROBLEM = -101;
 
 
 // flags
@@ -69,6 +70,12 @@ export const BAD_STORE_ID = "The current ID does not match any active store";
 export const BAD_USER_ID = "The current ID does not match any active user";
 
 
-
+//Purchase and Discounts consts
+export const PTYPE_COMPLEX = "complex";
+export const PTYPE_SIMPLE_MAX_PRODUCT = "simple-max-product-amount";
+export const PTYPE_SIMPLE_MAX_PRODUCTS = "simple-max-products-amount";
+export const PTYPE_SIMPLE_MIN_PRODUCT = "simple-min-product-amount";
+export const DTYPE_SIMPLE_DISCOUNT_PRECENTAGE = "discountPercentage";
+export const DTYPE_SIMPLE_DISCOUNT_OPO = "discountOnePlusOne";
 
 
