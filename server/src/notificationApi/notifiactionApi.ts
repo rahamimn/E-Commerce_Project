@@ -1,4 +1,5 @@
 import { UsersApi } from "../usersApi/usersApi";
+import { ITransaction } from "../persistance/Icollection";
 
 const server = require('http').createServer();
 const io = require('socket.io')(server);
@@ -52,7 +53,7 @@ export const connectWsServer = () => {
     server.listen(PORT);
 }
 
-export const sendNotification = async (userId, header, message) => {
+export const sendNotification = async (userId, header, message, trans?: ITransaction) => {
     const usersApi = new UsersApi();
     if(clientSockets[userId] && clientSockets[userId].socket ){
         clientSockets[userId].maxId++;
@@ -61,7 +62,7 @@ export const sendNotification = async (userId, header, message) => {
         clientSockets[userId].socket.emit('notification',header,message,id);
     }
     else {
-        await usersApi.pushNotification(userId,header,message);
+        await usersApi.pushNotification(userId,header,message,trans);
     }
 }
 

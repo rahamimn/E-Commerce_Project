@@ -47,9 +47,9 @@ export class Role {
 
     /**
      * Getter permissions
-     * @return {String[]}
+     * @return {string[]}
      */
-	public get permissions(): String[] {
+	public get permissions(): string[] {
 		return this._permissions;
 	}
 
@@ -87,41 +87,41 @@ export class Role {
 
     /**
      * Setter permissions
-     * @param {String[]} value
+     * @param {string[]} value
      */
-	public set permissions(value: String[]) {
+	public set permissions(value: string[]) {
 		this._permissions = value;
     }
 
     /**
      * Getter id
-     * @return {String}
+     * @return {string}
      */
-	public get id(): String {
+	public get id(): string {
 		return this._id;
 	}
 
     /**
      * Setter id
-     * @param {String} value
+     * @param {string} value
      */
-	public set id(value: String) {
+	public set id(value: string) {
 		this._id = value;
 	}
 
     /**
      * Getter name
-     * @return {String}
+     * @return {string}
      */
-	public get name(): String {
+	public get name(): string {
 		return this._name;
 	}
 
     /**
      * Setter name
-     * @param {String} value
+     * @param {string} value
      */
-	public set name(value: String) {
+	public set name(value: string) {
 		this._name = value;
     }
 
@@ -165,11 +165,11 @@ export class Role {
     };
 
 
-    private _id: String;
-    private _name: String;
+    private _id: string;
+    private _name: string;
     private _ofUser: any;
     private _store: any;
     private _appointor: any;
     private _appointees:  any[];
-    private _permissions: String[];
+    private _permissions: string[];
 }

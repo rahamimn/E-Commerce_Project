@@ -9,12 +9,12 @@ var mongoose = require('mongoose');
 var Schema = mongoose.Schema;
 
 interface IRole {
-  name: String
+  name: string
   ofUser: ObjectID;
   store: ObjectID;
   appointor: ObjectID;
   appointees:  MonArray<ObjectID>;
-  permissions: MonArray<String>;
+  permissions: MonArray<string>;
 }
 export interface IRoleModel extends IRole, Document{
   addAppointee(appointee: ObjectID): Model<IRoleModel>,

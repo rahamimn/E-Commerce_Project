@@ -18,49 +18,49 @@ export class User {
 
     /**
      * Getter userName
-     * @return {  String}
+     * @return {  string}
      */
-	public get userName():   String {
+	public get userName():   string {
 		return this._userName;
 	}
 
     /**
      * Getter password
-     * @return {  String}
+     * @return {  string}
      */
-	public get password():   String {
+	public get password():   string {
 		return this._password;
 	}
 
     /**
      * Getter salt
-     * @return {String}
+     * @return {string}
      */
-	public get salt(): String {
+	public get salt(): string {
 		return this._salt;
 	}
 
     /**
      * Getter firstName
-     * @return { String}
+     * @return { string}
      */
-	public get firstName():  String {
+	public get firstName():  string {
 		return this._firstName;
 	}
 
     /**
      * Getter lastName
-     * @return { String}
+     * @return { string}
      */
-	public get lastName():  String {
+	public get lastName():  string {
 		return this._lastName;
 	}
 
     /**
      * Getter email
-     * @return {String}
+     * @return {string}
      */
-	public get email(): String {
+	public get email(): string {
 		return this._email;
 	}
 
@@ -91,53 +91,53 @@ export class User {
 
     /**
      * Setter userName
-     * @param {  String} value
+     * @param {  string} value
      */
-	public set userName(value:   String) {
+	public set userName(value:   string) {
 		this._userName = value;
 	}
 
     /**
      * Setter password
-     * @param {  String} value
+     * @param {  string} value
      */
-	public set password(value:   String) {
+	public set password(value:   string) {
 		this._password = value;
 	}
 
     /**
      * Setter salt
-     * @param {String} value
+     * @param {string} value
      */
-	public set salt(value: String) {
+	public set salt(value: string) {
 		this._salt = value;
 	}
 
     /**
      * Setter firstName
-     * @param { String} value
+     * @param { string} value
      */
-	public set firstName(value:  String) {
+	public set firstName(value:  string) {
 		this._firstName = value;
 	}
 
     /**
      * Setter lastName
-     * @param { String} value
+     * @param { string} value
      */
-	public set lastName(value:  String) {
+	public set lastName(value:  string) {
 		this._lastName = value;
 	}
 
     /**
      * Setter email
-     * @param {String} value
+     * @param {string} value
      */
-	public set email(value: String) {
+	public set email(value: string) {
 		this._email = value;
     }
     
-    public set phone(value:  String) {
+    public set phone(value:  string) {
 		this._phone = value;
 	}
 
@@ -159,15 +159,15 @@ export class User {
     
      /**
      * Getter phone
-     * @return { String}
+     * @return { string}
      */
-	public get phone():  String {
+	public get phone():  string {
 		return this._phone;
     }
     
     /**
      * Setter phone
-     * @param { String} value
+     * @param { string} value
      */
 
     /**
@@ -181,17 +181,17 @@ export class User {
 
     /**
      * Getter id
-     * @return {String}
+     * @return {string}
      */
-	public get id(): String {
+	public get id(): string {
 		return this._id;
 	}
 
     /**
      * Setter id
-     * @param {String} value
+     * @param {string} value
      */
-	public set id(value: String) {
+	public set id(value: string) {
 		this._id = value;
     }
     public getUserDetails (){
@@ -222,14 +222,14 @@ export class User {
        this.phone = userDetails.phone;
     }
 
-    private _id: String;
-    private _userName:   String;
-    private _password:   String;
-    private _salt: String;
-    private _firstName:  String;
-    private _lastName:  String;
-    private _phone:  String;
-    private _email: String;
+    private _id: string;
+    private _userName:   string;
+    private _password:   string;
+    private _salt: string;
+    private _firstName:  string;
+    private _lastName:  string;
+    private _phone:  string;
+    private _email: string;
     private _isDeactivated: Boolean;
     private _notifications: any[];
     private _messages: any[];

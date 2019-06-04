@@ -14,6 +14,7 @@ interface IStore {
   purchasePolicy?: string;
   storState?: string;
   messages?: MonArray<ObjectID>;
+  pendingOwners?: MonArray<any>;
 }
 
 export interface IStoreModel extends IStore, Document {} //add methods here
@@ -27,7 +28,9 @@ export const storeScheme = new Schema({
   review: [{ type: Schema.Types.ObjectId, ref: "Review", default: [] }],
   purchasePolicy: String,
   storState: String,
-  messages: [{ type: Schema.Types.ObjectId, ref: "Messages", default: [] }]
+  messages: [{ type: Schema.Types.ObjectId, ref: "Messages", default: [] }],
+  pendingOwners: []
+
 });
 
 export let StoreModel: Model<IStoreModel>;

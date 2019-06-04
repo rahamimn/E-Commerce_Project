@@ -242,10 +242,4 @@ describe('Cart model',() => {
     expect(response).toBeFalsy();
   });
 
-  it('cart set supply check validity', () => {
-    const cart = fakeCart({items:[]});
-    
-    expect ( ()=>{cart.supplyPrice = -2}).toThrowError();
-  });
-
 });

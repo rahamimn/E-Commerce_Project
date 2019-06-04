@@ -11,6 +11,7 @@ export class Store {
     this._purchasePolicy = base.purchasePolicy;
     this._storeState = base.storeState;
     this._messages = base.messages;
+    this._pendingOwners = base.pendingOwners;
   }
 
   private _id: string;
@@ -23,6 +24,17 @@ export class Store {
   private _purchasePolicy: string;
   private _storeState: string;
   private _messages: any[];
+  private _pendingOwners: any[];
+
+
+
+
+  public get pendingOwners(): any[] {
+    return this._pendingOwners;
+  }
+  public set pendingOwners(value: any[]) {
+    this._pendingOwners = value;
+  }
 
   /**
    * Getter id
@@ -168,7 +180,6 @@ export class Store {
   public set messages(value: any[]) {
     this._messages = value;
   }
-
   
   public getStoreDetails (){
     const {

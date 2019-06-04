@@ -6,7 +6,7 @@ import { Role } from "../src/usersApi/models/role";
 import {mockPurchaseRules, mockSaleRules} from "../src/storeApi/mockRules";
 
 
-export const insertRegisterdUser = async (userName:String, password:String,isAdmin:Boolean = false) => {
+export const insertRegisterdUser = async (userName:string, password:string,isAdmin:Boolean = false) => {
     const salt = bcrypt.genSaltSync(10);
     const hashed =  bcrypt.hashSync(password+process.env.HASH_SECRET_KEY, salt);
     const user = await UserCollection.insert(fakeUser({

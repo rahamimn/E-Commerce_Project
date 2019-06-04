@@ -60,6 +60,7 @@ export const fakeStore = (opt: any = {}) => {
         purchasePolicy: "everyone can buy",
         storeState: OPEN_STORE,
         messages: opt.messages || [],
+        pendingOwners: [],
 });
 }
 
@@ -98,29 +99,43 @@ export const fakeComplaint = (opt: any = {}) => {
 }
 
 export const fakePayment = (opt: any = {}) => {
-    return {cardNumber: '1111222233334444', csv:'123',expireMM:'12', expireYY:'25'}
+    return {
+        card_number: '1111222233334444',
+        ccv:'123',
+        month:'12',
+        year:'25',
+        holder: 'dsa bhj',
+        id: '213213213'
+        }
 }
 
 export const fakeBadPayment = (opt: any = {}) => {
-    return {cardNumber: '1111222232As', csv:'123',expireMM:'12', expireYY:'25'}
-}
-
-export const fakeCountry = (opt: any = {}) => {
-    return chance.country()
-}
+    return {
+        card_number: '1111222232As',
+        ccv:'123',
+        month:'12',
+        year:'25',
+        holder: 'dsa bhj',
+        id: '213213213'
+    }};
 
 export const fakeAddress = (opt: any = {}) => {
-    return chance.address()
+    return {
+        address: chance.address(),
+        country: chance.country(),
+        zip: chance.zip(),
+        name: chance.name(),
+        city: chance.city()
+    };
 }
 
 export const fakeCart = (opt: any = {}) => {
     return new Cart({
         id: genObjectId(),
         ofUser: opt.ofUser || genObjectId(),
-        ofSession: opt.ofSession,
         store: opt.store || genObjectId(),
         items: opt.items || [],
-        state: opt.state || NORMAL_CART,
+        // state: opt.state || NORMAL_CART,
         supplyPrice: opt.supplyPrice || chance.natural()
     });
 }

@@ -1,10 +1,10 @@
 export class Complaint {
-  private _id: String;
+  private _id: string;
 
   private _date: Date;
   private _user: any;
-  private _order: String;
-  private _body: String;
+  private _order: string;
+  private _body: string;
 
   constructor(base: any) {
     this._id = base.id;
@@ -16,17 +16,17 @@ export class Complaint {
 
   /**
    * Getter id
-   * @return {String}
+   * @return {string}
    */
-  public get id(): String {
+  public get id(): string {
     return this._id;
   }
 
   /**
    * Setter id
-   * @param {String} value
+   * @param {string} value
    */
-  public set id(value: String) {
+  public set id(value: string) {
     this._id = value;
   }
   /**
@@ -47,17 +47,17 @@ export class Complaint {
 
   /**
    * Getter order
-   * @return { String}
+   * @return { string}
    */
-  public get order(): String {
+  public get order(): string {
     return this._order;
   }
 
   /**
    * Getter body
-   * @return { String}
+   * @return { string}
    */
-  public get body(): String {
+  public get body(): string {
     return this._body;
   }
 
@@ -79,17 +79,17 @@ export class Complaint {
 
   /**
    * Setter order
-   * @param { String} value
+   * @param { string} value
    */
-  public set order(value: String) {
+  public set order(value: string) {
     this._order = value;
   }
 
   /**
    * Setter body
-   * @param { String} value
+   * @param { string} value
    */
-  public set body(value: String) {
+  public set body(value: string) {
     this._body = value;
   }
 }
