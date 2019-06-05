@@ -893,17 +893,14 @@ m1=0..n
     <id>UMLClass</id>
     <coordinates>
       <x>1199</x>
-      <y>946</y>
+      <y>979</y>
       <w>143</w>
-      <h>121</h>
+      <h>88</h>
     </coordinates>
     <panel_attributes>dataType Condition
 --
 id:string
 type:string
-productId:string
-amount:int
-displayText:string
 </panel_attributes>
     <additional_attributes/>
   </element>
@@ -971,13 +968,13 @@ op2: condition
       <x>1001</x>
       <y>704</y>
       <w>286</w>
-      <h>264</h>
+      <h>297</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;-
 m1=1
 
 has</panel_attributes>
-    <additional_attributes>240.0;220.0;240.0;150.0;90.0;150.0;90.0;10.0;10.0;10.0</additional_attributes>
+    <additional_attributes>240.0;250.0;240.0;150.0;90.0;150.0;90.0;10.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
@@ -985,12 +982,12 @@ has</panel_attributes>
       <x>1034</x>
       <y>858</y>
       <w>253</w>
-      <h>110</h>
+      <h>143</h>
     </coordinates>
     <panel_attributes>lt=&lt;&lt;&lt;&lt;-
 m1=1
 </panel_attributes>
-    <additional_attributes>210.0;80.0;210.0;10.0;10.0;10.0</additional_attributes>
+    <additional_attributes>210.0;110.0;210.0;10.0;10.0;10.0</additional_attributes>
   </element>
   <element>
     <id>Relation</id>
