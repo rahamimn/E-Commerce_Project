@@ -319,7 +319,7 @@ export class StoresApi implements IStoresApi {
             const purchaseRules = store.purchaseRules;
             if (!validatePurchaseRule(purchaseRule, purchaseRules)) {
                 addToErrorLogger("addPurchaseRule");
-                return ({status: BAD_REQUEST});
+                return ({status: BAD_REQUEST , err: "rule name isnt unique"});
             }
 
             store.purchaseRules = [...purchaseRules, purchaseRule];
@@ -407,7 +407,7 @@ export class StoresApi implements IStoresApi {
             const saleRules = store.saleRules;
             if (!validateSaleRule(newSaleRule, saleRules)) {
                 addToErrorLogger("addSaleRule");
-                return ({status: BAD_REQUEST});
+                return ({status: BAD_REQUEST, err:"rule name isnt unique"});
             }
 
             store.saleRules = [...saleRules, newSaleRule];
@@ -457,12 +457,16 @@ export class StoresApi implements IStoresApi {
 
 
 const validatePurchaseRule = (newPurchaseRule: any, PurchaseRules: any[]) => {
-    //todo check rule name is unique and the rule is syntactically legal
+    const newName = newPurchaseRule.name;
+    if (PurchaseRules.filter(rule => rule.name === newName).length > 0)        //check unique name
+        return false;
     return true;
 };
 
 const validateSaleRule = (newSaleRule: any, saleRules: any[]) => {
-    //todo check rule name is unique and the rule is syntactically legal
+    const newName = newSaleRule.name;
+    if (saleRules.filter(rule => rule.name === newName).length > 0)        //check unique name
+        return false;
     return true;
 };
 
