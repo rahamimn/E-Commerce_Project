@@ -53,7 +53,7 @@ export const connectWsServer = () => {
     server.listen(PORT);
 }
 
-export const sendNotification = async (userId, header, message, trans?: ITransaction) => {
+export const sendNotification = async (userId, header, message, trans?: ITransaction, toCommit?: boolean) => {
     const usersApi = new UsersApi();
     if(clientSockets[userId] && clientSockets[userId].socket ){
         clientSockets[userId].maxId++;
@@ -62,7 +62,7 @@ export const sendNotification = async (userId, header, message, trans?: ITransac
         clientSockets[userId].socket.emit('notification',header,message,id);
     }
     else {
-        await usersApi.pushNotification(userId,header,message,trans);
+        await usersApi.pushNotification(userId,header,message,trans,toCommit);
     }
 }
 

@@ -352,7 +352,7 @@ export class UsersApi implements IUsersApi{
 
             appointorRole.appointees.push(newRole.id);
             await RoleCollection.updateOne(appointorRole,sessionOpt);
-            await sendNotification(appointedUser.id,'System Message','some one has appointed you \n please commit login again',trans);
+            await sendNotification(appointedUser.id,'System Message','some one has appointed you \n please commit login again',trans,true);
             return ({status: Constants.OK_STATUS});
         } catch(e){
             addToSystemFailierLogger(" connection lost  ");
@@ -506,7 +506,7 @@ export class UsersApi implements IUsersApi{
         }
     }
 
-    async pushNotification(userId, header, message, trans?: ITransaction){
+    async pushNotification(userId, header, message, trans?: ITransaction, toCommit?: boolean){
         try {
             addToRegularLogger(" push Notifications ", {userId, header, message });
 
@@ -519,10 +519,12 @@ export class UsersApi implements IUsersApi{
             user.notifications.push({header,message });
             
             await UserCollection.updateOne(user,trans? {session: trans.session()}:{});
-            if(trans)
+            if(trans && toCommit)
                 trans.commitTransaction();
             return {status: Constants.OK_STATUS};
         } catch(e){
+            if(trans)
+                await trans.abortTransaction();
             addToSystemFailierLogger(" connection lost  ");
             if(e.message === 'connection lost') 
                 return {status: Constants.CONNECTION_LOST, err:"connection Lost"};

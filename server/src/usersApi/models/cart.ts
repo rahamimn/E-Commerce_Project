@@ -36,7 +36,7 @@ export class Cart{
       return sum;
     }
 
-    async updateInventory (isDec){ //need to test
+    async updateInventory (isDec,sessionOpt?:any){ //need to test
       try{
         const products = await ProductCollection.findByIds(this.productsIds);
         await asyncForEach(this.items,
@@ -46,7 +46,7 @@ export class Cart{
             else 
               products[ind].amountInventory += item.amount;
         });
-        await asyncForEach(products, async prod => await ProductCollection.updateOne(prod));
+        await asyncForEach(products, async prod => await ProductCollection.updateOne(prod,sessionOpt));
         return true;
       }
       catch(error){

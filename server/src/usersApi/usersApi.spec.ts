@@ -100,7 +100,7 @@ describe('users-api-integration',() => {
     expect(updatedCart.items[0].product).toEqual(product.id);
   });
 
-  it.only('add product to cart of guest with cart of specific store ', async () => {
+  it('add product to cart of guest with cart of specific store ', async () => {
       const sessionId = chance.first();
       let updatedCarts = sessionCarts.findBySessionId(sessionId);
       await usersApi.addProductToCart(null,product.id,5,sessionId);

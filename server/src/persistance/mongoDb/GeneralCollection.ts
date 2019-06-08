@@ -1,4 +1,4 @@
-import { Session } from "inspector";
+
 import { ITransaction } from "../Icollection";
 
 var mongoose = require('mongoose');
@@ -92,21 +92,28 @@ export const createCollection = (TModel,extractT) =>
 
 export class Transaction implements ITransaction {
         _session;
-
+        prod: boolean;
         async startTransaction (){
-            this._session = await mongoose.connection.startSession();
-            await this._session.startTransaction();
+            if(process.argv.some( arg => arg === 'prod')) {
+                this.prod = true;
+                this._session = await mongoose.connection.startSession();
+                await this._session.startTransaction();  
+            }
             return ({session: this._session});
         }
 
         async commitTransaction (){
-            await this._session.commitTransaction();
-            await this._session.endSession();
+            if(this.prod) {
+                await this._session.commitTransaction();
+                await this._session.endSession();
+            }
         }
 
         async abortTransaction (){
-            await this._session.abortTransaction();
-            await this._session.endSession();
+            if(this.prod) {
+                await this._session.abortTransaction();
+                await this._session.endSession();
+            }
         }
 
         session(){
