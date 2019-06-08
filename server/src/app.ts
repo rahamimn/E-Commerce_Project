@@ -45,7 +45,9 @@ else {
 if(process.argv.some( arg => arg === '-init')){
         console.log(`init database with admin`);
         await mongoose.connection.db.dropDatabase();
-        await setDefaultData();
+        //await setDefaultData();
+        await read_from_input_file();
+
 }
 if(process.argv.some( arg => arg === '-initWithSomeData')){
     console.log(`init database with admin`);

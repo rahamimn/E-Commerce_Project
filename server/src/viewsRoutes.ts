@@ -337,6 +337,8 @@ webRoutes.get(
         res.redirect(`/store-panel/${req.params.storeId}/`);
         return;
       }
+        
+
 
       res.render("pages/storePages/workersPage", {
         user: req.session.user,

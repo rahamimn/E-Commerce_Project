@@ -17,88 +17,95 @@
       <td><%= worker.userName %></td>
       <td>
         <%if((worker.role.name) == 'store-manager'){%>
-          <%= 'Manager' %>
+        <%= 'Manager' %>
         <%}%> 
 
         <%if((worker.role.name) == 'store-owner'){%>
-          <%= 'Owner' %>
+        <%= 'Owner' %>
         <%}%> 
       </td>
 
       <%if( (worker.role.appointor).equals(user.role.id) && !(worker.role.name === "store-owner") ){%>
-        <td><button id="r<%=worker.userName%>" class="btn btn-danger" type="button" title="Remove Role"
+      <td><button id="r<%=worker.userName%>" class="btn btn-danger" type="button" title="Remove Role"
           onclick="removeRole(this.id)"> <i class="fas fa-user-slash" aria-hidden="true"> </i></button></td>
       <%}else{ %>
-        <td><button class="btn btn-outline-secondary" type="button" title="No Available Actions">
-        <i class=" far fa-window-minimize"></i></button></td>
+      <td><button class="btn btn-outline-secondary" type="button" title="No Available Actions">
+          <i class=" far fa-window-minimize"></i></button></td>
       <% } %>
 
 
       <%if((worker.role.appointor).equals(user.role.id) && ('store-manager' == worker.role.name)){%>
-        <td><a href="/store-panel/<%=storeId%>/workers/updatePermissions/<%=worker.role.ofUser%>"
-            id="e<%=worker.userName%>" class="btn btn-info" role="button" title="Update Permissions"> <i
-              class="fas fa-user-edit"></i></a></td>
+      <td><a href="/store-panel/<%=storeId%>/workers/updatePermissions/<%=worker.role.ofUser%>"
+          id="e<%=worker.userName%>" class="btn btn-info" role="button" title="Update Permissions"> <i
+            class="fas fa-user-edit"></i></a></td>
 
       <%}else{ %>
-        <td><button class="btn btn-outline-secondary" type="button" title="No Available Actions">
+      <td><button class="btn btn-outline-secondary" type="button" title="No Available Actions">
           <i class=" far fa-window-minimize"></i></button></td>
       <% } %>%>
 
     </tr>
     <%})%>
   </tbody>
+</table>
+
+<div class="input-group">
+  <input type="text" id="userName" class="form-control" placeholder="Enter username" width="18">
+  <div class="input-group-append">
+    <!-- <button class="btn btn-outline-secondary" type="button" onclick="onSubmitSetOwner(event)">Set As Owner</button> -->
+    <button class="btn btn-outline-secondary" type="button" onclick="onSubmitSetManager(event)">Set As Manager </button>
+    <button class="btn btn-outline-secondary" type="button" onclick="onSubmitSugggestNewOwner(event)">Suggest New Owner</button>
+  </div>
+  </ul>
+</div>
+<p style="text-align: center; color: red" id="workers-error"></p>
+
+
+<div>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th scope="col">Pending Owner</th>
+        <th scope="col">Actions</th>
+        <th scope="col">Status</th>
+        <th scope="col">Suggested By</th>
+
+
+      </tr>
+    </thead>
+
+
+    <tbody>
+      <%pendingOwners.forEach(function (pendingOwner){%>
+      <%if('Approved' != pendingOwner.status){%>
+      <tr>
+        <td><%=pendingOwner.toBeOwner%></td>
+
+        <td>
+          <button id="a<%=pendingOwner.toBeOwner%>" class="btn btn-outline-secondary"
+            onclick="approveOwnerToBe(event, this.id)" type="button" title="Approve"><i class=" far fa-thumbs-up">
+            </i></button>
+          <%if( (pendingOwner.suggestingOwner) !== (user.userName) ){%>
+          <button id="p<%=pendingOwner.toBeOwner%>" class="btn btn-outline-secondary"
+            onclick="voteNuetralOwnerToBe(event, this.id)" type="button" title="No Decision Yet"><i
+              class=" far fa-circle"></i></button>
+          <button id="d<%=pendingOwner.toBeOwner%>" class="btn btn-outline-secondary"
+            onclick="declineOwnerToBe(event, this.id)" type="button" title="Decline"><i
+              class=" fas fa-thumbs-down"></i></button>
+          <% } %>%>
+
+        </td>
+
+        <td><%= pendingOwner.status%></td>
+        <td><%= pendingOwner.suggestingOwner%></td>
+      </tr>
+      <%}%>
+            <%})%>
+    </tbody>
   </table>
 
-  <div class="input-group">
-    <input type="text" id="userName" class="form-control" placeholder="Enter username" width="18">
-    <div class="input-group-append">
-      <!-- <button class="btn btn-outline-secondary" type="button" onclick="onSubmitSetOwner(event)">Set As Owner</button> -->
-      <button class="btn btn-outline-secondary" type="button" onclick="onSubmitSetManager(event)">Set As Manager </button>
-      <button class="btn btn-outline-secondary" type="button" onclick="onSubmitSugggestNewOwner(event)">Suggest New Owner</button>
-    </div>
-    <p id="workers-error"></p>
-    </ul>
-  </div>
 
-  <div>
-      <table class="table table-bordered">
-          <thead>
-            <tr>
-              <th scope="col">Pending Owner</th>
-              <th scope="col">Actions</th>
-              <th scope="col">Status</th>
-              <th scope="col">Suggested By</th>
-
-
-            </tr>
-          </thead>
-        
-
-          <tbody>
-            <%pendingOwners.forEach(function (pendingOwner){%>
-              <%if('Approved' != pendingOwner.status){%>
-                <tr>
-                  <td><%=pendingOwner.toBeOwner%></td>
-
-                  <td>
-                      <button id="a<%=pendingOwner.toBeOwner%>" class="btn btn-outline-secondary" onclick="approveOwnerToBe(event, this.id)" type="button" title="Approve"><i class=" far fa-thumbs-up"> </i></button>
-                      <%if( (pendingOwner.suggestingOwner) !== (user.userName) ){%>
-                        <button id="p<%=pendingOwner.toBeOwner%>" class="btn btn-outline-secondary" onclick="voteNuetralOwnerToBe(event, this.id)" type="button" title="No Decision Yet"><i class=" far fa-circle"></i></button>
-                        <button id="d<%=pendingOwner.toBeOwner%>" class="btn btn-outline-secondary" onclick="declineOwnerToBe(event, this.id)" type="button" title="Decline"><i class=" fas fa-thumbs-down"></i></button>
-                      <% } %>%>
-
-                  </td>
-
-                  <td><%= pendingOwner.status%></td>
-                  <td><%= pendingOwner.suggestingOwner%></td>
-                </tr>
-              <%}%>
-            <%})%>
-          </tbody>
-          </table>
-    
-
-  </div>
+</div>
 </div>
 </main>
 </div>
@@ -111,7 +118,6 @@
       storeId: "<%= storeId %>"
     }).then(res => {
       if (res.status < 0) {
-        alert('Error');
         $('#workers-error').text(res.err);
       }
       else {
@@ -133,7 +139,6 @@
       .then(data => {
         if (data.status < 0) {
           $("#workers-error").text(data.err);
-          alert(data.status, data.err);
         }
         else {
           document.location.href = '/store-panel/<%=storeId%>/workers';
@@ -155,7 +160,6 @@
       .then(data => {
         if (data.status < 0) {
           $("#workers-error").text(data.err);
-          alert(data.status, data.err);
         }
         else {
           document.location.href = '/store-panel/<%=storeId%>/workers';
@@ -173,12 +177,11 @@
       toBeOwnerName: $("#userName").val(),
       storeId: "<%= storeId %>",
       suggestingOwnerName: "<%= user.userName %>"
-      })
+    })
       .then(data => {
 
         if (data.status < 0) {
           $("#workers-error").text(data.err);
-          alert(data.status, data.err);
         }
         else {
           document.location.href = '/store-panel/<%=storeId%>/workers';
@@ -190,76 +193,73 @@
 
 
 <script>
-    function declineOwnerToBe(event, dOwnerToBe) {
-      event.preventDefault();  
-      const userName = dOwnerToBe.slice(1);
+  function declineOwnerToBe(event, dOwnerToBe) {
+    event.preventDefault();
+    const userName = dOwnerToBe.slice(1);
 
-      postData(`/usersApi/declineOwnerToBe`, {
-        toBeOwnerName: userName,
-        storeId: "<%= storeId %>",
-        votingOwnerName: "<%= user.userName %>"
-        })
-        .then(data => {
-  
-          if (data.status < 0) {
-            $("#workers-error").text(data.err);
-            alert(data.status, data.err);
-          }
-          else {
-            document.location.href = '/store-panel/<%=storeId%>/workers';
-          }
-        })
-        .catch(error => console.error(error));
-    };
-  </script>
+    postData(`/usersApi/declineOwnerToBe`, {
+      toBeOwnerName: userName,
+      storeId: "<%= storeId %>",
+      votingOwnerName: "<%= user.userName %>"
+    })
+      .then(data => {
 
-<script>
-    function voteNuetralOwnerToBe(event, pOwnerToBe) {
-      event.preventDefault();  
-      const userName = pOwnerToBe.slice(1);
-
-      postData(`/usersApi/voteNuetralOwnerToBe`, {
-        toBeOwnerName: userName,
-        storeId: "<%= storeId %>",
-        votingOwnerName: "<%= user.userName %>"
-        })
-        .then(data => {
-  
-          if (data.status < 0) {
-            $("#workers-error").text(data.err);
-            alert(data.status, data.err);
-          }
-          else {
-            document.location.href = '/store-panel/<%=storeId%>/workers';
-          }
-        })
-        .catch(error => console.error(error));
-    };
-  </script>
+        if (data.status < 0) {
+          $("#workers-error").text(data.err);
+        }
+        else {
+          document.location.href = '/store-panel/<%=storeId%>/workers';
+        }
+      })
+      .catch(error => console.error(error));
+  };
+</script>
 
 <script>
-    function approveOwnerToBe(event, aOwnerToBe) {
-      event.preventDefault();  
-      const userName = aOwnerToBe.slice(1);
+  function voteNuetralOwnerToBe(event, pOwnerToBe) {
+    event.preventDefault();
+    const userName = pOwnerToBe.slice(1);
 
-      postData(`/usersApi/approveOwnerToBe`, {
-        toBeOwnerName: userName,
-        storeId: "<%= storeId %>",
-        votingOwnerName: "<%= user.userName %>"
-        })
-        .then(data => {
-  
-          if (data.status < 0) {
-            $("#workers-error").text(data.err);
-            alert(data.status, data.err);
-          }
-          else {
-            document.location.href = '/store-panel/<%=storeId%>/workers';
-          }
-        })
-        .catch(error => console.error(error));
-    };
-  </script>
+    postData(`/usersApi/voteNuetralOwnerToBe`, {
+      toBeOwnerName: userName,
+      storeId: "<%= storeId %>",
+      votingOwnerName: "<%= user.userName %>"
+    })
+      .then(data => {
+
+        if (data.status < 0) {
+          $("#workers-error").text(data.err);
+        }
+        else {
+          document.location.href = '/store-panel/<%=storeId%>/workers';
+        }
+      })
+      .catch(error => console.error(error));
+  };
+</script>
+
+<script>
+  function approveOwnerToBe(event, aOwnerToBe) {
+    event.preventDefault();
+    const userName = aOwnerToBe.slice(1);
+
+    postData(`/usersApi/approveOwnerToBe`, {
+      toBeOwnerName: userName,
+      storeId: "<%= storeId %>",
+      votingOwnerName: "<%= user.userName %>"
+    })
+      .then(data => {
+
+        if (data.status < 0) {
+          $("#workers-error").text(data.err);
+        }
+        else {
+          document.location.href = '/store-panel/<%=storeId%>/workers';
+        }
+      })
+      .catch(error => console.error(error));
+  };
+</script>
 
 
 
