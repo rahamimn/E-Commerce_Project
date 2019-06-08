@@ -20,26 +20,37 @@ const setMocks = (supply, cancelSupply ) => {
 const handshake = async () => {
     if(mockRespond.useMock)
         return false;
-    const res = await axios.post(EXTERNAL_URL, 
-        qs.stringify({ action_type: 'handshake'}),
-        {headers: { 'Content-Type': 'application/x-www-form-urlencoded'}}
-    );
-    if(res.data === 'OK')
-        return true;
-    return false;
+    try{
+        const res = await axios.post(EXTERNAL_URL, 
+            qs.stringify({ action_type: 'handshake'}),
+            {headers: { 'Content-Type': 'application/x-www-form-urlencoded'}}
+        );
+        if(res.data === 'OK')
+            return true;
+        return false;
+            
+    }
+    catch{
+        return false;
+    }
 }
 
 const cancelSupply = async (transactionId: number) => { // depeneds outside api
     if(transactionId === -1)
         return false;
     if(await handshake()){
-        const res = await axios.post(EXTERNAL_URL, 
-            qs.stringify({ action_type: 'cancel_supply', transaction_id:transactionId }),
-            {headers: { 'Content-Type': 'application/x-www-form-urlencoded'}}
-        );
-        if(res.data === -1)
+        try{
+            const res = await axios.post(EXTERNAL_URL, 
+                qs.stringify({ action_type: 'cancel_supply', transaction_id:transactionId }),
+                {headers: { 'Content-Type': 'application/x-www-form-urlencoded'}}
+            );
+            if(res.data === 1)
+                return true;
+            return false
+        }  
+        catch{
             return false;
-        return true;
+        }  
         
     }
     return mockRespond.cancelSupply;
@@ -47,13 +58,19 @@ const cancelSupply = async (transactionId: number) => { // depeneds outside api
 
 const supply = async (supplyData: {name:string, address:string, zip:string, country:string, city:string}) => { // depeneds outside api
     if(await handshake()){
-        const res = await axios.post(EXTERNAL_URL, 
-            qs.stringify({
-                action_type: 'supply',
-                ...supplyData}),
-            {headers: { 'Content-Type': 'application/x-www-form-urlencoded'}}
-        );
-        return res.data;
+        try{
+            const res = await axios.post(EXTERNAL_URL, 
+                qs.stringify({
+                    action_type: 'supply',
+                    ...supplyData}),
+                {headers: { 'Content-Type': 'application/x-www-form-urlencoded'}}
+            );
+            return res.data;
+        }         
+        catch{
+            return -1;
+        }  
+        
     }
     return mockRespond.supply;
 }
