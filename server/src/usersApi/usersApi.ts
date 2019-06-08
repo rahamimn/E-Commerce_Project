@@ -805,13 +805,18 @@ export class UsersApi implements IUsersApi{
     // }
     
 
-    async SetAllAnswersAsPending(owners: string[] ,storeID: string) {
-        addToRegularLogger("Set all answers as pending ", {storeID});
+    async initOwnerAnswers(owners: string[] ,storeId: string, suggestingOwnerName: string ) {
+        
+
+        addToRegularLogger("Set all answers as pending ", {storeID: storeId});
 
         let ownersWithAnsers = [];
 
         await asyncForEach(owners, async owner => {
-            ownersWithAnsers.push( { owner:owner, answer:"Pending" } );
+            if (owner === suggestingOwnerName) // The suggesting owner votes for the suggested one!
+                ownersWithAnsers.push( { owner:owner, answer:"Approved" } );
+            else     
+                ownersWithAnsers.push( { owner:owner, answer:"Pending" } );
         });
         
         return ({status: Constants.OK_STATUS,  ownersWithAnswers: ownersWithAnsers});
@@ -871,6 +876,10 @@ export class UsersApi implements IUsersApi{
                 for (let j = 0; j < pendingOwners[i].ownersAnswers.length && !found; j++){
                     if (pendingOwners[i].ownersAnswers[j].owner === votingOwnerName){
                         pendingOwners[i].ownersAnswers[j].answer = "Pending"
+
+                        store.pendingOwners = pendingOwners;
+                        await StoreCollection.updateOne(store);
+                        
                         if(!(await this.isPendingOwnerDeclined(storeId, toBeOwnerName))){
                             pendingOwners[i].status = "Pending"
                         }
@@ -929,7 +938,8 @@ export class UsersApi implements IUsersApi{
                     store.pendingOwners = pendingOwners;
                     await StoreCollection.updateOne(store);
                     let suggestingOwner = await UserCollection.findOne({userName: suggestingOwnerName});
-                    await this.setUserAsStoreOwner((suggestingOwner.id), toBeOwnerName, storeId);
+
+                    await this.setUserAsStoreOwner((suggestingOwner.id).toString(), toBeOwnerName, storeId);
                     await StoreCollection.updateOne(store);
                     return ({status: Constants.OK_STATUS});
                 }
@@ -970,6 +980,34 @@ export class UsersApi implements IUsersApi{
                 }
             }
             return isStillPendnig;
+        }
+        catch(err)
+        {
+            addToErrorLogger("Failed to check if still pending owner");         
+            return ({status: Constants.BAD_REQUEST, err: "Failed to check if still pending owner"});
+        }
+    }
+
+    async isUserAlreadyPending(storeId: string, toBeOwnerName: string){
+        try
+        {
+            addToRegularLogger("Checks if user is alreay pending to be owner ", {storeId, toBeOwnerName });
+
+            const store = await StoreCollection.findById(storeId);
+            if(!store){
+                addToErrorLogger("isUserAlreadyPending - store not found");         
+                return ({status: Constants.BAD_REQUEST, err: "Store not found"});
+            }
+
+            let pendingOwners = (await this.getPendingOwners(storeId)).pendingOwners;
+
+            for (let i = 0; i < pendingOwners.length; i++) {
+                if (pendingOwners[i].toBeOwner === toBeOwnerName){
+                    return true;
+                }
+                    
+            }
+            return false;
         }
         catch(err)
         {
@@ -1030,6 +1068,11 @@ export class UsersApi implements IUsersApi{
             return ({status: Constants.BAD_REQUEST, err: "Appointed user was not found"});
         }
 
+        if (await this.isUserAlreadyPending(storeId, toBeOwnerName)){
+            addToErrorLogger("User is already pending to be owner");         
+            return ({status: Constants.BAD_REQUEST, err: "User has been suggested to be owner in the past. Could not suggest more than once"});
+        }
+
         // Get suggesting Owner
         let suggestingOwner = await UserCollection.findOne({userName : suggestingOwnerName});
         if (!suggestingOwner){
@@ -1047,7 +1090,7 @@ export class UsersApi implements IUsersApi{
         // Add user to "pendingOwners" array of store
         let defaultStatus = "Pending";
         let owners = await this.getStoreOwners(storeId);
-        let ownersAnswers = (await this.SetAllAnswersAsPending(owners.storeOwners, storeId)).ownersWithAnswers;
+        let ownersAnswers = (await this.initOwnerAnswers(owners.storeOwners, storeId, suggestingOwnerName)).ownersWithAnswers;
         
         let pendingOwner =
         {
@@ -1066,6 +1109,7 @@ export class UsersApi implements IUsersApi{
             store.pendingOwners.push(pendingOwner);
             await StoreCollection.updateOne(store);
         }
+        
         return ({status: Constants.OK_STATUS,  ownersWithAnsers: owners});
     }
 
