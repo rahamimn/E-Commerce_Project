@@ -340,7 +340,7 @@ const isProductInRules = (product:any, productStore:any) => {
     }
     return isFoundInRule;
 };
-
+ 
 const isInCondition = (productId:any, condition:any) => {
     if(condition.type != PTYPE_COMPLEX)
         return productId == condition.productId;
