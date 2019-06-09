@@ -186,12 +186,17 @@ export class Store {
         _id,
         _name,
         _rank,
+        _purchaseRules,
+        _saleRules
+
         
     } = this;
     return ({
         id:_id,
         name:_name,
         rank: _rank,
+        purchaseRules:_purchaseRules,
+        saleRules: _saleRules
     });
 }
 

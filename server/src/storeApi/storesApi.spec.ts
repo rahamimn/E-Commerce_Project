@@ -5,9 +5,9 @@ import {
   STORE_OWNER,
   
 } from "./../consts";
-import { fakeStore, fakeRole, fakeUser, fakeMessage } from "../../test/fakes";
+import {fakeStore, fakeRole, fakeUser, fakeMessage, fakeProduct} from "../../test/fakes";
 import Chance from "chance";
-import { OK_STATUS } from "../consts";
+import {BAD_REQUEST, OK_STATUS} from "../consts";
 import { StoresApi } from "./storesApi";
 import {
   UserCollection,
@@ -17,6 +17,8 @@ import {
 } from "../persistance/mongoDb/Collections";
 import { connectDB, disconnectDB } from "../persistance/connectionDbTest";
 import { Message } from "../usersApi/models/message";
+import {ProductsApi} from "../productApi/productsApi";
+import {mockSimplePurchaseRule, mockSimpleSaleRule} from "./mockRules";
 
 describe("Store api model", () => {
   const storesApi = new StoresApi();
@@ -152,6 +154,119 @@ describe("Store api model", () => {
     expect(userWithMessage.messages[0].equals(response.message.id)).toBeTruthy();
     expect(storeWithMessage.messages[0].equals(response.message.id)).toBeTruthy();
   });
+
+    it("test good Add pRules", async () => {
+
+        //prepeare store and products
+        let storesApi = new StoresApi();
+        let productApi = new ProductsApi();
+        let user = await UserCollection.insert(fakeUser({}));
+        const storeName = chance.sentence();
+        const store = await storesApi.addStore(user.id,storeName);
+        let product1 = fakeProduct({});
+        product1.storeId = store.store.id;
+        await productApi.addProduct(user.id,product1);
+
+        const prulesBeforeTest = store.store.purchaseRules;
+        const simplePurchaseRule = mockSimplePurchaseRule(product1.id);
+        const addResult = await storesApi.addPurchaseRule(user.id, product1.storeId, simplePurchaseRule);
+
+
+        const store_from_db = await storesApi.getStore(store.store.id);
+        const prulesAfterTest = store_from_db.store.purchaseRules;
+
+        expect(prulesBeforeTest.length).toEqual(0);
+        expect(prulesAfterTest.length).toEqual(1);
+        expect(prulesAfterTest[0].name).toEqual(simplePurchaseRule['name']);
+        expect(addResult.status).toEqual(OK_STATUS);
+    });
+
+    it("test bad Add pRules - rule name isnt unique", async () => {
+
+        //prepeare store and products
+        let storesApi = new StoresApi();
+        let productApi = new ProductsApi();
+        let user = await UserCollection.insert(fakeUser({}));
+        const storeName = chance.sentence();
+        const store = await storesApi.addStore(user.id,storeName);
+        let product1 = fakeProduct({});
+        product1.storeId = store.store.id;
+        await productApi.addProduct(user.id,product1);
+
+        const simplePurchaseRule = mockSimplePurchaseRule(product1.id);
+        await storesApi.addPurchaseRule(user.id, product1.storeId, simplePurchaseRule);
+
+        const storeBeforeAdd = await storesApi.getStore(store.store.id);
+        const prulesBeforeTest = storeBeforeAdd.store.purchaseRules;
+
+        const simplePurchaseRul2 = mockSimplePurchaseRule(product1.id);
+        const addResult = await storesApi.addPurchaseRule(user.id, product1.storeId, simplePurchaseRul2);
+
+        const storeAfterAdd = await storesApi.getStore(store.store.id);
+        const prulesAfterTest = storeAfterAdd.store.purchaseRules;
+
+        expect(prulesBeforeTest.length).toEqual(1);
+        expect(prulesAfterTest.length).toEqual(1);
+        expect(addResult.status).toEqual(BAD_REQUEST);
+        expect(addResult.err).toEqual("rule name isnt unique");
+    });
+
+    it("test good Add sRules", async () => {
+
+        //prepeare store and products
+        let storesApi = new StoresApi();
+        let productApi = new ProductsApi();
+        let user = await UserCollection.insert(fakeUser({}));
+        const storeName = chance.sentence();
+        const store = await storesApi.addStore(user.id,storeName);
+        let product1 = fakeProduct({});
+        product1.storeId = store.store.id;
+        await productApi.addProduct(user.id,product1);
+
+        const rulesBeforeTest = store.store.saleRules;
+        const simpleRule = mockSimpleSaleRule(product1.id, product1.name);
+        const addResult = await storesApi.addSaleRule(user.id, product1.storeId, simpleRule);
+
+
+        const store_from_db = await storesApi.getStore(store.store.id);
+        const rulesAfterTest = store_from_db.store.saleRules;
+
+        console.log(addResult.err);
+        expect(addResult.status).toEqual(OK_STATUS);
+        expect(rulesBeforeTest.length).toEqual(0);
+        expect(rulesAfterTest.length).toEqual(1);
+        expect(rulesAfterTest[0].name).toEqual(simpleRule['name']);
+    });
+
+    it("test bad Add sRules - rule name isnt unique", async () => {
+
+        //prepeare store and products
+        let storesApi = new StoresApi();
+        let productApi = new ProductsApi();
+        let user = await UserCollection.insert(fakeUser({}));
+        const storeName = chance.sentence();
+        const store = await storesApi.addStore(user.id,storeName);
+        let product1 = fakeProduct({});
+        product1.storeId = store.store.id;
+        await productApi.addProduct(user.id,product1);
+
+        const simpleRule = mockSimpleSaleRule(product1.id, product1.name);
+        await storesApi.addSaleRule(user.id, product1.storeId, simpleRule);
+
+        const storeBeforeAdd = await storesApi.getStore(store.store.id);
+        const rulesBeforeTest = storeBeforeAdd.store.saleRules;
+
+        const simpleRule2 = mockSimpleSaleRule(product1.id, product1.name);
+        const addResult = await storesApi.addSaleRule(user.id, product1.storeId, simpleRule2);
+
+        const storeAfterAdd = await storesApi.getStore(store.store.id);
+        const prulesAfterTest = storeAfterAdd.store.saleRules;
+
+        expect(rulesBeforeTest.length).toEqual(1);
+        expect(prulesAfterTest.length).toEqual(1);
+        expect(addResult.status).toEqual(BAD_REQUEST);
+        expect(addResult.err).toEqual("rule name isnt unique");
+    });
 
   // it("test GET STORE WORKERS (currentlly in app.ts)", async () => {
 
