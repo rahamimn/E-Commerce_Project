@@ -5,6 +5,7 @@ import { OK_STATUS, BAD_PRICE, BAD_REQUEST, BAD_AMOUNT, BAD_STORE_ID } from '../
 import { ProductCollection, StoreCollection, UserCollection, RoleCollection } from '../persistance/mongoDb/Collections';
 import { connectDB } from '../persistance/connectionDbTest';
 import { StoresApi } from '../storeApi/storesApi';
+import {mockSimplePurchaseRule} from "../storeApi/mockRules";
 
 var mongoose = require('mongoose');
 var genObjectId = mongoose.Types.ObjectId;
@@ -194,6 +195,31 @@ describe('Product model',() => {
     expect(product_AfterRemove.product.isActivated).toBeFalsy;
 
   });
+
+    it('removeProduct That in Rule - Test', async () => {
+
+        //prepeare store and products
+        let storesApi = new StoresApi();
+        let productApi = new ProductsApi();
+        let user = await UserCollection.insert(fakeUser({}));
+        const storeName = chance.sentence();
+        const store = await storesApi.addStore(user.id,storeName);
+        let product = fakeProduct({});
+        product.storeId = store.store.id;
+        let response = await productApi.addProduct(user.id,product);
+
+        const simplePurchaseRule = mockSimplePurchaseRule(response.product.id);
+        await storesApi.addPurchaseRule(user.id, product.storeId, simplePurchaseRule);
+        
+        let product_AfterRemoveResponse = await productsApi.setProdactActivation(user.id, response.product.id);
+
+        let product_AfterRemove = await productsApi.getProductDetails(response.product.id)
+
+        expect(product_AfterRemoveResponse.status).toEqual(BAD_REQUEST);
+        expect((product_AfterRemoveResponse.err).startsWith("the prodcut participate in purchase/sales rules"));
+        expect(product_AfterRemove.product.isActivated).toEqual(true);
+
+    });
 
   
   it.skip('removeProduct with UNACTIVATED STORE ID- Test', async () => {
