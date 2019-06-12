@@ -2,7 +2,7 @@ import {
     BAD_PAYMENT, ERR_INVENTORY_MSG, ERR_INVENTORY_PROBLEM, ERR_PAYMENT_MSG,
     ERR_PAYMENT_SYSTEM, ERR_SUPPLY_MSG,
     OK_STATUS, BAD_REQUEST,
-    BAD_SUPPLY, ERR_SUPPLY_SYSTEM,CONNECTION_LOST
+    BAD_SUPPLY, ERR_SUPPLY_SYSTEM, CONNECTION_LOST, ERR_POLICY_PROBLEM
 } from "../consts";
 import { IOrderApi } from "./ordersApiInterface";
 import {
@@ -67,6 +67,11 @@ export class OrdersApi implements IOrderApi{
             if(!cart){
                 addToErrorLogger("pay");
                 return ({status: BAD_PAYMENT, err: "bad cart details"});
+            }
+
+            if(! await cart.validateCartRules()){
+                addToErrorLogger("pay");
+                return ({status: ERR_POLICY_PROBLEM, err: "User not passing store policy rules"});
             }
             [trans,sessionOpt] = await initTransactions();
             if(!await cart.updateInventory(true,sessionOpt)){

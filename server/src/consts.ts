@@ -22,6 +22,7 @@ export const BAD_SUPPLY = -102;
 export const ERR_PAYMENT_SYSTEM = -103;
 export const ERR_SUPPLY_SYSTEM = -104;
 export const ERR_INVENTORY_PROBLEM = -105;
+export const ERR_POLICY_PROBLEM = -106;
 
 export const ERR_STORE_PROBLEM = -101;
 

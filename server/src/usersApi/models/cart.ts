@@ -1,6 +1,5 @@
 import {Order} from "../../orderApi/models/order";
-import {Product} from "../../productApi/models/product";
-import {ProductCollection, CartCollection, StoreCollection} from "../../persistance/mongoDb/Collections";
+import {ProductCollection, StoreCollection} from "../../persistance/mongoDb/Collections";
 import {asyncForEach} from "../../utils/utils";
 import {addToSystemFailierLogger} from "../../utils/addToLogger";
 import {
@@ -32,7 +31,6 @@ export class Cart {
     async getTotalPriceAfterDiscount (saleRules: any) {
         var sum = 0;
         var prodDiscount = 0;
-        const items = this.items;
 
         await asyncForEach(this.items, async item => {
             const prod = await ProductCollection.findById(item.product);
@@ -257,27 +255,7 @@ export class Cart {
     }
 
 }
-//
-// const isInCondition = (productId: any, condition: any) => {
-//     if (condition.type != PTYPE_COMPLEX)
-//         return productId == condition.productId;
-//     else {
-//         return isInCondition(productId, condition.op1) || isInCondition(productId, condition.op2)
-//     }
-// };
 
-
-const isProductInSRuleDiscount = (product: any, saleRule: any) => {
-    var discount = null;
-    saleRule.discounts.map(currDiscount => {
-        currDiscount.products.map(currProduct => {
-            if (currProduct.id == product.id) {
-                discount = currDiscount
-            }
-        });
-    });
-    return discount
-};
 
 const getProductAmount = (productId: any, items: any) => {
     var itemAmount = -1;

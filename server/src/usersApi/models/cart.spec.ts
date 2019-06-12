@@ -4,9 +4,11 @@ import {fakeCart, fakeProduct, fakeUser} from '../../../test/fakes';
 import { ObjectId } from 'bson';
 import { connectDB } from '../../persistance/connectionDbTest';
 import {CartCollection, ProductCollection, UserCollection} from '../../persistance/mongoDb/Collections';
-import { Product } from '../../productApi/models/product';
 import {StoresApi} from "../../storeApi/storesApi";
-import {ProductsApi} from "../../productApi/productsApi";
+import {
+    mock2DiscountsSaleRule_EasyToPass, mockSimpleSaleRule,
+    mockSimpleSaleRule_EasyToPass
+} from "../../storeApi/mockRules";
 
 
 describe('Cart model',() => {
@@ -269,5 +271,93 @@ describe('Cart model',() => {
     expect(product2.amountInventory).toBe(20);
     expect(response).toBeFalsy();
   });
+
+    it('get totalPrice with discounts - one Discount - SUCCESS - passing the discounts',async () => {
+        let storesApi = new StoresApi();
+        let user = await UserCollection.insert(fakeUser({}));
+        const storeName = chance.sentence();
+        const storeResponse = await storesApi.addStore(user.id,storeName);
+        const storeId = storeResponse.store.id;
+
+        const product1 = await ProductCollection.insert(fakeProduct({price: 10, storeId:storeId}));
+        const product2 = await ProductCollection.insert(fakeProduct({price: 20, storeId:storeId}));
+        const product3 = await ProductCollection.insert(fakeProduct({price: 30, storeId:storeId}));
+
+        const simpleSaleRule = mockSimpleSaleRule_EasyToPass(product3.id);   //purchase rule : min 1 product
+        await storesApi.addSaleRule(user.id, product3.storeId, simpleSaleRule);
+        const cart = fakeCart({items:[{
+                product: product1.id,
+                amount: 1
+            },
+                {
+                    product: product2.id,
+                    amount: 2
+                },
+                {
+                    product: product3.id,
+                    amount: 3
+                }]});
+
+        expect(await cart.totalPrice()).toEqual(95);
+    });
+
+    it('get totalPrice with discounts - many Discounts - SUCCESS - passing the discounts',async () => {
+        let storesApi = new StoresApi();
+        let user = await UserCollection.insert(fakeUser({}));
+        const storeName = chance.sentence();
+        const storeResponse = await storesApi.addStore(user.id,storeName);
+        const storeId = storeResponse.store.id;
+
+        const product1 = await ProductCollection.insert(fakeProduct({price: 10, storeId:storeId}));
+        const product2 = await ProductCollection.insert(fakeProduct({price: 20, storeId:storeId}));
+        const product3 = await ProductCollection.insert(fakeProduct({price: 30, storeId:storeId}));
+
+        const simpleSaleRule = mock2DiscountsSaleRule_EasyToPass(product1.id, product2.id);
+        await storesApi.addSaleRule(user.id, product3.storeId, simpleSaleRule);
+        const cart = fakeCart({items:[{
+                product: product1.id,
+                amount: 1
+            },
+                {
+                    product: product2.id,
+                    amount: 2
+                },
+                {
+                    product: product3.id,
+                    amount: 3
+                }]});
+
+        expect(await cart.totalPrice()).toEqual(125);
+    });
+
+    it('get totalPrice with discounts - one Discount - FAIL - NOT passing the discounts',async () => {
+        let storesApi = new StoresApi();
+        let user = await UserCollection.insert(fakeUser({}));
+        const storeName = chance.sentence();
+        const storeResponse = await storesApi.addStore(user.id,storeName);
+        const storeId = storeResponse.store.id;
+
+        const product1 = await ProductCollection.insert(fakeProduct({price: 10, storeId:storeId}));
+        const product2 = await ProductCollection.insert(fakeProduct({price: 20, storeId:storeId}));
+        const product3 = await ProductCollection.insert(fakeProduct({price: 30, storeId:storeId}));
+
+        const simpleSaleRule = mockSimpleSaleRule(product3.id, 'just a name');   //purchase rule : min 1 product
+        await storesApi.addSaleRule(user.id, product3.storeId, simpleSaleRule);
+        const cart = fakeCart({items:[{
+                product: product1.id,
+                amount: 1
+            },
+                {
+                    product: product2.id,
+                    amount: 2
+                },
+                {
+                    product: product3.id,
+                    amount: 3
+                }]});
+
+        expect(await cart.totalPrice()).toEqual(140);
+    });
+
 
 });
