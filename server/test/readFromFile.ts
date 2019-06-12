@@ -65,6 +65,7 @@ UPDATE_PRODUCT_PERMISSION
 
 */
 export const read_from_input_file = async () => {
+    try{
     let fs = require('fs');
     let names = fs.readFileSync('input.txt').toString().split("\n"); 
     //var names = read("/../..input.txt").split("\n"); 
@@ -176,5 +177,10 @@ export const read_from_input_file = async () => {
                     //add to the system failier logger
         }
     }
+}
+catch(e){
+    addToSystemFailierLogger("can not read file, bad name" );
+
+}
     };
 
