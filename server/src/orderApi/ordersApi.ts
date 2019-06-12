@@ -11,7 +11,7 @@ import {
     StoreCollection,
     RoleCollection
 } from "../persistance/mongoDb/Collections";
-import { addToRegularLogger, addToErrorLogger } from "../utils/addToLogger";
+import { addToRegularLogger, addToErrorLogger, addToSystemFailierLogger } from "../utils/addToLogger";
 import { sendNotification } from "../notificationApi/notifiactionApi";
 import supplySystem from "../supplySystemProxy";
 import paymentSystem from "../paymentSystemProxy";
@@ -36,7 +36,7 @@ function validatePayment(payment) {
         return isVaildLength && !isNotNumber && isEnteredExpiration;
     }
     catch (err){
-        addToErrorLogger("validatePayment");
+        addToSystemFailierLogger("validatePayment " + err);
         return false;
     }
 }
@@ -52,12 +52,12 @@ export class OrdersApi implements IOrderApi{
         addToRegularLogger("pay", {cartId, userId,paymentData, addressData });
         try{
             if (!validatePayment(paymentData)){
-                addToErrorLogger("pay");
+                addToErrorLogger("pay Bad payment - please insert legal data");
                 return ({status: BAD_PAYMENT, err:'Bad payment - please insert legal data'});
             }
             
             if (!validateAddress(addressData)){
-                addToErrorLogger("pay");
+                addToErrorLogger("pay Bad Address or Country - please insert legal data");
                 return ({status: BAD_SUPPLY, err: 'Bad Address or Country - please insert legal data'});
             }
             let cart =  userId? 
@@ -65,7 +65,7 @@ export class OrdersApi implements IOrderApi{
                 sessionCarts.findById(cartId);
 
             if(!cart){
-                addToErrorLogger("pay");
+                addToErrorLogger("pay bad cart details");
                 return ({status: BAD_PAYMENT, err: "bad cart details"});
             }
 
@@ -75,21 +75,21 @@ export class OrdersApi implements IOrderApi{
             }
             [trans,sessionOpt] = await initTransactions();
             if(!await cart.updateInventory(true,sessionOpt)){
-                addToErrorLogger("pay");
+                addToErrorLogger("pay"+ ERR_INVENTORY_MSG);
                 return ({status: ERR_INVENTORY_PROBLEM, err: ERR_INVENTORY_MSG});
             }
  
             let paymentTransaction , supplyTransaction;
             if((paymentTransaction = await paymentSystem.takePayment(paymentData)) === -1){
                 await cart.updateInventory(false,sessionOpt);
-                addToErrorLogger("pay");
+                addToErrorLogger("pay"+ ERR_PAYMENT_MSG);
                 return ({status: ERR_PAYMENT_SYSTEM, err:ERR_PAYMENT_MSG});
             }
 
             if((supplyTransaction = await supplySystem.supply(addressData)) === -1){
                 await paymentSystem.refund(paymentTransaction);
                 await cart.updateInventory(false,sessionOpt);
-                addToErrorLogger("pay");
+                addToErrorLogger("pay"+ ERR_SUPPLY_MSG);
                 return ({status: ERR_SUPPLY_SYSTEM, err:ERR_SUPPLY_MSG});
             }
  
@@ -118,7 +118,7 @@ export class OrdersApi implements IOrderApi{
         } catch(error) {
             await trans.abortTransaction();
             console.log(error)
-            addToErrorLogger("pay");
+            addToSystemFailierLogger("pay" + error);
             if(error.message === 'connection lost') 
                 return {status: CONNECTION_LOST, err:"connection Lost"};
             else

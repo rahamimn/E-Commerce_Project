@@ -50,7 +50,7 @@ export class UsersApi implements IUsersApi{
 
     async login(userName ,password){
         try {
-            addToRegularLogger(" login ", {userName , password});
+            addToRegularLogger(" login ", {userName});
 
             const user = await UserCollection.findOne({userName});
             const isAdmin = await RoleCollection.findOne({ofUser:user.id, name:ADMIN})
@@ -67,7 +67,7 @@ export class UsersApi implements IUsersApi{
             }
         }
         catch(err){
-            addToSystemFailierLogger(" login  ");
+            addToSystemFailierLogger(" login  " + err);
             if(err.message === 'connection lost') 
                 return {status: Constants.CONNECTION_LOST, err:"connection Lost"};
             return ({status: Constants.BAD_USERNAME, err:'data isn\'t valid'});
@@ -125,7 +125,7 @@ export class UsersApi implements IUsersApi{
             }
             else{
                 await trans.abortTransaction();
-                addToSystemFailierLogger(" register  ");
+                addToSystemFailierLogger(" register  " + err);
                 return {status:Constants.BAD_USERNAME, err:"otherError"};
             }
         }
@@ -141,7 +141,7 @@ export class UsersApi implements IUsersApi{
             }
             return ({status: Constants.OK_STATUS , user: user.getUserDetails()});
         } catch(e){
-            addToSystemFailierLogger(" connection lost  ");
+            addToSystemFailierLogger(" connection lost  "+ e);
             if(e.message === 'connection lost') 
                 return {status: Constants.CONNECTION_LOST, err:"connection Lost"};
             else
@@ -160,7 +160,7 @@ export class UsersApi implements IUsersApi{
             }
             return ({status: Constants.OK_STATUS , user: user.getUserDetails()});
         } catch(e){
-            addToSystemFailierLogger(" connection lost  ");
+            addToSystemFailierLogger(" connection lost  " + e);
             if(e.message === 'connection lost') 
                 return {status: Constants.CONNECTION_LOST, err:"connection Lost"};
             else
@@ -181,7 +181,7 @@ export class UsersApi implements IUsersApi{
             userToUpdate = await UserCollection.updateOne(userToUpdate);
             return ({status: Constants.OK_STATUS});
         } catch(e){
-            addToSystemFailierLogger(" connection lost  ");
+            addToSystemFailierLogger(" connection lost  " + e);
             if(e.message === 'connection lost') 
                 return {status: Constants.CONNECTION_LOST, err:"connection Lost"};
             else
@@ -206,7 +206,7 @@ export class UsersApi implements IUsersApi{
                     {status: Constants.BAD_REQUEST}
             }
         } catch(e){
-            addToSystemFailierLogger(" connection lost  ");
+            addToSystemFailierLogger(" connection lost  " + e);
             if(e.message === 'connection lost') 
                 return {status: Constants.CONNECTION_LOST, err:"connection Lost"};
             else
@@ -237,7 +237,7 @@ export class UsersApi implements IUsersApi{
 
             let cartToUpdate = await CartCollection.findById(cartDetails.id);
             if(!cartToUpdate){
-                addToErrorLogger("updateCart no cart");         
+                addToErrorLogger("updateCart no cart found");         
 
                 return ({status: Constants.BAD_REQUEST, err: "updateCart no cart"});
             }
@@ -253,7 +253,7 @@ export class UsersApi implements IUsersApi{
 
             return ({status:Constants.BAD_REQUEST, err:'items not valid' });
         } catch(e){
-            addToSystemFailierLogger(" connection lost  ");
+            addToSystemFailierLogger(" connection lost  " + e);
             if(e.message === 'connection lost') 
                 return {status: Constants.CONNECTION_LOST, err:"connection Lost"};
             else
@@ -267,7 +267,7 @@ export class UsersApi implements IUsersApi{
 
             let user;
             if(!userId && !sessionId ){
-                addToErrorLogger("getCarts no user or session");         
+                addToErrorLogger("getCarts no user or no session");         
                 return ({status: Constants.BAD_REQUEST, err:"session nor user given"});
             }
             if(userId){
@@ -283,7 +283,7 @@ export class UsersApi implements IUsersApi{
             const cartsWithProducts = await Promise.all(carts.map( cart => cart.getDetails()));
             return ({status: Constants.OK_STATUS , carts:cartsWithProducts});
         } catch(e){
-            addToSystemFailierLogger(" connection lost  ");
+            addToSystemFailierLogger(" connection lost  " + e);
             if(e.message === 'connection lost') 
                 return {status: Constants.CONNECTION_LOST, err:"connection Lost"};
             else
@@ -304,7 +304,7 @@ export class UsersApi implements IUsersApi{
                 await CartCollection.findOne({ofUser:userId, store: product.storeId}) :
                 sessionCarts.findOne(sessionId, product.storeId);
             if(!product){
-                addToErrorLogger("addProductToCart no product");         
+                addToErrorLogger("addProductToCart no product found");         
 
                 return ({status: Constants.BAD_REQUEST, err:"products doesn't exists"});
             }
@@ -340,8 +340,8 @@ export class UsersApi implements IUsersApi{
             }
             return ({status: Constants.OK_STATUS , cart});
         } catch(e){
-            console.log(e);
-            addToSystemFailierLogger(" connection lost  ");
+            //console.log(e);
+            addToSystemFailierLogger(" connection lost  " + e);
             if(e.message === 'connection lost') 
                 return {status: Constants.CONNECTION_LOST, err:"connection Lost"};
             else
@@ -361,8 +361,8 @@ export class UsersApi implements IUsersApi{
             }
             const existRole = await RoleCollection.findOne({ofUser:appointedUser.id, name:ADMIN});
             if(existRole){
-                addToErrorLogger("setUserAsSystemAdmin no role");         
-                return ({status: Constants.BAD_REQUEST, err: "tole does not exist for admin"});
+                addToErrorLogger("setUserAsSystemAdmin no role for the appointer admin");         
+                return ({status: Constants.BAD_REQUEST, err: "role does not exist for admin"});
             }
             const [trans,sessionOpt] = await initTransactions();
             const newRole = await RoleCollection.insert(new Role({name:ADMIN, ofUser: appointedUser.id , appointor: appointorRole.id }),sessionOpt);
@@ -372,7 +372,7 @@ export class UsersApi implements IUsersApi{
             await sendNotification(appointedUser.id,'System Message','some one has appointed you \n please commit login again',trans,true);
             return ({status: Constants.OK_STATUS});
         } catch(e){
-            addToSystemFailierLogger(" connection lost  ");
+            addToSystemFailierLogger(" connection lost  " + e);
             if(e.message === 'connection lost') 
                 return {status: Constants.CONNECTION_LOST, err:"connection Lost"};
             return ({status: Constants.BAD_REQUEST, err:'data isn\'t valid'});
@@ -384,7 +384,7 @@ export class UsersApi implements IUsersApi{
             addToRegularLogger(" set User As store owner ", {userId ,appointedUserName, storeId });
             const store = await StoreCollection.findById(storeId);
             if(!store){
-                addToErrorLogger("setUserAsStoreOwner no store");         
+                addToErrorLogger("setUserAsStoreOwner no store found");         
 
                 return ({status: Constants.BAD_REQUEST, err: "store doesn't exists"});
             }
@@ -392,8 +392,8 @@ export class UsersApi implements IUsersApi{
             let newRole;
             const appointorRole = await RoleCollection.findOne({ofUser:userId, store:storeId , name:STORE_OWNER});
             if(!appointorRole){
-                addToErrorLogger("setUserAsStoreOwner no appointer");         
-                return ({status: Constants.BAD_REQUEST, err: "bad role for appointor"});
+                addToErrorLogger("setUserAsStoreOwner no appointer as store owner");         
+                return ({status: Constants.BAD_REQUEST, err: "bad role for appointor, he is not owner"});
             }
 
             if (!appointedUser){
@@ -419,7 +419,7 @@ export class UsersApi implements IUsersApi{
             await sendNotification(appointedUser.id,`Store ${store.name}`,'Congratulation you\'re owner now');
             return ({status: Constants.OK_STATUS});
         } catch(e){
-            addToSystemFailierLogger(" connection lost  ");
+            addToSystemFailierLogger(" connection lost  " + e);
             if(e.message === 'connection lost') 
                 return {status: Constants.CONNECTION_LOST, err:"connection Lost"};
             return ({status: Constants.BAD_REQUEST, err:'data isn\'t valid'});
@@ -461,7 +461,7 @@ export class UsersApi implements IUsersApi{
             await sendNotification(appointedUser.id,`Store ${store.name}`,'Congratulation you\'re manager now');
             return ({status: Constants.OK_STATUS});
         } catch(e){
-            addToSystemFailierLogger(" connection lost  ");
+            addToSystemFailierLogger(" connection lost  " + e);
             if(e.message === 'connection lost') 
                 return {status: Constants.CONNECTION_LOST, err:"connection Lost"};
             return ({status: Constants.BAD_REQUEST, err:'data isn\'t valid'});
@@ -479,13 +479,13 @@ export class UsersApi implements IUsersApi{
             const existRole = await RoleCollection.findOne({ofUser:appointedUser.id, store:storeId});
 
             if(!existRole){
-                addToErrorLogger("updatePermissions");         
+                addToErrorLogger("updatePermissions role does not exist");         
                 return {status: Constants.BAD_REQUEST, err:'role does not exist'};
             }
 
             const appointorRole = await RoleCollection.findOne({ofUser:userId, store:storeId});
             if(!appointorRole || !appointorRole.appointees.some(appointee => appointee.equals(existRole.id))){
-                addToErrorLogger("updatePermissions");         
+                addToErrorLogger("updatePermissions does not have appointer role");         
                 return {status: Constants.BAD_REQUEST, err:'does not have appointer role'};
             }
             existRole.permissions = permissions;
@@ -493,7 +493,7 @@ export class UsersApi implements IUsersApi{
 
             return {status: Constants.OK_STATUS };
         } catch(e){
-            addToSystemFailierLogger(" connection lost  ");
+            addToSystemFailierLogger(" connection lost  " + e);
             if(e.message === 'connection lost') 
                 return {status: Constants.CONNECTION_LOST, err:"connection Lost"};
             return ({status: Constants.BAD_REQUEST, err:'data isn\'t valid'});
@@ -506,7 +506,7 @@ export class UsersApi implements IUsersApi{
 
             const user = await UserCollection.findById(userId);
             if(!user){
-                addToErrorLogger("updatePermissions");         
+                addToErrorLogger("popNotifications bad user details");         
                 return {status: Constants.BAD_REQUEST, err: "bad user details"};
             }
             const notifications =  user.notifications.slice(0);
@@ -516,7 +516,7 @@ export class UsersApi implements IUsersApi{
 
             return {status: Constants.OK_STATUS , notifications};
         } catch(e){
-            addToSystemFailierLogger(" connection lost  ");
+            addToSystemFailierLogger("popNotifications connection lost  " + e);
             if(e.message === 'connection lost') 
                 return {status: Constants.CONNECTION_LOST, err:"connection Lost"};
             return ({status: Constants.BAD_REQUEST, err:'data isn\'t valid'});
@@ -529,7 +529,7 @@ export class UsersApi implements IUsersApi{
 
             const user = await UserCollection.findById(userId);
             if(!user){
-                addToErrorLogger("pushNotification");         
+                addToErrorLogger("pushNotification user does not exist");         
                 return {status: Constants.BAD_REQUEST, err:'user does not exist'};
             }
 
@@ -542,7 +542,7 @@ export class UsersApi implements IUsersApi{
         } catch(e){
             if(trans)
                 await trans.abortTransaction();
-            addToSystemFailierLogger(" connection lost  ");
+            addToSystemFailierLogger(" connection lost  " + e);
             if(e.message === 'connection lost') 
                 return {status: Constants.CONNECTION_LOST, err:"connection Lost"};
             return ({status: Constants.BAD_REQUEST, err:'data isn\'t valid'});
@@ -556,17 +556,17 @@ export class UsersApi implements IUsersApi{
             const roleUserId = await RoleCollection.findOne({ ofUser: userId, store: storeId });
             const userofRoleToDelete = await UserCollection.findOne({ userName: userNameRemove });
             if(!userofRoleToDelete){
-                addToErrorLogger("removeRole");         
+                addToErrorLogger("removeRole There is no user with this user name");         
                 return {status: Constants.BAD_REQUEST, err: 'There is no user with this user name'};
             }
             const role = await RoleCollection.findOne({ ofUser: userofRoleToDelete.id, store: storeId });
             if(!roleUserId || !roleUserId.checkPermission(Constants.REMOVE_ROLE_PERMISSION)){
-                addToErrorLogger("removeRole");         
+                addToErrorLogger("removeRole appointor userIdRemove role not exist");         
                 return {status: Constants.BAD_REQUEST, err: 'appointor userIdRemove role not exist'};
             }
                 
             if(!role){
-                addToErrorLogger("removeRole");         
+                addToErrorLogger("removeRole role of appointee not exist");         
                 return {status: Constants.BAD_REQUEST, err: 'role of appointee not exist'};
             }
             if(role.appointor.equals(roleUserId.id)){
@@ -575,11 +575,11 @@ export class UsersApi implements IUsersApi{
                 return {status: Constants.OK_STATUS };
             }
             else{
-                addToErrorLogger("removeRole");         
+                addToErrorLogger("removeRole not appointee of commiter");         
                 return {status: Constants.BAD_REQUEST, err: 'not appointee of commiter' };
             }
         } catch(e){
-            addToSystemFailierLogger(" connection lost  ");
+            addToSystemFailierLogger(" connection lost  " + e);
             if(e.message === 'connection lost') 
                 return {status: Constants.CONNECTION_LOST, err:"connection Lost"};
             return ({status: Constants.BAD_REQUEST, err:'data isn\'t valid'});
@@ -594,21 +594,21 @@ export class UsersApi implements IUsersApi{
 
             let admin = await UserCollection.findById(adminId);
             if(!admin){
-                addToErrorLogger("setUserActivation");         
+                addToErrorLogger("setUserActivation there is  no permission");         
                 return {status: Constants.BAD_REQUEST, err: "there is  no permission"};
             }
             let user = await UserCollection.findOne({userName: userNameToDisActivate});
             if(!user){
-                addToErrorLogger("setUserActivation");         
+                addToErrorLogger("setUserActivation the user does not exist");         
                 return {status: Constants.BAD_REQUEST, err: "the user does not exist"};
             }
             let adminRole = await RoleCollection.find({ofUser: adminId, name:ADMIN});
             if(!adminRole){
-                addToErrorLogger("setUserActivation");         
+                addToErrorLogger("setUserActivation there is  no permission");         
                 return {status: Constants.BAD_REQUEST, err: "there is  no permission"};
             }
             if(await RoleCollection.findOne({ofUser:user.id, name:ADMIN})){
-                addToErrorLogger("setUserActivation");
+                addToErrorLogger("setUserActivation cannot change activation to admin user");
                 return {status: Constants.BAD_REQUEST, err: "cannot change activation to admin user"};
             }
 
@@ -617,7 +617,7 @@ export class UsersApi implements IUsersApi{
             user = await UserCollection.updateOne(user);
             return ({status: Constants.OK_STATUS , user});
         } catch(e){
-            addToSystemFailierLogger(" connection lost  ");
+            addToSystemFailierLogger(" connection lost  " + e);
             if(e.message === 'connection lost') 
                 return {status: Constants.CONNECTION_LOST, err:"connection Lost"};
             return ({status: Constants.BAD_REQUEST, err:'data isn\'t valid'});
@@ -642,7 +642,7 @@ export class UsersApi implements IUsersApi{
 
             return ({status: Constants.OK_STATUS , stores});
         } catch(e){
-            addToSystemFailierLogger(" connection lost  ");
+            addToSystemFailierLogger(" connection lost  " + e);
             if(e.message === 'connection lost') 
                 return {status: Constants.CONNECTION_LOST, err:"connection Lost"};
             return ({status: Constants.BAD_REQUEST, err:'data isn\'t valid'});
@@ -655,12 +655,12 @@ export class UsersApi implements IUsersApi{
             let role = await RoleCollection.findOne({ofUser: userId, store: storeId});;
 
             if (!role){
-                addToErrorLogger("getUserRole");
+                addToErrorLogger("getUserRole no role found");
                 return ({status: Constants.BAD_REQUEST, err: "role problem!!!"});
             }
             return ({status: Constants.OK_STATUS , role});
         } catch(e){
-            addToSystemFailierLogger(" connection lost  ");
+            addToSystemFailierLogger(" connection lost  " + e);
             if(e.message === 'connection lost') 
                 return {status: Constants.CONNECTION_LOST, err:"connection Lost"};
             return ({status: Constants.BAD_REQUEST, err:'data isn\'t valid'});
@@ -869,7 +869,7 @@ export class UsersApi implements IUsersApi{
         }
         catch(err)
         {
-            addToErrorLogger("Failed to decline pending owner");         
+            addToSystemFailierLogger("declineOwnerToBe Failed to decline pending owner"+ err);         
             return ({status: Constants.BAD_REQUEST, err: "Failed to decline pending-owner"});
         }
         
@@ -912,7 +912,7 @@ export class UsersApi implements IUsersApi{
         }
         catch(err)
         {
-            addToErrorLogger("Failed to vote nuetral for pending owner");         
+            addToSystemFailierLogger("voteNuetralOwnerToBe Failed to vote nuetral for pending owner "+ err);         
             return ({status: Constants.BAD_REQUEST, err: "Failed to vote nuetral for pending owner"});
         }
         
@@ -967,7 +967,7 @@ export class UsersApi implements IUsersApi{
         }
         catch(err)
         {
-            addToErrorLogger("Failed to approve pending owner");         
+            addToSystemFailierLogger("approveOwnerToBe Failed to approve pending owner " + err);         
             return ({status: Constants.BAD_REQUEST, err: "Failed to approve pending-owner"});
         } 
         return ({status: Constants.OK_STATUS});
@@ -1000,7 +1000,7 @@ export class UsersApi implements IUsersApi{
         }
         catch(err)
         {
-            addToErrorLogger("Failed to check if still pending owner");         
+            addToSystemFailierLogger("isStillPending Failed to check if still pending owner"+ err);         
             return ({status: Constants.BAD_REQUEST, err: "Failed to check if still pending owner"});
         }
     }
@@ -1028,7 +1028,7 @@ export class UsersApi implements IUsersApi{
         }
         catch(err)
         {
-            addToErrorLogger("Failed to check if still pending owner");         
+            addToSystemFailierLogger("isUserAlreadyPending Failed to check if still pending owner"+ err);         
             return ({status: Constants.BAD_REQUEST, err: "Failed to check if still pending owner"});
         }
     }
@@ -1061,7 +1061,7 @@ export class UsersApi implements IUsersApi{
         }
         catch(err)
         {
-            addToErrorLogger("Failed to check if pending owner has been declined ");         
+            addToSystemFailierLogger("isPendingOwnerDeclined Failed to check if pending owner has been declined "+ err);         
             return ({status: Constants.BAD_REQUEST, err: "Failed to check if pending owner has been declined"});
         }
     }
@@ -1074,33 +1074,33 @@ export class UsersApi implements IUsersApi{
         // Get Store
         let store = await StoreCollection.findById(storeId);
         if(!store){
-            addToErrorLogger("Store not found");         
+            addToErrorLogger("suggestToBeOwner Store not found");         
             return ({status: Constants.BAD_REQUEST, err: "Store not found"});
         }
 
         // Get toBeOwner
         let toBeOwner = await UserCollection.findOne({userName : toBeOwnerName});
         if (!toBeOwner){
-            addToErrorLogger("Appointed user was not found");         
+            addToErrorLogger("suggestToBeOwner Appointed user was not found");         
             return ({status: Constants.BAD_REQUEST, err: "Appointed user was not found"});
         }
 
         if (await this.isUserAlreadyPending(storeId, toBeOwnerName)){
-            addToErrorLogger("User is already pending to be owner");         
+            addToErrorLogger("suggestToBeOwner User is already pending to be owner");         
             return ({status: Constants.BAD_REQUEST, err: "User has been suggested to be owner in the past. Could not suggest more than once"});
         }
 
         // Get suggesting Owner
         let suggestingOwner = await UserCollection.findOne({userName : suggestingOwnerName});
         if (!suggestingOwner){
-            addToErrorLogger("Suggesting user was not found");         
+            addToErrorLogger("suggestToBeOwner Suggesting user was not found");         
             return ({status: Constants.BAD_REQUEST, err: "Suggesting owner was not found"});
         }
 
         // Make sure user is not already owner
         let existRole = await RoleCollection.findOne({ofUser:toBeOwner.id, store:storeId});
         if(existRole && existRole.name === STORE_OWNER){
-            addToErrorLogger("User is already owner in this store");         
+            addToErrorLogger("suggestToBeOwner User is already owner in this store");         
             return ({status: Constants.BAD_REQUEST, err: "User is already owner in this store"});
         }
 
