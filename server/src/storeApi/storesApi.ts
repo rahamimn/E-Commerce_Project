@@ -64,7 +64,7 @@ export class StoresApi implements IStoresApi {
         }
         catch (err) {
             await trans.abortTransaction();
-            addToSystemFailierLogger(" add store : connectionLost  ");
+            addToSystemFailierLogger(" add store : connectionLost  "+ err);
             if (err.message === 'connection lost')
                 return {status: CONNECTION_LOST, err: "connection Lost"};
             return ({status: BAD_REQUEST, err: 'data isn\'t valid'});
@@ -103,7 +103,7 @@ export class StoresApi implements IStoresApi {
 
             return ({status: OK_STATUS});
         } catch (err) {
-            addToSystemFailierLogger(" close store : connectionLost  ");
+            addToSystemFailierLogger(" close store : connectionLost  "+ err);
             if (err.message === 'connection lost')
                 return {status: CONNECTION_LOST, err: "connection Lost"};
             return ({status: BAD_REQUEST, err: 'data isn\'t valid'});
@@ -124,7 +124,7 @@ export class StoresApi implements IStoresApi {
                 return {store: storeDetails.getStoreDetails(), status: OK_STATUS};
             }
         } catch (err) {
-            addToSystemFailierLogger(" getStore : connectionLost  ");
+            addToSystemFailierLogger(" getStore : connectionLost  "+ err);
             if (err.message === 'connection lost')
                 return {status: CONNECTION_LOST, err: "connection Lost"};
             return ({status: BAD_REQUEST, err: 'data isn\'t valid'});
@@ -137,7 +137,7 @@ export class StoresApi implements IStoresApi {
             const stores = await StoreCollection.find({});
             return {stores: stores.map(store => store.getStoreDetails()), status: OK_STATUS};
         } catch (err) {
-            addToSystemFailierLogger(" getAllStores : connectionLost  ");
+            addToSystemFailierLogger(" getAllStores : connectionLost  "+ err);
             if (err.message === 'connection lost')
                 return {status: CONNECTION_LOST, err: "connection Lost"};
             return ({status: BAD_REQUEST, err: 'data isn\'t valid'});
@@ -162,7 +162,7 @@ export class StoresApi implements IStoresApi {
             }
             return ({status: OK_STATUS, arrat_of_messages: store_object_from_db.messages});
         } catch (err) {
-            addToSystemFailierLogger(" getStoreMessages : connectionLost  ");
+            addToSystemFailierLogger(" getStoreMessages : connectionLost  "+ err);
             if (err.message === 'connection lost')
                 return {status: CONNECTION_LOST, err: "connection Lost"};
             return ({status: BAD_REQUEST, err: 'data isn\'t valid'});
@@ -202,7 +202,7 @@ export class StoresApi implements IStoresApi {
 
             return ({status: OK_STATUS, storeWorkers: workers});
         } catch (err) {
-            addToSystemFailierLogger(" getWorkers : connectionLost  ");
+            addToSystemFailierLogger(" getWorkers : connectionLost  "+ err);
             if (err.message === 'connection lost')
                 return {status: CONNECTION_LOST, err: "connection Lost"};
             return ({status: BAD_REQUEST, err: 'data isn\'t valid'});
@@ -230,7 +230,7 @@ export class StoresApi implements IStoresApi {
             const store_curr = await StoreCollection.updateOne(store_object_from_db);
             return ({status: OK_STATUS});
         } catch (err) {
-            addToSystemFailierLogger(" getWorkers : connectionLost  ");
+            addToSystemFailierLogger(" getWorkers : connectionLost  "+ err);
             if (err.message === 'connection lost')
                 return {status: CONNECTION_LOST, err: "connection Lost"};
             return ({status: BAD_REQUEST, err: 'data isn\'t valid'});
@@ -273,7 +273,7 @@ export class StoresApi implements IStoresApi {
             await UserCollection.updateOne(toUser);
             return ({status: OK_STATUS, message: message1});
         } catch (err) {
-            addToSystemFailierLogger(" sendMessage : connectionLost  ");
+            addToSystemFailierLogger(" sendMessage : connectionLost  "+ err);
             if (err.message === 'connection lost')
                 return {status: CONNECTION_LOST, err: "connection Lost"};
             return ({status: BAD_REQUEST, err: 'data isn\'t valid'});
@@ -308,7 +308,7 @@ export class StoresApi implements IStoresApi {
             const isUserPermitted = await RoleCollection.findOne({ofUser: userId, store: storeId});
 
             if (!isUserAdmin && (!isUserPermitted || !isUserPermitted.checkPermission(MANAGE_PURCHASE_POLICY_PERMISSION))) {
-                addToErrorLogger("addPurchaseRule");
+                addToErrorLogger("addPurchaseRule You have no permission for this action (User ID: " + userId + ").");
                 return ({
                     status: BAD_REQUEST,
                     err: "You have no permission for this action (User ID: " + userId + ")."
@@ -318,7 +318,7 @@ export class StoresApi implements IStoresApi {
             purchaseRule.id = uuidv4();
             const purchaseRules = store.purchaseRules;
             if (!validatePurchaseRule(purchaseRule, purchaseRules)) {
-                addToErrorLogger("addPurchaseRule");
+                addToErrorLogger("addPurchaseRule rule name isnt unique");
                 return ({status: BAD_REQUEST , err: "rule name isnt unique"});
             }
 
@@ -328,7 +328,7 @@ export class StoresApi implements IStoresApi {
 
         }
         catch (err) {
-            addToSystemFailierLogger(" add purchase rules -> from routes  ");
+            addToSystemFailierLogger(" add purchase rules -> from routes  "+ err);
             return ({status: Constants.BAD_REQUEST});
         }
 
@@ -348,7 +348,7 @@ export class StoresApi implements IStoresApi {
             const isUserPermitted = await RoleCollection.findOne({ofUser: userId, store: storeId});
 
             if (!isUserAdmin && (!isUserPermitted || !isUserPermitted.checkPermission(MANAGE_PURCHASE_POLICY_PERMISSION))) {
-                addToErrorLogger("deletePurchaseRule");
+                addToErrorLogger("deletePurchaseRule You have no permission for this action (User ID: " + userId + ").");
                 return ({
                     status: BAD_REQUEST,
                     err: "You have no permission for this action (User ID: " + userId + ")."
@@ -362,7 +362,7 @@ export class StoresApi implements IStoresApi {
 
         }
         catch (err) {
-            addToSystemFailierLogger(" add purchase rules -> from routes  ");
+            addToSystemFailierLogger(" add purchase rules -> from routes  "+ err);
             return ({status: Constants.BAD_REQUEST});
         }
 
@@ -395,7 +395,7 @@ export class StoresApi implements IStoresApi {
             const isUserPermitted = await RoleCollection.findOne({ofUser: userId, store: storeId});
 
             if (!isUserAdmin && (!isUserPermitted || !isUserPermitted.checkPermission(MANAGE_SALES_PERMISSION))) {
-                addToErrorLogger("addSaleRule");
+                addToErrorLogger("addSaleRule You have no permission for this action (User ID: " + userId + ").");
                 return ({
                     status: BAD_REQUEST,
                     err: "You have no permission for this action (User ID: " + userId + ")."
@@ -406,7 +406,7 @@ export class StoresApi implements IStoresApi {
             updateSaleIds(newSaleRule);
             const saleRules = store.saleRules;
             if (!validateSaleRule(newSaleRule, saleRules)) {
-                addToErrorLogger("addSaleRule");
+                addToErrorLogger("addSaleRule rule name isnt unique");
                 return ({status: BAD_REQUEST, err:"rule name isnt unique"});
             }
 
@@ -415,7 +415,7 @@ export class StoresApi implements IStoresApi {
             return ({status: OK_STATUS});
         }
         catch (err) {
-            addToSystemFailierLogger(" add sale rules -> from routes  ");
+            addToSystemFailierLogger(" add sale rules -> from routes  "+ err);
             return ({status: Constants.BAD_REQUEST});
         }
 
@@ -434,7 +434,7 @@ export class StoresApi implements IStoresApi {
             const isUserPermitted = await RoleCollection.findOne({ofUser: userId, store: storeId});
 
             if (!isUserAdmin && (!isUserPermitted || !isUserPermitted.checkPermission(MANAGE_SALES_PERMISSION))) {
-                addToErrorLogger("deleteSaleRule");
+                addToErrorLogger("deleteSaleRule You have no permission for this action (User ID: " + userId + ").");
                 return ({
                     status: BAD_REQUEST,
                     err: "You have no permission for this action (User ID: " + userId + ")."
@@ -448,7 +448,7 @@ export class StoresApi implements IStoresApi {
 
         }
         catch (err) {
-            addToSystemFailierLogger(" deleteSaleRule rules -> from routes  ");
+            addToSystemFailierLogger(" deleteSaleRule rules -> from routes  "+ err);
             return ({status: Constants.BAD_REQUEST});
         }
 

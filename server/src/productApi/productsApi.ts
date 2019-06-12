@@ -10,34 +10,34 @@ export class ProductsApi implements IProductApi{
 
         addToRegularLogger("addProduct", {} );
         if (!userId){
-            addToErrorLogger("addProduct");
+            addToErrorLogger("addProduct BAD user details");
             return ({status: BAD_REQUEST, err: "BAD user details"});
         }
 
         if (!this.isStoreVaild(newProduct.storeId)){
-            addToErrorLogger("addProduct");
+            addToErrorLogger("addProduct BAD STORE details");
             return ({status: BAD_REQUEST, err: "BAD STORE details"});
         }
 
        const isUserPermitted = await RoleCollection.findOne({ofUser:userId, store:newProduct.storeId });
 
         if(!isUserPermitted ||  !isUserPermitted.checkPermission(ADD_PRODUCT_PERMISSION )){
-            addToErrorLogger("addProduct");
+            addToErrorLogger("addProduct You have no permission for this action (User ID: " + userId + ").");
             return ({status: BAD_REQUEST, err: "You have no permission for this action (User ID: " + userId + ")."});
         }
 
         if (newProduct.amountInventory < 0) {
-            addToErrorLogger("addProduct");
+            addToErrorLogger("addProduct " + BAD_AMOUNT);
             return ({status: BAD_REQUEST, err: BAD_AMOUNT});
         }
 
         if (newProduct.price < 0){
-            addToErrorLogger("addProduct");
+            addToErrorLogger("addProduct "+BAD_PRICE );
             return ({status: BAD_REQUEST, err: BAD_PRICE});
         }
 
         if (await (this.doesStoreHaveThisProduct(newProduct.storeId, newProduct.name))){
-            addToErrorLogger("addProduct");
+            addToErrorLogger("addProduct The product \"" + newProduct.name + "\" already exists in the store with ID: \"" + newProduct.storeId +"\"");
             return ({status: BAD_REQUEST, err: ("The product \"" + newProduct.name + "\" already exists in the store with ID: \"" + newProduct.storeId +"\"") });
         }
 
@@ -63,7 +63,7 @@ export class ProductsApi implements IProductApi{
             return {status: OK_STATUS , product: productToInsert}
 
         } catch(err) {
-            addToSystemFailierLogger(" add Product  ");
+            addToSystemFailierLogger(" add Product  "+ err);
             if(err.message === 'connection lost')
                 return {status: CONNECTION_LOST, err:"connection Lost"};
             else
@@ -81,12 +81,12 @@ export class ProductsApi implements IProductApi{
         try{ 
 
             if (!userId || !productId){
-                addToErrorLogger("setProdactActivation");
+                addToErrorLogger("setProdactActivation BAD USER ID");
                 return ({status: BAD_REQUEST, err: "BAD USER ID"});
             }
             let product = await ProductCollection.findById(productId);
             if(!product){
-                addToErrorLogger("setProdactActivation");
+                addToErrorLogger("setProdactActivation Product not found (Id: " + productId + ").");
                 return ({status: BAD_REQUEST, err: "Product not found (Id: " + productId + ")."});
             }
     
@@ -94,7 +94,7 @@ export class ProductsApi implements IProductApi{
             const isUserPermitted = await RoleCollection.findOne({ofUser:userId, store:product.storeId , name:{$in: [STORE_OWNER,STORE_MANAGER]}});
     
             if(!isUserAdmin && (!isUserPermitted ||  !isUserPermitted.checkPermission(REMOVE_PRODUCT_PERMISSION ))){
-                addToErrorLogger("setProdactActivation");
+                addToErrorLogger("setProdactActivation You have no permission for this action (User ID: " + userId + ").");
                 return ({status: BAD_REQUEST, err: "You have no permission for this action (User ID: " + userId + ")."});
             }
             
@@ -111,7 +111,7 @@ export class ProductsApi implements IProductApi{
             return {status: OK_STATUS ,product: product_AfterRemove}
 
         } catch(err) {
-            addToSystemFailierLogger(" setProdactActivation  ");
+            addToSystemFailierLogger(" setProdactActivation  "+ err);
             if(err.message === "connection Lost")
                 return {status: CONNECTION_LOST, err:"connection lost"};
             return ({status: BAD_REQUEST, err:'data not valid'});
@@ -124,12 +124,12 @@ export class ProductsApi implements IProductApi{
         try{ 
 
             if (!userId){
-                addToErrorLogger("updateProduct");
+                addToErrorLogger("updateProduct"+ BAD_USER_ID);
                 return ({status: BAD_REQUEST, err: BAD_USER_ID});
             }
     
             if (!this.isStoreVaild(storeId)){
-                addToErrorLogger("updateProduct");
+                addToErrorLogger("updateProduct"+ BAD_STORE_ID);
                 return ({status: BAD_REQUEST, err: BAD_STORE_ID});
             }
     
@@ -137,12 +137,12 @@ export class ProductsApi implements IProductApi{
             const isUserPermitted = await RoleCollection.findOne({ofUser:userId, store:storeId });
     
             if(!isUserAdmin && (!isUserPermitted ||  !isUserPermitted.checkPermission(UPDATE_PRODUCT_PERMISSION ))){
-                addToErrorLogger("updateProduct");
+                addToErrorLogger("updateProduct You have no permission for this action (User ID: " + userId + ").");
                 return ({status: BAD_REQUEST, err: "You have no permission for this action (User ID: " + userId + ")."});
             }
 
             if (!this.isProductVaild(productId)){
-                addToErrorLogger("updateProduct");
+                addToErrorLogger("updateProduct Product not found (Id: " + productId + ")");
                 return ({status: BAD_REQUEST, err: "Product not found (Id: " + productId + ")" } );
             }
 
@@ -152,7 +152,7 @@ export class ProductsApi implements IProductApi{
             return {status: OK_STATUS ,product: product_AfterUpdate}
 
         } catch(err) {
-            addToSystemFailierLogger(" updateProduct  ");
+            addToSystemFailierLogger(" updateProduct  "+ err);
             if(err.message === "connection lost")
                 return {status: CONNECTION_LOST, err:"connection Lost"};
             return ({status: BAD_REQUEST, err:'data not valid'});
@@ -203,7 +203,7 @@ export class ProductsApi implements IProductApi{
             return {status: OK_STATUS ,products: productsToReturn}
 
         } catch(err) {
-            addToSystemFailierLogger(" getProducts  ");
+            addToSystemFailierLogger(" getProducts  "+ err);
             if(err.message === 'connection lost')
                 return {status: CONNECTION_LOST, err:"connection Lost"};
             else
@@ -216,21 +216,21 @@ export class ProductsApi implements IProductApi{
         try{ 
 
             if (!this.isProductVaild(productId)){
-                addToErrorLogger("getProductDetails");
+                addToErrorLogger("getProductDetails Product not found (Id: " + productId + ")");
                 return ({status: BAD_REQUEST, err: "Product not found (Id: " + productId + ")" } );
             }
             
             let product = await ProductCollection.findById(productId);
             if(!product){
-                addToErrorLogger("getProductDetails");
-                return ({status: BAD_REQUEST}); //inorder to remove props from object
+                addToErrorLogger("getProductDetails product not found");
+                return ({status: BAD_REQUEST, err: "product not found"}); //inorder to remove props from object
             }
     
             return ({status: OK_STATUS , product: product.getProductDetails()});
 
                
         } catch(err) {
-            addToSystemFailierLogger(" getProductDetails  ");
+            addToSystemFailierLogger(" getProductDetails  "+ err);
             if(err.message === 'connection lost')
                 return {status: CONNECTION_LOST, err:"connection Lost"};
             else
@@ -257,7 +257,7 @@ export class ProductsApi implements IProductApi{
             return true;
         }
         catch(e){
-            addToSystemFailierLogger(" isStoreVaild : connectionLost  ");
+            addToSystemFailierLogger(" isStoreVaild : connectionLost  "+ e);
             return false;
         }
     }
@@ -287,7 +287,7 @@ export class ProductsApi implements IProductApi{
 
         try{ 
             if (!(await this.isStoreVaild(storeId))){
-                addToErrorLogger("doesStoreHaveThisProduct");
+                addToErrorLogger("doesStoreHaveThisProduct BAD STORE ID");
                 return ({status: BAD_REQUEST, err: "BAD STORE ID"});
             }
             
@@ -305,7 +305,7 @@ export class ProductsApi implements IProductApi{
                 return false;
 
         } catch(err) {
-            addToSystemFailierLogger(" doesStoreHaveThisProduct  ");
+            addToSystemFailierLogger(" doesStoreHaveThisProduct  "+ err);
             return false;
         }       
     }
