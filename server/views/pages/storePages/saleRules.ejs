@@ -22,9 +22,9 @@
                             <div class="col-md-6">
                                 <select class="custom-select" id="type" name="type" onchange="onChangeType(event)">
                                     <option value="complex" label="Complex Pre Condition" selected></option>
-                                    <option value="minProductA" label="Min Product Amount"></option>
-                                    <option value="maxProductA" label="Max Product Amount"></option>
-                                    <option value="maxProductsA" label="Max Products Amount"></option>
+                                    <option value="simple-min-product-amount" label="Min Product Amount"></option>
+                                    <option value="simple-max-product-amount" label="Max Product Amount"></option>
+                                    <option value="simple-max-products-amount" label="Max Products Amount"></option>
                                 </select>
                             </div>
                         </div>
@@ -254,15 +254,15 @@
                 condition.op1={id:`new-${condId++}`,type:"unset", parentId: condition.id };
                 condition.op2={id:`new-${condId++}`,type:"unset", parentId: condition.id };
                 break;
-            case 'maxProductA':
+            case "simple-max-product-amount":
                 condition.amount = amount;
                 condition.product = product;
                 break;
-            case 'minProductA':
+            case "simple-min-product-amount":
                 condition.amount = amount;
                 condition.product = product;
                 break;
-            case 'maxProductsA': 
+            case "simple-max-products-amount":
                 condition.amount = amount;
                 break;
         }
@@ -344,17 +344,17 @@
                 $('#product_input_view').hide();
                 $('#amount_input_view').hide();    
                 break;
-            case 'minProductA': 
+            case "simple-min-product-amount":
                 $('#bin_op_input_view').hide();
                 $('#product_input_view').show();
                 $('#amount_input_view').show();    
                 break;
-            case 'maxProductA': 
+            case "simple-max-product-amount":
                 $('#bin_op_input_view').hide();
                 $('#product_input_view').show();
                 $('#amount_input_view').show();    
                 break;
-            case 'maxProductsA': 
+            case "simple-max-products-amount":
                 $('#bin_op_input_view').hide();
                 $('#product_input_view').hide();
                 $('#amount_input_view').show();  

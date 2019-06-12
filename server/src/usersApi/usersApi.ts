@@ -214,6 +214,23 @@ export class UsersApi implements IUsersApi{
         }
     }
 
+    async validateCartRules(cartId){
+        try {
+            addToRegularLogger(" validateCartRules ", {cartId});
+
+            let cart = await CartCollection.findById(cartId);
+            const isPassedRules = await cart.validateCartRules();
+            return ({status: Constants.OK_STATUS, isPassedRules:isPassedRules});
+
+        } catch(e){
+            addToSystemFailierLogger(" connection lost  ");
+            if(e.message === 'connection lost')
+                return {status: Constants.CONNECTION_LOST, err:"connection Lost"};
+            else
+                return ({status: Constants.BAD_REQUEST, err:'data isn\'t valid'});
+        }
+    }
+
     async updateCart(cartDetails){
         try {
             addToRegularLogger(" update Cart ", {cartDetails });

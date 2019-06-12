@@ -22,6 +22,7 @@ export const BAD_SUPPLY = -102;
 export const ERR_PAYMENT_SYSTEM = -103;
 export const ERR_SUPPLY_SYSTEM = -104;
 export const ERR_INVENTORY_PROBLEM = -105;
+export const ERR_POLICY_PROBLEM = -106;
 
 export const ERR_STORE_PROBLEM = -101;
 
@@ -76,6 +77,6 @@ export const PTYPE_SIMPLE_MAX_PRODUCT = "simple-max-product-amount";
 export const PTYPE_SIMPLE_MAX_PRODUCTS = "simple-max-products-amount";
 export const PTYPE_SIMPLE_MIN_PRODUCT = "simple-min-product-amount";
 export const DTYPE_SIMPLE_DISCOUNT_PRECENTAGE = "discountPercentage";
-export const DTYPE_SIMPLE_DISCOUNT_OPO = "discountOnePlusOne";
+// export const DTYPE_SIMPLE_DISCOUNT_OPO = "discountOnePlusOne";
 
 

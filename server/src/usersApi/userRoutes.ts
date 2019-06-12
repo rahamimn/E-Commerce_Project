@@ -160,6 +160,26 @@ async function getCart(req: Request, res: express.Response) {
     }
 }
 
+usersApiRouter.post('/usersApi/validateCartRules', validateCartRules);
+
+async function validateCartRules(req: Request, res: express.Response) {
+    try {
+        const cartId = req.body.cartId;
+
+        if (!cartId)
+            res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
+        else {
+            const response = await usersApi.validateCartRules(cartId);
+            res.send(response);
+        }
+    }
+    catch (err) {
+        addToSystemFailierLogger(" validateCartRules from user routers  ");
+        res.send({status: Constants.BAD_REQUEST});
+    }
+}
+
+
 usersApiRouter.post('/usersApi/updateCart', updateCart);
 
 async function updateCart(req: Request, res: express.Response) {

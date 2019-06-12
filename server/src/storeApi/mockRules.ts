@@ -1,5 +1,5 @@
 import {
-    DTYPE_SIMPLE_DISCOUNT_PRECENTAGE, PTYPE_COMPLEX, PTYPE_SIMPLE_MAX_PRODUCT,
+    DTYPE_SIMPLE_DISCOUNT_PRECENTAGE, PTYPE_COMPLEX, PTYPE_SIMPLE_MAX_PRODUCT, PTYPE_SIMPLE_MAX_PRODUCTS,
     PTYPE_SIMPLE_MIN_PRODUCT
 } from "../consts";
 const uuidv4 = require('uuid/v4');
@@ -10,7 +10,7 @@ export const  mockSaleRules = [{
     condition:{
         id:'11',
         type:PTYPE_SIMPLE_MAX_PRODUCT,
-        productId:'123',
+        product:'123',
         amount:5,
         displayText:'At most 5 cucambers'
     },
@@ -30,7 +30,7 @@ export const  mockSaleRules = [{
     condition:{
         id:'1dasda1',
         type:PTYPE_SIMPLE_MAX_PRODUCT,
-        productId:'gfdg123',
+        product:'gfdg123',
         amount:5,
         displayText:'At most 5 cucambers'
     },
@@ -53,7 +53,7 @@ export const mockSimpleSaleRule = function (productId, productName) {
         condition:{
             id:'11',
             type:PTYPE_SIMPLE_MIN_PRODUCT,
-            productId:productId,
+            product:productId,
             amount:5,
             displayText:'At most 5 cucambers'
         },
@@ -71,6 +71,112 @@ export const mockSimpleSaleRule = function (productId, productName) {
     return result;
 };
 
+export const mock2DiscountsSaleRule_EasyToPass = function (prodId1, prodId2) {
+    const result = {
+        name:"pRule2",
+        id:'1',
+        condition:{
+            id:'11',
+            type:PTYPE_SIMPLE_MIN_PRODUCT,
+            product:prodId2,
+            amount:2,
+            displayText:'At LEAST 1 from prod2'
+        },
+        discounts:[
+            {
+                id:'21332bgg1',
+                type: DTYPE_SIMPLE_DISCOUNT_PRECENTAGE,
+                percentage:50,
+                products:[{id:prodId1,name:'justA Name'}],
+                displayText:'on the following products 50% discount.'
+            },
+            {
+                id:'21332bgg2',
+                type: DTYPE_SIMPLE_DISCOUNT_PRECENTAGE,
+                percentage:25,
+                products:[{id:prodId2,name:'justA Name2'}],
+                displayText:'on the following products 25% discount.'
+            }
+        ]
+
+    };
+
+    return result;
+};
+
+export const mockSimpleSaleRule_EasyToPass = function (prodId) {
+    const result = {
+        name:"pRule2",
+        id:'1',
+        condition:{
+            id:'11',
+            type:PTYPE_SIMPLE_MIN_PRODUCT,
+            product:prodId,
+            amount:1,
+            displayText:'At LEAST 1 from prod'
+        },
+        discounts:[
+            {
+                id:'21332bgg1',
+                type: DTYPE_SIMPLE_DISCOUNT_PRECENTAGE,
+                percentage:50,
+                products:[{id:prodId,name:'justA Name'}],
+                displayText:'on the following products 50% discount.'
+            }
+        ]
+
+    };
+
+    return result;
+};
+
+export const mockSimplePurchaseRule_EasyToPass = function (prodId) {
+    const result = {
+        name:"pRule2",
+        id:'1',
+        condition:{
+            id:'11',
+            type:PTYPE_SIMPLE_MIN_PRODUCT,
+            product:prodId,
+            amount:1,
+            displayText:'At LEAST 0 from prod'
+        }
+    };
+
+    return result;
+};
+
+export const mockComplexPurchaseRule = function (prodId) {
+    const result = {
+        name:"rule2",
+        id:'2342222s',
+        condition:
+            {
+                id:'2321321313',
+                type:PTYPE_COMPLEX,
+                bin_op:'and',
+                op1:{
+                    parentId:'2321321313',
+                    id:'2321332132',
+                    type:PTYPE_SIMPLE_MIN_PRODUCT,
+                    product:prodId,
+                    amount:3,
+                    displayText:'At least 3 tomatos'
+                },
+                op2:{
+                    parentId:'2321321313',
+                    id:'23213213',
+                    type:PTYPE_SIMPLE_MAX_PRODUCTS,
+                    amount:5,
+                    displayText:'At most 5 PRODS'
+                },
+                displayText:'At least 3 Prods1 And at most 5prods total'
+            }
+    };
+
+    return result;
+};
+
 export const mockSimplePurchaseRule = function (prodId) {
     const result = {
         name:"pRule1",
@@ -78,7 +184,7 @@ export const mockSimplePurchaseRule = function (prodId) {
         condition:{
             id:'11',
             type:PTYPE_SIMPLE_MIN_PRODUCT,
-            productId:prodId,
+            product:prodId,
             amount:2,
             displayText:'At LEAST 2 from prod'
         }
@@ -87,48 +193,6 @@ export const mockSimplePurchaseRule = function (prodId) {
     return result;
 };
 
-export const mockComplexPurchaseRules = function (prodId1, prodId2) {
-    const result = [{
-        name:"rule1",
-        id:'1',
-        condition:{
-            id:'11',
-            type:PTYPE_SIMPLE_MIN_PRODUCT,
-            productId:prodId1,
-            amount:5,
-            displayText:'At most 5 cucambers'
-        }
-    },
-        {
-            name:"rule2",
-            id:'2342222s',
-            condition:
-                {
-                    id:'2321321313',
-                    type:PTYPE_COMPLEX,
-                    bin_op:'and',
-                    op1:{
-                        parentId:'2321321313',
-                        id:'2321332132',
-                        type:PTYPE_SIMPLE_MIN_PRODUCT,
-                        productId:prodId1,
-                        amount:5,
-                        displayText:'At most 5 tomatos'
-                    },
-                    op2:{
-                        parentId:'2321321313',
-                        id:'23213213',
-                        type:PTYPE_SIMPLE_MIN_PRODUCT,
-                        productId:prodId2,
-                        amount:5,
-                        displayText:'At most 5 tomatos'
-                    },
-                    displayText:'At least one'
-                }
-        }]
-
-    return result;
-};
 
 export const mockPurchaseRules = [{
     name:"rule1",
@@ -136,7 +200,7 @@ export const mockPurchaseRules = [{
     condition:{
         id:'11',
         type:PTYPE_SIMPLE_MAX_PRODUCT,
-        productId:'123',
+        product:'123',
         amount:5,
         displayText:'At most 5 cucambers'
         }
@@ -153,7 +217,7 @@ export const mockPurchaseRules = [{
             parentId:'2321321313',
             id:'2321332132',
             type:PTYPE_SIMPLE_MAX_PRODUCT,
-            productId:'12321334',
+            product:'12321334',
             amount:5,
             displayText:'At most 5 tomatos'
             },
@@ -161,7 +225,7 @@ export const mockPurchaseRules = [{
             parentId:'2321321313',
             id:'23213213',
             type:PTYPE_SIMPLE_MAX_PRODUCT,
-            productId:'13213234',
+            product:'13213234',
             amount:5,
             displayText:'At most 5 tomatos'
             },
@@ -186,24 +250,6 @@ export const updateCondIds = (condition) => {
     }
 };
 
-
-
-export const findSaleRelevantProduct = (productId) => {
-    return mockSaleRules.filter(isSaleRelevant(productId));
-}
-
-const isSaleRelevant = (productId) => (sale) => {
-    return sale.discounts.some(discount=>
-        discount.products.some(product => product.id === productId)
-    )
-}
-
-export const findRuleRelevantProduct = (productId) => {
-    return mockPurchaseRules.filter(isRuleRelevant(productId));
-}
-const isRuleRelevant = (productId) => (rule) => {
-    return isCondRelevant(rule.condition,productId);
-}
 
 const isCondRelevant = (cond,productId) => {
     if(cond.type === PTYPE_COMPLEX)

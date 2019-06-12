@@ -1,10 +1,14 @@
 import Chance from 'chance';
-import {fakeCart, fakeProduct } from '../../../test/fakes';
+import {fakeCart, fakeProduct, fakeUser} from '../../../test/fakes';
 
 import { ObjectId } from 'bson';
 import { connectDB } from '../../persistance/connectionDbTest';
-import { CartCollection, ProductCollection } from '../../persistance/mongoDb/Collections';
-import { Product } from '../../productApi/models/product';
+import {CartCollection, ProductCollection, UserCollection} from '../../persistance/mongoDb/Collections';
+import {StoresApi} from "../../storeApi/storesApi";
+import {
+    mock2DiscountsSaleRule_EasyToPass, mockSimpleSaleRule,
+    mockSimpleSaleRule_EasyToPass
+} from "../../storeApi/mockRules";
 
 
 describe('Cart model',() => {
@@ -42,27 +46,33 @@ describe('Cart model',() => {
     expect(cart.items[0].amount).toEqual(amount*2);
   });
 
-  it('get cart details', async () => {
-    const product = await ProductCollection.insert(fakeProduct({price: 10}));
+    it('get cart details', async () => {
+        let storesApi = new StoresApi();
+        let user = await UserCollection.insert(fakeUser({}));
+        const storeName = chance.sentence();
+        const storeResponse = await storesApi.addStore(user.id,storeName);
+        const storeId = storeResponse.store.id;
 
-    const cart = fakeCart({items:[{
-      product: product.id,
-      amount:1
-    }]});
+        const product = await ProductCollection.insert(fakeProduct({price: 10, storeId:storeId}));
 
-    const det =  await cart.getDetails();
-    expect(det).toMatchObject({
-      id: cart.id,
-      store: cart.store,
+        const cart = fakeCart({items:[{
+                product: product.id,
+                amount:1
+            }]});
+
+        const det =  await cart.getDetails();
+        expect(det).toMatchObject({
+            id: cart.id,
+            store: cart.store,
+        });
+
+        expect(det.items[0]).toMatchObject({
+            amount: 1,
+        });
+
+        expect(JSON.stringify(det.items[0].product)).toEqual(JSON.stringify(product.getProductDetails()));
+
     });
-    
-    expect(det.items[0]).toMatchObject({
-      amount: 1,
-    });
-
-    expect(JSON.stringify(det.items[0].product)).toEqual(JSON.stringify(product.getProductDetails()));
-
-  });
 
   it('update relevant details onlt items should updated', async  () => {
     const product = await ProductCollection.insert(fakeProduct({price: 10, amountInventory:7}));
@@ -72,7 +82,7 @@ describe('Cart model',() => {
       items: [{product:product.id, amount:6}],
       store: new ObjectId(),
     };
-    
+
     expect(await  cart.updateDetails(newDetils)).toBe(true);
 
     expect(cart.items.length).toEqual(1);
@@ -87,7 +97,7 @@ describe('Cart model',() => {
       items: [{product:product.id, amount:8}],
       store: new ObjectId(),
     };
-    
+
     expect(await  cart.updateDetails(newDetils)).toBe(false);
 
   });
@@ -114,10 +124,16 @@ describe('Cart model',() => {
     expect(cart.productsIds.map(oId=>oId.toHexString())).toEqual([productId1,productId2,productId3].map(oId=>oId.toHexString()));
   });
 
-  it('get totalPrice',async () => {
-    const productId1 = await ProductCollection.insert(fakeProduct({price: 10}));
-    const productId2 = await ProductCollection.insert(fakeProduct({price: 20}));
-    const productId3 = await ProductCollection.insert(fakeProduct({price: 30}));
+  it('get totalPrice simple',async () => {
+    let storesApi = new StoresApi();
+    let user = await UserCollection.insert(fakeUser({}));
+    const storeName = chance.sentence();
+    const storeResponse = await storesApi.addStore(user.id,storeName);
+    const storeId = storeResponse.store.id;
+
+    const productId1 = await ProductCollection.insert(fakeProduct({price: 10, storeId:storeId}));
+    const productId2 = await ProductCollection.insert(fakeProduct({price: 20, storeId:storeId}));
+    const productId3 = await ProductCollection.insert(fakeProduct({price: 30, storeId:storeId}));
     const cart = fakeCart({items:[{
       product: productId1,
       amount: 1
@@ -135,7 +151,14 @@ describe('Cart model',() => {
   });
 
   it('cart to Order',async () => {
-    const productId1 = await ProductCollection.insert(fakeProduct({price: 10}));
+
+    let storesApi = new StoresApi();
+    let user = await UserCollection.insert(fakeUser({}));
+    const storeName = chance.sentence();
+    const storeResponse = await storesApi.addStore(user.id,storeName);
+    const storeId = storeResponse.store.id;
+
+    const productId1 = await ProductCollection.insert(fakeProduct({price: 10, storeId:storeId}));
     const cart = fakeCart({items:[{
       product: productId1,
       amount: 2
@@ -148,10 +171,17 @@ describe('Cart model',() => {
     expect(order.totalPrice).toEqual(20);
   });
 
-  it('get totalPrice',async () => {
-    const productId1 = await ProductCollection.insert(fakeProduct({price: 10}));
-    const productId2 = await ProductCollection.insert(fakeProduct({price: 20}));
-    const productId3 = await ProductCollection.insert(fakeProduct({price: 30}));
+  it('get totalPrice advanced',async () => {
+
+    let storesApi = new StoresApi();
+    let user = await UserCollection.insert(fakeUser({}));
+    const storeName = chance.sentence();
+    const storeResponse = await storesApi.addStore(user.id,storeName);
+    const storeId = storeResponse.store.id;
+
+    const productId1 = await ProductCollection.insert(fakeProduct({price: 10, storeId:storeId}));
+    const productId2 = await ProductCollection.insert(fakeProduct({price: 20, storeId:storeId}));
+    const productId3 = await ProductCollection.insert(fakeProduct({price: 30, storeId:storeId}));
     const cart = fakeCart({items:[{
       product: productId1,
       amount: 1
@@ -172,7 +202,7 @@ describe('Cart model',() => {
     );
   });
 
-  
+
   it('cart update Invetory (subtract)  success',async () => {
     const amountInventory = 20;
     let product1 = await ProductCollection.insert(fakeProduct({
@@ -195,7 +225,7 @@ describe('Cart model',() => {
     expect(response).toBeTruthy();
   });
 
-  
+
 
   it('cart update Invetory (adding)  success',async () => {
     const amountInventory = 20;
@@ -241,5 +271,93 @@ describe('Cart model',() => {
     expect(product2.amountInventory).toBe(20);
     expect(response).toBeFalsy();
   });
+
+    it('get totalPrice with discounts - one Discount - SUCCESS - passing the discounts',async () => {
+        let storesApi = new StoresApi();
+        let user = await UserCollection.insert(fakeUser({}));
+        const storeName = chance.sentence();
+        const storeResponse = await storesApi.addStore(user.id,storeName);
+        const storeId = storeResponse.store.id;
+
+        const product1 = await ProductCollection.insert(fakeProduct({price: 10, storeId:storeId}));
+        const product2 = await ProductCollection.insert(fakeProduct({price: 20, storeId:storeId}));
+        const product3 = await ProductCollection.insert(fakeProduct({price: 30, storeId:storeId}));
+
+        const simpleSaleRule = mockSimpleSaleRule_EasyToPass(product3.id);   //purchase rule : min 1 product
+        await storesApi.addSaleRule(user.id, product3.storeId, simpleSaleRule);
+        const cart = fakeCart({items:[{
+                product: product1.id,
+                amount: 1
+            },
+                {
+                    product: product2.id,
+                    amount: 2
+                },
+                {
+                    product: product3.id,
+                    amount: 3
+                }]});
+
+        expect(await cart.totalPrice()).toEqual(95);
+    });
+
+    it('get totalPrice with discounts - many Discounts - SUCCESS - passing the discounts',async () => {
+        let storesApi = new StoresApi();
+        let user = await UserCollection.insert(fakeUser({}));
+        const storeName = chance.sentence();
+        const storeResponse = await storesApi.addStore(user.id,storeName);
+        const storeId = storeResponse.store.id;
+
+        const product1 = await ProductCollection.insert(fakeProduct({price: 10, storeId:storeId}));
+        const product2 = await ProductCollection.insert(fakeProduct({price: 20, storeId:storeId}));
+        const product3 = await ProductCollection.insert(fakeProduct({price: 30, storeId:storeId}));
+
+        const simpleSaleRule = mock2DiscountsSaleRule_EasyToPass(product1.id, product2.id);
+        await storesApi.addSaleRule(user.id, product3.storeId, simpleSaleRule);
+        const cart = fakeCart({items:[{
+                product: product1.id,
+                amount: 1
+            },
+                {
+                    product: product2.id,
+                    amount: 2
+                },
+                {
+                    product: product3.id,
+                    amount: 3
+                }]});
+
+        expect(await cart.totalPrice()).toEqual(125);
+    });
+
+    it('get totalPrice with discounts - one Discount - FAIL - NOT passing the discounts',async () => {
+        let storesApi = new StoresApi();
+        let user = await UserCollection.insert(fakeUser({}));
+        const storeName = chance.sentence();
+        const storeResponse = await storesApi.addStore(user.id,storeName);
+        const storeId = storeResponse.store.id;
+
+        const product1 = await ProductCollection.insert(fakeProduct({price: 10, storeId:storeId}));
+        const product2 = await ProductCollection.insert(fakeProduct({price: 20, storeId:storeId}));
+        const product3 = await ProductCollection.insert(fakeProduct({price: 30, storeId:storeId}));
+
+        const simpleSaleRule = mockSimpleSaleRule(product3.id, 'just a name');   //purchase rule : min 1 product
+        await storesApi.addSaleRule(user.id, product3.storeId, simpleSaleRule);
+        const cart = fakeCart({items:[{
+                product: product1.id,
+                amount: 1
+            },
+                {
+                    product: product2.id,
+                    amount: 2
+                },
+                {
+                    product: product3.id,
+                    amount: 3
+                }]});
+
+        expect(await cart.totalPrice()).toEqual(140);
+    });
+
 
 });
