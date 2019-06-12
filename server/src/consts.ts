@@ -76,6 +76,6 @@ export const PTYPE_SIMPLE_MAX_PRODUCT = "simple-max-product-amount";
 export const PTYPE_SIMPLE_MAX_PRODUCTS = "simple-max-products-amount";
 export const PTYPE_SIMPLE_MIN_PRODUCT = "simple-min-product-amount";
 export const DTYPE_SIMPLE_DISCOUNT_PRECENTAGE = "discountPercentage";
-export const DTYPE_SIMPLE_DISCOUNT_OPO = "discountOnePlusOne";
+// export const DTYPE_SIMPLE_DISCOUNT_OPO = "discountOnePlusOne";
 
 

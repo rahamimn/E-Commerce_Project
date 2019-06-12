@@ -17,8 +17,8 @@ export const connectDB = async () => {
             useNewUrlParser: true,
         };
 
-        //mongoUri = 'mongodb://localhost:27017/unit-test-local' ;
-        mongoUri = 'mongodb://localhost:27017,localhost:27018,localhost:27019/test?replicaSet=rs' ;
+        mongoUri = 'mongodb://localhost:27017/unit-test-local' ;
+        // mongoUri = 'mongodb://localhost:27017,localhost:27018,localhost:27019/test?replicaSet=rs' ;
 
         if(false){
             mongooseOpts= {

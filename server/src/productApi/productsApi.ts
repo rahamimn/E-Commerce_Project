@@ -343,7 +343,7 @@ const isProductInRules = (product:any, productStore:any) => {
  
 const isInCondition = (productId:any, condition:any) => {
     if(condition.type != PTYPE_COMPLEX)
-        return productId == condition.productId;
+        return productId == condition.product;
     else{
         return isInCondition(productId, condition.op1 ) || isInCondition(productId, condition.op2)
     }

@@ -10,7 +10,7 @@ export const  mockSaleRules = [{
     condition:{
         id:'11',
         type:PTYPE_SIMPLE_MAX_PRODUCT,
-        productId:'123',
+        product:'123',
         amount:5,
         displayText:'At most 5 cucambers'
     },
@@ -30,7 +30,7 @@ export const  mockSaleRules = [{
     condition:{
         id:'1dasda1',
         type:PTYPE_SIMPLE_MAX_PRODUCT,
-        productId:'gfdg123',
+        product:'gfdg123',
         amount:5,
         displayText:'At most 5 cucambers'
     },
@@ -53,7 +53,7 @@ export const mockSimpleSaleRule = function (productId, productName) {
         condition:{
             id:'11',
             type:PTYPE_SIMPLE_MIN_PRODUCT,
-            productId:productId,
+            product:productId,
             amount:5,
             displayText:'At most 5 cucambers'
         },
@@ -78,7 +78,7 @@ export const mockSimplePurchaseRule = function (prodId) {
         condition:{
             id:'11',
             type:PTYPE_SIMPLE_MIN_PRODUCT,
-            productId:prodId,
+            product:prodId,
             amount:2,
             displayText:'At LEAST 2 from prod'
         }
@@ -94,7 +94,7 @@ export const mockComplexPurchaseRules = function (prodId1, prodId2) {
         condition:{
             id:'11',
             type:PTYPE_SIMPLE_MIN_PRODUCT,
-            productId:prodId1,
+            product:prodId1,
             amount:5,
             displayText:'At most 5 cucambers'
         }
@@ -111,7 +111,7 @@ export const mockComplexPurchaseRules = function (prodId1, prodId2) {
                         parentId:'2321321313',
                         id:'2321332132',
                         type:PTYPE_SIMPLE_MIN_PRODUCT,
-                        productId:prodId1,
+                        product:prodId1,
                         amount:5,
                         displayText:'At most 5 tomatos'
                     },
@@ -119,7 +119,7 @@ export const mockComplexPurchaseRules = function (prodId1, prodId2) {
                         parentId:'2321321313',
                         id:'23213213',
                         type:PTYPE_SIMPLE_MIN_PRODUCT,
-                        productId:prodId2,
+                        product:prodId2,
                         amount:5,
                         displayText:'At most 5 tomatos'
                     },
@@ -136,7 +136,7 @@ export const mockPurchaseRules = [{
     condition:{
         id:'11',
         type:PTYPE_SIMPLE_MAX_PRODUCT,
-        productId:'123',
+        product:'123',
         amount:5,
         displayText:'At most 5 cucambers'
         }
@@ -153,7 +153,7 @@ export const mockPurchaseRules = [{
             parentId:'2321321313',
             id:'2321332132',
             type:PTYPE_SIMPLE_MAX_PRODUCT,
-            productId:'12321334',
+            product:'12321334',
             amount:5,
             displayText:'At most 5 tomatos'
             },
@@ -161,7 +161,7 @@ export const mockPurchaseRules = [{
             parentId:'2321321313',
             id:'23213213',
             type:PTYPE_SIMPLE_MAX_PRODUCT,
-            productId:'13213234',
+            product:'13213234',
             amount:5,
             displayText:'At most 5 tomatos'
             },

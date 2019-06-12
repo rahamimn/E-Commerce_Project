@@ -11,9 +11,14 @@ import {connectDB} from '../persistance/connectionDbTest';
 import {OrdersApi} from './ordersApi';
 import supplySystem from "../supplySystemProxy";
 import paymentSystem from "../paymentSystemProxy";
+import {StoresApi} from "../storeApi/storesApi";
+import Chance from 'chance';
 
-describe('Owner model', () => {
+
+
+describe('Order model', () => {
     let ordersApi = new OrdersApi();
+    const chance = new Chance();
 
     beforeAll(() => {
         connectDB();
@@ -23,11 +28,15 @@ describe('Owner model', () => {
         let user, product, cart;
 
         beforeEach(async () => {
+            let storesApi = new StoresApi();
             paymentSystem.setMocks(true,true);
             supplySystem.setMocks(true,true);
 
             user = await UserCollection.insert(fakeUser());
-            product = await ProductCollection.insert(fakeProduct({price: 70, amountInventory: 1}));
+            const storeName = chance.sentence();
+            const storeResponse = await storesApi.addStore(user.id,storeName);
+            const storeId = storeResponse.store.id;
+            product = await ProductCollection.insert(fakeProduct({price: 70, amountInventory: 1, storeId:storeId}));
             cart = await CartCollection.insert(fakeCart({
                 ofUser: user.id,
                 supplyPrice: 20,

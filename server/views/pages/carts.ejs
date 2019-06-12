@@ -51,12 +51,23 @@
             <div class="card-footer" >
                 <div class="pull-right" style="margin: 10px ; display:flex ; justify-content:flex-end" >
                      <div class="pull-right" style="margin: 5px">
-                        Total price: <b><%=cart.totalPrice%>$</b>
+                         <b>Check Purchase Rules and get Total Price</b>
                     </div>
-                    <a href="/order/<%= cart.id%>" class="btn btn-success pull-right">Checkout</a>
-               
+                    <button type="button" onclick="validateCartRules('<%= cart.id%>')" class="btn btn-info pull-right">Check</button>
+                </div>
+                <div id="validate-rules-label" class="pull-right" style="margin: 5px; display: none">
+                    Cart doesnt pass the Store Purchase Rules, please visit store page and update your cart.
                 </div>
             </div>
+           <div id="continue-checkout-label" style="display: none" class="card-footer" >
+               <div class="pull-right" style="margin: 10px ; display:flex ; justify-content:flex-end" >
+                   <div class="pull-right" style="margin: 5px">
+                       Total price: <b><%=cart.totalPrice%>$</b>
+                   </div>
+                   <a href="/order/<%= cart.id%>" class="btn btn-success pull-right">Checkout</a>
+
+               </div>
+           </div>
         </div>   
     </div>  
 <%})%>
@@ -67,6 +78,24 @@
 </footer>
 
 <script>
+
+    function validateCartRules(cartId){
+        postData('/usersApi/validateCartRules',{cartId:cartId})
+            .then(response => {
+            console.log(response);
+        if(response.status===0){
+            if(response.isPassedRules){
+                document.getElementById("continue-checkout-label").style.display = 'block';
+            }
+            else{
+                document.getElementById("validate-rules-label").style.display = 'block';
+            }
+        }
+        else if(response.status < 0)
+            $(`#error-${id}`).text(response.err);
+    })
+    }
+
     function onClickPlus(plusId){
         const id = plusId.slice(1);
         $('#n'+id).val(parseInt($('#n'+id).val())+1);
