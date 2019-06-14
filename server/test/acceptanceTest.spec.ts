@@ -298,13 +298,13 @@ describe('AcceptanceTest',()=>{
     //-----------Shoval---------------
 
     it('UC 4.1 - Add product', async () => {
-         const res = await productsApi.addProduct(data.store1.id,{storeId:data.storeManager.id,name: 'prod1', amountInventory:3, sellType:'direct', price:50,keyWords: ['prody'], category:'home',acceptableDiscount:4,rank:3,reviews:[]});
+         const res = await productsApi.addProduct(data.store1.id,{storeId:data.storeManager.id,name: 'prod1', amountInventory:3, price:50,keyWords: ['prody'], category:'home'});
          const res1 = await productsApi.getProducts({name: 'prod1'},false);
          expect(res1.status).toBe(OK_STATUS);
      });
 
     it('UC 4.1 - Add product with invalid data',async () => {
-        const res = await productsApi.addProduct(data.store1.id,{storeId:data.storeManager.id,name: 'p', amountInventory:3, sellType:'direct', price:50,keyWords: ['prody'], category:'home',acceptableDiscount:4,rank:3,reviews:[]});
+        const res = await productsApi.addProduct(data.store1.id,{storeId:data.storeManager.id,name: 'p', amountInventory:3, price:50,keyWords: ['prody'], category:'home'});
         expect(res.status).toBe(BAD_REQUEST);
     });
 

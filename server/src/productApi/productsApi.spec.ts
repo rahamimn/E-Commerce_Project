@@ -31,22 +31,6 @@ describe('Product model',() => {
 
     let response = await productsApi.addProduct(
         user.id,product
-            // user.id,
-            // product.storeId,
-            // product.name,
-            // product.amountInventory,
-            // product.sellType,
-            // product.price,
-            // product.keyWords,
-            // product.category,
-            // product.imageUrl,
-            // product.description,
-            // product.coupons,
-            // product.acceptableDiscount,
-            // product.discountPrice,
-            // product.rank,
-            // product.reviews,
-            // product.category
     );
 
     let productFromDB = await ProductCollection.findById(response.product.id);
@@ -56,7 +40,6 @@ describe('Product model',() => {
     expect(productFromDB.storeId === product.storeId);
     expect(productFromDB.name).toEqual(product.name);
     expect(productFromDB.amountInventory).toEqual(product.amountInventory);
-    expect(productFromDB.sellType).toEqual(product.sellType);
     expect(productFromDB.price).toEqual(product.price);
     expect(productFromDB.keyWords === product.keyWords);
     expect(productFromDB.category).toEqual(product.category);
@@ -278,13 +261,11 @@ describe('Product model',() => {
         let productFromDB = await productsApi.getProductDetails(productToDB.product.id);
 
         let productDetails = productFromDB.product;
-        productDetails.sellType = "updated_selltype";
         productDetails.amountInventory = 42;
 
         let productAfterUpdate = await productsApi.updateProduct(user.id, store.store.id, productDetails.id, productDetails);
 
         expect(productAfterUpdate.status).toEqual(OK_STATUS);
-        expect(productAfterUpdate.product.sellType).toEqual(productDetails.sellType);
         expect(productAfterUpdate.product.amountInventory).toEqual(productDetails.amountInventory);
     });
     
@@ -301,7 +282,6 @@ describe('Product model',() => {
     let productFromDB = await productsApi.getProductDetails(productToDB.product.id);
 
     let productDetails = productFromDB.product;
-    productDetails.sellType = "updated_selltype";
     productDetails.amountInventory = 42;
 
     let userWithNoPermission = await UserCollection.insert(fakeUser({}));
@@ -311,18 +291,6 @@ describe('Product model',() => {
     expect((productAfterUpdate.err).startsWith("You have no permission for this action"));
 });
 
-//  it('addReview - Test', async () => {
-
-//     let product = fakeProduct({});
-//     let productToDB = await productsApi.addProduct(product.storeId, product.amountInventory, product.sellType, product.price, product.keyWords, product.category);
-//     let productFromDB = await productsApi.getProductDetails(productToDB.product.id);
-
-//     let productDetails = productFromDB.product;
-//     let review = new Review({ comment: "comment", date: Date.now(), id: "productId" ,rank: 4,  registeredUser: "userId"});
-//     let productAfterReviewAdded = await productsApi.addReview(productDetails._id, review.registeredUser, review.rank, review.comment);
-
-//     expect(productAfterReviewAdded.product.reviews).toEqual(review);
-// });
 
 it('getProducts with 3 params: {storeId, category, keyWords}', async () => {
   let user = await UserCollection.insert(fakeUser({}));

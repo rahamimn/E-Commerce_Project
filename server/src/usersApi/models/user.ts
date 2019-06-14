@@ -12,7 +12,6 @@ export class User {
         this._phone = base.phone;
         this._isDeactivated = base.isDeactivated;
         this._notifications = base.notifications;
-        this._messages = base.messages;
     }
 
 
@@ -79,14 +78,6 @@ export class User {
      */
 	public get notifications(): any[] {
 		return this._notifications;
-	}
-
-    /**
-     * Getter messages
-     * @return {any[]}
-     */
-	public get messages(): any[] {
-		return this._messages;
 	}
 
     /**
@@ -171,15 +162,6 @@ export class User {
      */
 
     /**
-     * Setter messages
-     * @param {any[]} value
-     */
-    
-	public set messages(value: any[]) {
-		this._messages = value;
-	}
-
-    /**
      * Getter id
      * @return {string}
      */
@@ -232,7 +214,6 @@ export class User {
     private _email: string;
     private _isDeactivated: Boolean;
     private _notifications: any[];
-    private _messages: any[];
 }
 
 

@@ -1,22 +1,14 @@
-import { Message } from '../src/usersApi/models/message';
-import { ObjectID } from 'bson';
-import { UserCollection, RoleCollection } from './../src/persistance/mongoDb/Collections';
-import { Complaint } from './../src/storeApi/models/complaint';
-import { OPEN_STORE, OK_STATUS, BAD_REQUEST, ADMIN, NORMAL_CART } from './../src/consts';
+
+import { OPEN_STORE } from './../src/consts';
 import Chance from 'chance';
 
-import { ProductModel } from '../src/persistance/mongoDb/models/productModel';
 import { User } from '../src/usersApi/models/user';
 import { Cart } from '../src/usersApi/models/cart';
 import { Role } from '../src/usersApi/models/role';
 import { Product } from '../src/productApi/models/product';
 import { Store } from '../src/storeApi/models/store';
-import { Review } from '../src/storeApi/models/review';
-import { StoresApi } from '../src/storeApi/storesApi';
-import { StoreCollection } from '../src/persistance/mongoDb/Collections';
 import bcrypt = require('bcryptjs');
 import { Order } from '../src/orderApi/models/order';
-import {mockPurchaseRules} from "../src/storeApi/mockRules";
 
 const chance = new Chance();
 var mongoose = require('mongoose');
@@ -43,7 +35,6 @@ export const fakeUser = (opt: any = {}, isGuest = false) => {
             password: opt.password || chance.country(),
             salt: opt.salt || bcrypt.genSaltSync(10),
             isRegisteredUser: true ,
-            messages : opt.messages || [],
     })
 }
 
@@ -52,51 +43,14 @@ export const fakeStore = (opt: any = {}) => {
     return new Store({
         id : genObjectId(),
         name: opt.name || chance.name() ,
-        workers : opt.workers || [],
         purchaseRules : opt.purchaseRules || [],
         saleRules : opt.saleRules || [],
-        rank: opt.rank || chance.integer(),
-        review : opt.review || [],
         purchasePolicy: "everyone can buy",
         storeState: OPEN_STORE,
-        messages: opt.messages || [],
         pendingOwners: [],
 });
 }
 
-
-export const fakeReview = (opt: any = {}) => {
-    return new Review({
-        id : genObjectId(),
-        date: opt.date || chance.date() ,
-        registeredUser : opt.registeredUser || genObjectId(),
-        rank: opt.rank || chance.integer(),
-        comment : opt.comment || chance.string(),
-});
-}
-
-
-
-export const fakeMessage = (opt: any = {}) => {
-    return new Message({
-        id : genObjectId(),
-        date:  chance.date({string: true}), 
-        from : opt.from || genObjectId(),
-        to : opt.to || genObjectId(),
-        title: opt.title || chance.string(),
-        body :  "aviv added me",
-});
-}
-
-export const fakeComplaint = (opt: any = {}) => {
-    return new Complaint({
-        id : genObjectId(),
-        date: opt.date || chance.date(), 
-        user : opt.user || genObjectId(),
-        order: opt.order ||chance.string(),
-        comment : opt.comment || chance.string(),
-});
-}
 
 export const fakePayment = (opt: any = {}) => {
     return {
@@ -135,7 +89,6 @@ export const fakeCart = (opt: any = {}) => {
         ofUser: opt.ofUser || genObjectId(),
         store: opt.store || genObjectId(),
         items: opt.items || [],
-        // state: opt.state || NORMAL_CART,
         supplyPrice: opt.supplyPrice || chance.natural()
     });
 }
@@ -146,16 +99,11 @@ export const fakeProduct = (opt: any = {}) => {
         id: genObjectId(),
         storeId: opt.storeId|| genObjectId() ,
         amountInventory: opt.amountInventory || chance.natural(),
-        sellType: opt.sellType || chance.sentence(),
         price: opt.price || chance.natural() ,
         imageUrl: opt.imageUrl || "https://cdn.shopify.com/s/files/1/0396/8269/products/classic-towels-cotton-white-lp-000_2880x.jpg?v=1539717395",
         name: opt.name || chance.sentence(),
         description: opt.description || chance.sentence(),
-        coupons: opt.coupons || chance.sentence(),
-        acceptableDiscount: opt.acceptableDiscount || chance.natural(),
         discountPrice: opt.discountPrice || chance.natural(),
-        rank: opt.rank || chance.natural({min:0,max:5} ),
-        reviews: opt.reviews || [genObjectId(), genObjectId()],
         keyWords: opt.keyWords || [chance.sentence(),chance.sentence()],
         category: opt.category || chance.sentence(),
         isActivated: opt.isActivated || true,

@@ -1,4 +1,3 @@
-import { Complaint } from '../storeApi/models/complaint';
 import { Order } from './models/order';
 
 export interface IOrderApi{

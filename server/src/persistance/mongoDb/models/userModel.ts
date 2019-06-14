@@ -1,7 +1,7 @@
-import {MonArray} from '../../../../types/moongooseArray';
+
 import { Model, Document} from 'mongoose';
 import { Schema } from 'inspector';
-import { ObjectID, ObjectId } from 'bson';
+import { ObjectId } from 'bson';
 var mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
@@ -16,7 +16,6 @@ interface IUser{
   isRegisteredUser?: Boolean,
   isDeactivated?: Boolean,
   notifications: {header:string, message:string}[],
-  messages: MonArray<ObjectID>,
 }
 
 export interface IUserModel extends IUser, Document{
@@ -41,7 +40,6 @@ export const userScheme = new Schema({
     header: {type: String, required: true },
     message:  {type: String, required: true}
   }],
-  messages: [{type: Schema.Types.ObjectId, ref: 'Message', default:[] }]
 });
 
 export let UserModel : Model<IUserModel>

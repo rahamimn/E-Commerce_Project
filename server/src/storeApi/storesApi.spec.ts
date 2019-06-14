@@ -5,7 +5,7 @@ import {
   STORE_OWNER,
   
 } from "./../consts";
-import {fakeStore, fakeRole, fakeUser, fakeMessage, fakeProduct} from "../../test/fakes";
+import {fakeStore, fakeRole, fakeUser, fakeProduct} from "../../test/fakes";
 import Chance from "chance";
 import {BAD_REQUEST, OK_STATUS} from "../consts";
 import { StoresApi } from "./storesApi";
@@ -13,10 +13,8 @@ import {
   UserCollection,
   RoleCollection,
   StoreCollection,
-  MessageCollection,
 } from "../persistance/mongoDb/Collections";
-import { connectDB, disconnectDB } from "../persistance/connectionDbTest";
-import { Message } from "../usersApi/models/message";
+import { connectDB } from "../persistance/connectionDbTest";
 import {ProductsApi} from "../productApi/productsApi";
 import {mockSimplePurchaseRule, mockSimpleSaleRule} from "./mockRules";
 
@@ -83,7 +81,6 @@ describe("Store api model", () => {
     expect(userRole).toBeTruthy;
     expect(store).toBeTruthy;
     expect(response.status).toEqual(OK_STATUS);
-    expect(store.workers[0].toString()).toEqual(userRole.id.toString());//next to remove
     expect(response.store.storeState).toEqual(OPEN_STORE);
   });
 
@@ -108,51 +105,6 @@ describe("Store api model", () => {
     expect(store_from_db.stores.length).toEqual(2);
     expect(store_from_db.stores[0]).toMatchObject({name:storeName});
     expect(store_from_db.stores[1]).toMatchObject({name:storeName2});
-  });
-
-  it("test GET STORE MESSAGES", async () => {
-    var user1 = fakeUser({});
-    var user2 = await UserCollection.insert(user1);
-    var user2_id = user2.id.toString();
-    // UserCollection.insert(user1);
-    var role1 = fakeRole({ name: STORE_OWNER, ofUser: user2.id });
-    await RoleCollection.insert(role1);
-
-    var store1 = fakeStore({});
-    var store2 = await StoreCollection.insert(store1);
-
-    const Message1 = fakeMessage({});
-
-    store2.messages.push(Message1);
-
-    var store_after_update = await StoreCollection.updateOne(store2);
-    const store_from_db = await storesApi.getStoreMessages(
-      user2_id,
-      store_after_update.id
-    );
-    expect(store_from_db.arrat_of_messages.length).toEqual(1);
-  });
-
-  it("test SEND MESSAGE to user ", async () => {
-    var store = await StoreCollection.insert(fakeStore({}));
-    var owner = await UserCollection.insert(fakeUser({}));
-    var user = await UserCollection.insert(fakeUser({}));
-    var role = await RoleCollection.insert(fakeRole({ name: STORE_OWNER, ofUser: owner.id ,store: store.id  }));
-
-    const response = await storesApi.sendMessage(
-      owner.id,
-      store.id,
-      chance.sentence(),
-      chance.sentence(),
-      user.id);
-    const message = await MessageCollection.findById(response.message.id);
-    const userWithMessage = await UserCollection.findById(user.id)
-    const storeWithMessage = await StoreCollection.findById(store.id)
-
-    expect(response.status).toEqual(OK_STATUS);
-    expect(message).toBeTruthy();
-    expect(userWithMessage.messages[0].equals(response.message.id)).toBeTruthy();
-    expect(storeWithMessage.messages[0].equals(response.message.id)).toBeTruthy();
   });
 
     it("test good Add pRules", async () => {

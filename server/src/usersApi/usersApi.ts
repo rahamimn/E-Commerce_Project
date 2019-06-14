@@ -3,11 +3,10 @@ import * as Constants from "../consts";
 import bcrypt = require('bcryptjs');
 
 import {STORE_OWNER,STORE_MANAGER,ADMIN} from '../consts';
-import { UserCollection, CartCollection, ProductCollection, RoleCollection, MessageCollection, StoreCollection } from "../persistance/mongoDb/Collections";
+import { UserCollection, CartCollection, ProductCollection, RoleCollection, StoreCollection } from "../persistance/mongoDb/Collections";
 import { Cart } from "./models/cart";
 import { Role } from "./models/role";
 import { User } from "./models/user";
-import { Message } from "./models/message";
 import { asyncForEach, initTransactions } from "../utils/utils";
 import { addToRegularLogger, addToErrorLogger, addToSystemFailierLogger } from "../utils/addToLogger";
 import { sendNotification } from "../notificationApi/notifiactionApi";
@@ -38,12 +37,6 @@ const validateUserCart = function(userId,cart){
             return cart.ofSession.toString() == userId.toString();
     }
     return false;
-}
-
-const abortTransAndReturn = async (trans:ITransaction, obj:any,) => {
-    if(trans)
-        await trans.abortTransaction();
-    return obj;
 }
 
 export class UsersApi implements IUsersApi{
@@ -668,101 +661,6 @@ export class UsersApi implements IUsersApi{
     }
 
 
-
-// async sendMessage(userId, title, body, toName , toIsStore){
-    //     try {
-    //         addToRegularLogger(" send Message", {userId, title, body, toName , toIsStore});
-
-    //         let toUser,toStore;
-    //         let user = await UserCollection.findById(userId);
-
-    //         if(toIsStore)
-    //             toStore = await StoreCollection.findOne({name:toName});
-
-    //         else
-    //             toUser = await UserCollection.findOne({userName:toName});
-            
-    //         if(!user || !(toUser || toStore)){
-    //             addToErrorLogger("sendMessage");
-    //             return ({status: Constants.BAD_REQUEST, err: "bad details"});
-    //         }
-
-    //         const message = await MessageCollection.insert(
-    //             new Message({
-    //                 date: new Date(),
-    //                 from:userId,
-    //                 title,
-    //                 body,
-    //                 to: toIsStore? toStore.id: toUser.id
-    //             }));
-
-    //         user.messages.push(message.id);
-    //         await UserCollection.updateOne(user);
-
-    //         if(toIsStore){
-    //             toStore.messages.push(message.id);
-    //             await StoreCollection.updateOne(toStore);
-    //         }else{
-    //             toUser.messages.push(message.id);
-    //             await UserCollection.updateOne(toUser);
-    //         }
-    //         return ({status: Constants.OK_STATUS , message});
-    //     } catch(e){
-    //         addToSystemFailierLogger(" connection lost  ");
-    //         return {status:Constants.CONNECTION_LOST, err:"connection lost"};
-    //     }
-    // }
-
-
-    // async getUserAppointees(appointerId: string, storeId: string) {
-
-    //     const role_of_appointer = await RoleCollection.findOne({ofUser: appointerId , store: storeId});
-
-    //     if(!role_of_appointer){
-    //         return ({status: Constants.BAD_REQUEST});
-    //     }
-
-    //     const userAppointees = role_of_appointer.appointees;
-
-    //     if(!userAppointees){
-    //         console.log("fail to get appointees ");
-    //         return ({status: Constants.BAD_REQUEST});
-    //     }
-
-    //     let appointees = [];
-
-    //     await asyncForEach(userAppointees, async appointee => {
-    //         console.log(" HERE   ");
-
-    //         const userName = (await UserCollection.findById(role.ofUser)).userName;
-    //         appointees.push({userName: userName , role: role.getRoleDetails()})
-    //     });
-
-
-    //     return ({status: Constants.OK_STATUS,  appointees: appointees});
-    // };
-
-    // async getMessages(userId){
-    //     try {
-    //         addToRegularLogger(" get Messages", {userId });
-
-    //         let user = await UserCollection.findById(userId);
-    //         if(!user){
-    //             addToErrorLogger("getMessages");         
-    //             return ({status: Constants.BAD_REQUEST, err:'user does not exist'});
-    //         }
-    //         const messages = await MessageCollection.findByIds(user.messages);
-
-    //         return ({status: Constants.OK_STATUS , messages});
-    //     } catch(e){
-    //         addToSystemFailierLogger(" connection lost  ");
-    //         if(e.message === 'connection lost') 
-    //             return {status: Constants.CONNECTION_LOST, err:"connection Lost"};
-    //         return ({status: Constants.BAD_REQUEST, err:'data isn\'t valid'});
-    //     }
-    // }
-
-
     async getStoreOwners(storeID: string) {
         addToRegularLogger("Get owners of store ", {storeID});
 
@@ -793,34 +691,6 @@ export class UsersApi implements IUsersApi{
 
         return ({status: Constants.OK_STATUS,  pendingOwners: store.pendingOwners});
     }
-
-    // async removePendingOwner(storeId: string, toBeOwnerName: string){
-    //     addToRegularLogger("Remove Pending Owner" , {storeId, toBeOwnerName});
-
-    //     const store = await StoreCollection.findById(storeId);
-    //     if(!store){
-    //         addToErrorLogger("removePendingOwner no valid store");         
-    //         return ({status: Constants.BAD_REQUEST, err: "store doesn't exists"});
-    //     }
-
-    //     let pendingOwners = (await this.getPendingOwners(storeId)).pendingOwners;
-
-    //     for (let i = 0; i < pendingOwners.length; i++) {
-    //         if (pendingOwners[i].toBeOwner === toBeOwnerName){
-    //             console.log("pendingOwnersORIG = ", pendingOwners, "\n"); // NIR
-    //             console.log("i = ", i, "\n"); // NIR
-    //             //pendingOwners = pendingOwners.splice(i,1);
-    //             let afterSlice = pendingOwners.filter( el => el.toBeOwner === toBeOwnerName ); 
-    //             console.log("afterSlice = ", afterSlice, "\n"); // NIR
-    //             store.pendingOwners = afterSlice;
-    //             console.log("store.pendingOwners = ", store.pendingOwners, "\n"); // NIR
-    //             await StoreCollection.updateOne(store);
-    //             break;
-    //         }
-    //     }
-    //     return ({status: Constants.OK_STATUS,  pendingOwners: store.pendingOwners});
-    // }
-    
 
     async initOwnerAnswers(owners: string[] ,storeId: string, suggestingOwnerName: string ) {
         
