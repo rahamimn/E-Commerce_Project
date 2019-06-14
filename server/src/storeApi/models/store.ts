@@ -3,27 +3,19 @@ export class Store {
   constructor(base: any) {
     this._id = base.id;
     this._name = base.name;
-    this._workers = base.workers;
     this._purchaseRules = base.purchaseRules;
     this._saleRules = base.saleRules;
-    this._rank = base.rank;
-    this._review = base.reviews;
     this._purchasePolicy = base.purchasePolicy;
     this._storeState = base.storeState;
-    this._messages = base.messages;
     this._pendingOwners = base.pendingOwners;
   }
 
   private _id: string;
   private _name: string;
-  private _workers: any[]; //already an array of users
   private _purchaseRules: any[];
   private _saleRules: any[];
-  private _rank: number;
-  private _review: any[]; //array of review
   private _purchasePolicy: string;
   private _storeState: string;
-  private _messages: any[];
   private _pendingOwners: any[];
 
 
@@ -52,14 +44,6 @@ export class Store {
     return this._name;
   }
 
-  /**
-   * Getter workers
-   * @return {any[]}
-   */
-  public get workers(): any[] {
-    return this._workers;
-  }
-
   public get purchaseRules(): any[] {
       return this._purchaseRules;
   }
@@ -68,21 +52,6 @@ export class Store {
       return this._saleRules;
   }
 
-  /**
-   * Getter rank
-   * @return { number}
-   */
-  public get rank(): number {
-    return this._rank;
-  }
-
-  /**
-   * Getter review
-   * @return { any[]}
-   */
-  public get review(): any[] {
-    return this._review;
-  }
 
   /**
    * Getter purchasePolicy
@@ -100,13 +69,6 @@ export class Store {
     return this._storeState;
   }
 
-  /**
-   * Getter messages
-   * @return {any[]}
-   */
-  public get messages(): any[] {
-    return this._messages;
-  }
 
   /**
    * Setter id
@@ -124,13 +86,6 @@ export class Store {
     this._name = value;
   }
 
-  /**
-   * Setter workers
-   * @param {any[]} value
-   */
-  public set workers(value: any[]) {
-    this._workers = value;
-  }
 
   public set purchaseRules(value: any[]) {
     this._purchaseRules = value;
@@ -138,23 +93,6 @@ export class Store {
 
   public set saleRules(value: any[]) {
     this._saleRules = value;
-  }
-
-
-  /**
-   * Setter rank
-   * @param { number} value
-   */
-  public set rank(value: number) {
-    this._rank = value;
-  }
-
-  /**
-   * Setter review
-   * @param { any[]} value
-   */
-  public set review(value: any[]) {
-    this._review = value;
   }
 
   /**
@@ -173,19 +111,11 @@ export class Store {
     this._storeState = value;
   }
 
-  /**
-   * Setter messages
-   * @param {any[]} value
-   */
-  public set messages(value: any[]) {
-    this._messages = value;
-  }
   
   public getStoreDetails (){
     const {
         _id,
         _name,
-        _rank,
         _purchaseRules,
         _saleRules
 
@@ -194,7 +124,6 @@ export class Store {
     return ({
         id:_id,
         name:_name,
-        rank: _rank,
         purchaseRules:_purchaseRules,
         saleRules: _saleRules
     });

@@ -1,20 +1,11 @@
-import { ProductCollection } from "../../persistance/mongoDb/Collections";
-import { BAD_REQUEST, OK_STATUS } from "../../consts";
-import { Review } from "../../storeApi/models/review";
-
 export class Product {
     private _id: any;
     private _name: string;
     private _storeId: any;
     private _amountInventory: number;
-    private _sellType: string;
     private _description: string;
     private _price: number;
-    private _coupons: string;
-    private _acceptableDiscount: number;
     private _discountPrice: number;
-    private _rank: number;
-    private _reviews: string[];
     private _keyWords: string[];
     private _category: string;
     private _isActivated: Boolean;
@@ -25,13 +16,8 @@ export class Product {
         this._name = base.name;
         this._storeId = base.storeId;
         this._amountInventory = base.amountInventory;
-        this._sellType = base.sellType;
         this._price = base.price;
-        this._coupons = base.coupons;
-        this._acceptableDiscount = base.acceptableDiscount;
         this._discountPrice = base.discountPrice;
-        this._rank = base.rank;
-        this._reviews = base.reviews;
         this._keyWords = base.keyWords;
         this._category = base.category;
         this._description = base.description;
@@ -42,13 +28,8 @@ export class Product {
 
     public updateDetails (productDetails){ 
         this.amountInventory = productDetails.amountInventory;
-        this.sellType = productDetails.sellType;
         this.price = productDetails.price;
-        this.coupons = productDetails.coupons;
-        this.acceptableDiscount = productDetails.acceptableDiscount;
         this.discountPrice = productDetails.discountPrice;
-        this.rank = productDetails.rank;
-        this.reviews = productDetails.reviews;
         this.keyWords = productDetails.keyWords;
         this.category = productDetails.category;
         this.imageUrl = productDetails.imageUrl;
@@ -62,13 +43,8 @@ export class Product {
             _name,
             _storeId,
             _amountInventory,
-            _sellType,
             _price,
-            _coupons,
-            _acceptableDiscount,
             _discountPrice,
-            _rank,
-            _reviews,
             _keyWords,
             _category,
             _description,
@@ -80,25 +56,15 @@ export class Product {
             name:_name,
             storeId: _storeId.toString(),
             amountInventory: _amountInventory,
-            sellType: _sellType,
             price: _price,
-            coupons: _coupons,
-            acceptableDiscount: _acceptableDiscount,
             discountPrice: _discountPrice,
-            rank: _rank,
             imageUrl: _imageUrl,
-            reviews: _reviews.map(rev=> rev.toString()),
             keyWords: _keyWords,
             category: _category,
             description: _description,
             isActivated: _isActivated,
         });
     }
-
-    public pushReview (reviewToPush){
-            this.reviews.push(reviewToPush);
-    }
-
 
     /**
      * Getter description
@@ -163,14 +129,7 @@ export class Product {
 	public set imageUrl(value: string) {
 		this._imageUrl = value;
 	}
-    /**
-     * Getter sellType
-     * @return {string}
-     */
-	public get sellType(): string {
-		return this._sellType;
-	}
-
+ 
     /**
      * Getter price
      * @return {number}
@@ -179,21 +138,6 @@ export class Product {
 		return this._price;
 	}
 
-    /**
-     * Getter coupons
-     * @return {string}
-     */
-	public get coupons(): string {
-		return this._coupons;
-	}
-
-    /**
-     * Getter acceptableDiscount
-     * @return {number}
-     */
-	public get acceptableDiscount(): number {
-		return this._acceptableDiscount;
-	}
 
     /**
      * Getter discountPrice
@@ -203,21 +147,6 @@ export class Product {
 		return this._discountPrice;
 	}
 
-    /**
-     * Getter rank
-     * @return {number}
-     */
-	public get rank(): number {
-		return this._rank;
-	}
-
-    /**
-     * Getter reviews
-     * @return {Review[]}
-     */
-	public get reviews(): string[] {
-		return this._reviews;
-	}
 
     /**
      * Getter keyWords
@@ -261,13 +190,6 @@ export class Product {
         this._amountInventory = value;
 	}
 
-    /**
-     * Setter sellType
-     * @param {string} value
-     */
-	public set sellType(value: string) {
-		this._sellType = value;
-	}
 
     /**
      * Setter price
@@ -278,22 +200,6 @@ export class Product {
 	}
 
     /**
-     * Setter coupons
-     * @param {string} value
-     */
-	public set coupons(value: string) {
-		this._coupons = value;
-	}
-
-    /**
-     * Setter acceptableDiscount
-     * @param {number} value
-     */
-	public set acceptableDiscount(value: number) {
-		this._acceptableDiscount = value;
-	}
-
-    /**
      * Setter discountPrice
      * @param {number} value
      */
@@ -301,21 +207,6 @@ export class Product {
 		this._discountPrice = value;
 	}
 
-    /**
-     * Setter rank
-     * @param {number} value
-     */
-	public set rank(value: number) {
-		this._rank = value;
-	}
-
-    /**
-     * Setter reviews
-     * @param {Review[]} value
-     */
-	public set reviews(value: string[]) {
-		this._reviews = value;
-	}
 
     /**
      * Setter keyWords

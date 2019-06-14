@@ -6,7 +6,7 @@ import { Role } from "../usersApi/models/role";
 import { addToErrorLogger, addToRegularLogger, addToSystemFailierLogger } from "../utils/addToLogger";
 export class ProductsApi implements IProductApi{
 
-    async addProduct(userId,newProduct: {storeId: string, name:string, amountInventory: Number, sellType: string, price: Number, keyWords: string[], category: string,coupons?: string,description?: string,imageUrl?: string,acceptableDiscount: number,discountPrice?: number,rank:number,reviews: any[]}){
+    async addProduct(userId,newProduct: {storeId: string, name:string, amountInventory: Number, price: Number, keyWords: string[], category: string,description?: string,imageUrl?: string,discountPrice?: number}){
 
         addToRegularLogger("addProduct", {} );
         if (!userId){
@@ -46,15 +46,10 @@ export class ProductsApi implements IProductApi{
                 storeId: newProduct.storeId,
                 name: newProduct.name,
                 amountInventory: newProduct.amountInventory,
-                sellType: newProduct.sellType,
                 price: newProduct.price,
                 imageUrl: newProduct.imageUrl,
                 description: newProduct.description,
-                coupons: null,
-                acceptableDiscount: null,
                 discountPrice: null,
-                rank: null,
-                reviews: [],
                 keyWords: newProduct.keyWords,
                 category: newProduct.category,
                 isActivated: true
@@ -158,26 +153,6 @@ export class ProductsApi implements IProductApi{
             return ({status: BAD_REQUEST, err:'data not valid'});
         }
     }
-
-    // //NIR: NOT WORKING. NEED TO FIX.
-    // async addReview(productId: string, userId: string, rank: Number, comment: string){
-    //     addToRegularLogger("addReview", {productId, userId, rank, comment} );
-    //     try{
-    //         let reviewToAdd = new Review({date: Date.now(), registeredUser: userId, rank: rank, comment: comment})
-    //         reviewToAdd.id = "tempID"; //NIR: need to generate id ???;
-
-    //         let productToUpdate = await ProductCollection.findById(productId);
-    //         productToUpdate.reviews.push(reviewToAdd.id) //NIR: SOMETHING'S NOT WORKING HERE
-
-    //         let product_AfterUpdate = await ProductCollection.updateOne(productToUpdate);
-    //         return {status: OK_STATUS ,product: productToUpdate}
-
-    //     } catch(err) {
-
-    //         addToSystemFailierLogger(" add review  ");
-    //         return {status: CONNECTION_LOST, err:"connection Lost"};
-    //     }
-    // }
 
     async getProducts(parmas: {storeName?: string, storeId?: string, category?: string, keyWords?: string[], name?:string},includeDisabled=false){
         addToRegularLogger("getProducts", {});
@@ -309,14 +284,12 @@ export class ProductsApi implements IProductApi{
             return false;
         }       
     }
-
 }
 
 const isProductInRules = (product:any, productStore:any) => {
     const saleRules = productStore.saleRules;
     const purchaseRules = productStore.purchaseRules;
     let isFoundInRule = false;
-
 
     purchaseRules.map( purchaseRule =>{
         if(isInCondition(product.id, purchaseRule.condition)){

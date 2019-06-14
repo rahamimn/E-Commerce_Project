@@ -31,7 +31,6 @@ describe("Store model", () => {
     expect(store.getStoreDetails()).toMatchObject({
       id: store.id,
       name: store.name,
-      rank: store.rank,
     });
   });
 });

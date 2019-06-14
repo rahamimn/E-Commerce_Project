@@ -97,7 +97,7 @@ export class OrdersApi implements IOrderApi{
             const cartDetails = await cart.getDetails();
             const store = await StoreCollection.findById(cartDetails.store,sessionOpt);
             if(store) {
-                const workersRole = store.workers;
+                const workersRole = []  //SHOVAL - get workers api
                 let role, i;
                 for (i = 0; i < workersRole.length; i++) {
                     role = await RoleCollection.findById(workersRole[i],sessionOpt);

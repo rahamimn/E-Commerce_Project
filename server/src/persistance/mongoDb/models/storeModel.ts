@@ -6,14 +6,10 @@ var Schema = mongoose.Schema;
 
 interface IStore {
   name: string;
-  workers?: MonArray<ObjectID>; //already an array of users
   purchaseRules: any,
   saleRules: any,
-  rank?: number;
-  review?: MonArray<ObjectID>; //array of review
   purchasePolicy?: string;
   storState?: string;
-  messages?: MonArray<ObjectID>;
   pendingOwners?: MonArray<any>;
 }
 
@@ -21,16 +17,11 @@ export interface IStoreModel extends IStore, Document {} //add methods here
 
 export const storeScheme = new Schema({
   name: { type: String, unique: true },
-  workers: [{ type: Schema.Types.ObjectId, ref: "User", default: [] }],
   purchaseRules: [],
   saleRules: [],
-  rank: Number,
-  review: [{ type: Schema.Types.ObjectId, ref: "Review", default: [] }],
   purchasePolicy: String,
   storState: String,
-  messages: [{ type: Schema.Types.ObjectId, ref: "Messages", default: [] }],
   pendingOwners: []
-
 });
 
 export let StoreModel: Model<IStoreModel>;

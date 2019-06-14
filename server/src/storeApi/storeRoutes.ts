@@ -104,58 +104,6 @@ async function getWorkers(req: Request, res: express.Response) {
     }
 }
 
-storesApiRouter.post('/storesApi/addReview', addReview);
-
-async function addReview(req: Request, res: express.Response) {
-    try {
-        const user = req.session.user;
-        if (!user) {
-            res.send({status: Constants.BAD_ACCESS_NO_VISITORS, err: Constants.ERR_Access_MSG});
-            return;
-        }
-        const storeId = req.body.storeId;
-        const rank = req.body.rank;
-        const comment = req.body.comment;
-
-        if (!storeId)
-            throw Error(ERR_GENERAL_MSG);
-        if (!rank || !storeId)
-            res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
-        else {
-            const response = await storesApi.addReview(user.id, storeId, rank, comment);
-            res.send(response);
-        }
-    }
-    catch (err) {
-        addToSystemFailierLogger(" add review from routes  ");
-        res.send({status: Constants.BAD_REQUEST});
-    }
-}
-
-
-storesApiRouter.post('/storesApi/getStoreMessages', getStoreMessages);
-
-async function getStoreMessages(req: Request, res: express.Response) {
-    try {
-        const user = req.session.user;
-        if (!user) {
-            res.send({status: Constants.BAD_ACCESS_NO_VISITORS, err: Constants.ERR_Access_MSG});
-            return;
-        }
-        const storeId = req.body.storeId;
-
-        if (!storeId)
-            throw Error(ERR_GENERAL_MSG);
-
-        const response = await storesApi.getStoreMessages(user.id, storeId);
-        res.send(response);
-    }
-    catch (err) {
-        addToSystemFailierLogger(" get store messages from routes  ");
-        res.send({status: Constants.BAD_REQUEST});
-    }
-}
-
 
 storesApiRouter.post('/storesApi/getStore', getStore);
 
@@ -183,34 +131,6 @@ async function getStore(req: Request, res: express.Response) {
 }
 
 
-usersApiRouter.post('/storesApi/sendMessage', sendMessage);
-
-async function sendMessage(req: Request, res: express.Response) {
-    try {
-        const user = req.session.user;
-        if (!user) {
-            res.send({status: Constants.BAD_ACCESS_NO_VISITORS, err: Constants.ERR_Access_MSG});
-            return;
-        }
-        const title = req.body.title;
-        const body = req.body.body;
-        const toName = req.body.toName;
-        const storeId = req.body.storeId;
-
-        if (!storeId)
-            throw Error(ERR_GENERAL_MSG);
-
-        if (!title || !body || !toName)
-            res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
-
-        const response = await storesApi.sendMessage(user.id, storeId, title, body, toName);
-        res.send(response);
-    }
-    catch (err) {
-        addToSystemFailierLogger(" send message from routes  ");
-        res.send({status: Constants.BAD_REQUEST});
-    }
-}
 
 usersApiRouter.post('/storesApi/:storeId/purchaseRules', purchaseRules);
 

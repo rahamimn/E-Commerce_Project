@@ -1,8 +1,7 @@
-import { read } from "fs";
 import { insertRegisterdUser, setupRoleToUser } from "./accetpanceTestUtils";
 import { StoreCollection, ProductCollection, RoleCollection, UserCollection } from '../src/persistance/mongoDb/Collections';
 import { fakeStore, fakeProduct } from "./fakes";
-import { STORE_OWNER, STORE_MANAGER, REMOVE_PRODUCT_PERMISSION, UPDATE_PRODUCT_PERMISSION, ADMIN } from '../src/consts';
+import { STORE_OWNER, STORE_MANAGER, ADMIN } from '../src/consts';
 import { addToSystemFailierLogger } from "../src/utils/addToLogger";
 import { Role } from "../src/usersApi/models/role";
 
@@ -109,8 +108,7 @@ export const read_from_input_file = async () => {
                     let name_of_new_store = names[i + 2];
                     const storeId1 = (await StoreCollection.insert(fakeStore({name: name_of_new_store})));
                     let store_id = storeId1.id;
-                    const storeOwnerRole = await setupRoleToUser(username_id, {name: STORE_OWNER, store: store_id, appointor: admin.id });
-                    storeId1.workers.push(storeOwnerRole);
+                    await setupRoleToUser(username_id, {name: STORE_OWNER, store: store_id, appointor: admin.id });
                     StoreCollection.updateOne(storeId1); 
                     i = i + 2;
                     break;

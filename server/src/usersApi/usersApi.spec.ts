@@ -1,11 +1,11 @@
-import { fakeRole, fakeUser, fakeProduct, fakeStore, fakeCart, fakeMessage } from "../../test/fakes";
+import { fakeRole, fakeUser, fakeProduct, fakeStore, fakeCart } from "../../test/fakes";
 
 import { UsersApi } from "./usersApi";
 import Chance from 'chance';
 import { STORE_OWNER, ADMIN, STORE_MANAGER } from "../consts";
 import * as constants from '../consts'
 import { connectDB } from "../persistance/connectionDbTest";
-import { UserCollection, RoleCollection, CartCollection, ProductCollection, StoreCollection, MessageCollection } from "../persistance/mongoDb/Collections";
+import { UserCollection, RoleCollection, CartCollection, ProductCollection, StoreCollection } from "../persistance/mongoDb/Collections";
 import { User } from "./models/user";
 import { Role } from "./models/role";
 import { sessionCarts } from "./sessionCarts";
@@ -13,7 +13,7 @@ import { sessionCarts } from "./sessionCarts";
 
 describe('users-api-integration',() => {
   let storeOwner, storeOwnerRole,storeOwner2, storeOwnerRole2, storeManager, storeManagerRole, userWithoutRole,adminUser, roleAdmin;
-  let product, store, cart, userWithAll, message;
+  let product, store, cart, userWithAll;
   const usersApi  = new UsersApi();
   const chance = new Chance();
   jest.setTimeout(10000);
@@ -27,7 +27,6 @@ describe('users-api-integration',() => {
 //   });
 
   beforeEach(async () => { //create database to work with
-      message = await MessageCollection.insert(fakeMessage({}));
       store = await StoreCollection.insert(fakeStore({}));
       product = await ProductCollection.insert(fakeProduct({storeId: store.id, amountInvetory:10 }));
       cart = await CartCollection.insert(fakeCart({
@@ -37,7 +36,7 @@ describe('users-api-integration',() => {
               amount:2
           }]
       }));
-      userWithAll = await UserCollection.insert(fakeUser({carts:[cart.id], messages:[message.id]}));
+      userWithAll = await UserCollection.insert(fakeUser({carts:[cart.id]}));
       [adminUser, roleAdmin] = await roleWithUser({},{name: ADMIN});
       [storeOwner, storeOwnerRole] = await roleWithUser({},{name: STORE_OWNER, store: store.id });
       [storeOwner2, storeOwnerRole2] = await roleWithUser({},{name: STORE_OWNER, store: store.id, appointor: storeOwnerRole.id });
@@ -208,13 +207,6 @@ describe('users-api-integration',() => {
     expect(user.notifications[1]).toMatchObject({header,message});
 });
 
-//   it('get all messages ', async () => {
-//       const response = await usersApi.getMessages(userWithAll.id);
-
-//       expect(response.status).toEqual(constants.OK_STATUS);
-//       expect(response.messages[0].id).toEqual(message.id);
-//   });
-
 
   it('get user details ', async () => {
       const user = await UserCollection.findById(userWithAll.id);
@@ -280,43 +272,6 @@ describe('users-api-integration',() => {
     expect(cartAfter).toBeNull();
 });
 
-//   it('sendMessage to user ', async () => {
-//       let response = await usersApi.sendMessage(
-//         storeOwner.id,
-//         chance.sentence(),
-//         chance.sentence(),
-//         storeManager.userName,
-//         false
-//       );
-
-//       const users = await UserCollection.findByIds([storeOwner.id,storeManager.id]);
-//       const message = await MessageCollection.findById(response.message.id);
-
-//       expect(response.status).toEqual(constants.OK_STATUS);
-//       expect(response.message.id).toEqual(message.id);
-//       expect(users[0].messages[0].equals(response.message.id)).toBeTruthy();
-//       expect(users[1].messages[0].equals(response.message.id)).toBeTruthy();
-//   });
-
-//   it('sendMessage to store ', async () => {
-//     let response = await usersApi.sendMessage(
-//       adminUser.id,
-//       chance.sentence(),
-//       chance.sentence(),
-//       store.name,
-//       true 
-//     );
-
-//     const user = await UserCollection.findById(adminUser.id);
-//     const storeWithMessage = await StoreCollection.findById(store.id);
-//     const message = await MessageCollection.findById(response.message.id);
-
-//     expect(response.status).toEqual(constants.OK_STATUS);
-//     expect(response.message.id).toEqual(message.id);
-//     expect(user.messages[0].equals(response.message.id)).toBeTruthy();
-//     expect(storeWithMessage.messages[0].equals(response.message.id)).toBeTruthy();
-//   });
-
   it('delete user ', async () => {
     let response = await usersApi.setUserActivation(adminUser.id,userWithoutRole.userName);
 
@@ -373,7 +328,6 @@ it('add product to cart of guest and than register ', async () => {
     expect(cartsSession.length).toBe(0);
  
 });
-
 
 it('get user stores ', async () => {
     const response = await usersApi.getUserStores(storeOwner.id);
