@@ -83,7 +83,6 @@
                             <div class="col-md-6">
                                 <select class="custom-select" id="disc_type" name="disc_type" onchange="onChangeDiscountType(event)">
                                     <option value="percentage" label="Percentage" selected></option>
-                                    <option value="onePlusOne" label="One Plus One"></option>
                                 </select>
                             </div>
                         </div>
@@ -295,9 +294,6 @@
                 discount.percentage = percentage;
                 discount.products = products;
                 break;
-            case 'onePlusOne': 
-                discount.products = products;
-                break;
         }
       
         discount.displayText = displayText;
@@ -366,9 +362,6 @@
         switch($('#disc_type')[0].value){
             case 'percentage':
                 $('#disc_percentage_view').show();  
-                break;
-            case 'onePlusOne': 
-                $('#disc_percentage_view').hide(); 
                 break;
         } 
     }
