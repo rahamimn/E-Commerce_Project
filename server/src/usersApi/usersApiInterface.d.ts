@@ -17,9 +17,9 @@ export interface IUsersApi{
     updateUser: (userId: string, user: any) => Promise< {status:number, err?: string}>,
     getUserDetails: (userId: string) => Promise< {status:number, err?: string , user?:any}>,
     getUserDetailsByName: (userId: string) => Promise< {status:number, err?: string , user?:any}>,
-    updateCart:(cartDetails: {id:string, items:any[] }) => Promise<{status:number, err?: string}>,
+    updateCart:(userId:string,cartDetails: {id:string, items:any[] }) => Promise<{status:number, err?: string}>,
     getCart:(userId:string , cartId:string) => Promise< {status:number, err?: string , cart?: any  }>,
     getCarts:(userId:string, sessionId?:string) => Promise< {status:number, err?: string , carts?: any[]  }>,
-    validateCartRules:(cartId: {cartId:string}) => Promise<{status:number, err?: string, isPassedRules?:boolean}>,
+    validateCartRules:(userId:string, cartId: {cartId:string}) => Promise<{status:number, err?: string, isPassedRules?:boolean}>,
     setUserActivation: (adminId: string, userNameToDisActivate:string ) =>  Promise< {status:number, err?: string , user?: User  }>,
 }

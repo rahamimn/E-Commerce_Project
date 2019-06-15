@@ -207,11 +207,14 @@ export class UsersApi implements IUsersApi{
         }
     }
 
-    async validateCartRules(cartId){
+    async validateCartRules(userId,cartId){
         try {
             addToRegularLogger(" validateCartRules ", {cartId});
 
-            let cart = await CartCollection.findById(cartId);
+            let cart = userId? 
+                await CartCollection.findById(cartId) : 
+                sessionCarts.findById(cartId);
+
             const isPassedRules = await cart.validateCartRules();
             return ({status: Constants.OK_STATUS, isPassedRules:isPassedRules});
 
@@ -224,23 +227,28 @@ export class UsersApi implements IUsersApi{
         }
     }
 
-    async updateCart(cartDetails){
+    async updateCart(userId,cartDetails){
         try {
             addToRegularLogger(" update Cart ", {cartDetails });
+            
+            let cartToUpdate = userId? 
+                await CartCollection.findById(cartDetails.id) : 
+                sessionCarts.findById(cartDetails.id);
 
-            let cartToUpdate = await CartCollection.findById(cartDetails.id);
             if(!cartToUpdate){
                 addToErrorLogger("updateCart no cart found");         
 
                 return ({status: Constants.BAD_REQUEST, err: "updateCart no cart"});
             }
+
             if(cartDetails.items.length === 0){
                 await CartCollection.delete({_id:cartDetails.id});
                 return ({status: Constants.OK_STATUS});
             }
 
             if(await cartToUpdate.updateDetails(cartDetails)){
-                cartToUpdate = await CartCollection.updateOne(cartToUpdate);
+                if(userId)
+                    cartToUpdate = await CartCollection.updateOne(cartToUpdate);
                 return ({status: Constants.OK_STATUS});
             }
 

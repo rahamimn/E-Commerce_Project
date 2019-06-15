@@ -250,7 +250,7 @@ describe('users-api-integration',() => {
 
       cartDetails.items = [{product: product.id, amount: 1}];
 
-      response = await usersApi.updateCart(cartDetails);
+      response = await usersApi.updateCart(cart.ofUser,cartDetails);
       const res = await usersApi.getCart(cart.ofUser,cartDetails.id);
       const updatedcart = res.cart;
 
@@ -265,7 +265,7 @@ describe('users-api-integration',() => {
 
     cartDetails.items = [];
 
-    response = await usersApi.updateCart(cartDetails);
+    response = await usersApi.updateCart(cart.ofUser,cartDetails);
     const cartAfter = await CartCollection.findById(cartDetails.id);
 
     expect(response.status).toEqual(constants.OK_STATUS);
