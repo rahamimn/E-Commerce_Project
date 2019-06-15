@@ -28,11 +28,6 @@ describe("Store api model", () => {
     connectDB();
   });
 
-  // afterAll(async ()=>{
-  //   await disconnectDB();
-  // });
-
-
   afterAll(async() => {
     await StoreCollection.drop();
     //ProductCollection.drop();
@@ -133,6 +128,25 @@ describe("Store api model", () => {
         expect(addResult.status).toEqual(OK_STATUS);
     });
 
+    it("getPurchaseRules with productId parameter should return relevent purcahse Rules", async () => {
+      //prepeare store and products
+      let storesApi = new StoresApi();
+      let productApi = new ProductsApi();
+
+      let user = await UserCollection.insert(fakeUser({}));
+      const {store} = await storesApi.addStore(user.id,chance.sentence());
+
+      let product1 = fakeProduct({ storeId : store.id });
+      let product2 = fakeProduct({ storeId : store.id });
+      await productApi.addProduct(user.id,product1);
+      await productApi.addProduct(user.id,product2);
+      await storesApi.addPurchaseRule(user.id, product1.storeId, mockSimplePurchaseRule(product1.id));
+      await storesApi.addPurchaseRule(user.id, product1.storeId, mockSimplePurchaseRule(product2.id));
+      const {purchaseRules} =  await storesApi.getPurchaseRules(store.id,product1.id);
+
+      expect(purchaseRules.length).toEqual(1);
+  });
+
     it("test bad Add pRules - rule name isnt unique", async () => {
 
         //prepeare store and products
@@ -163,6 +177,27 @@ describe("Store api model", () => {
         expect(addResult.err).toEqual("rule name isnt unique");
     });
 
+
+    it("getSalesRules with productId parameter should return relevent purcahse Rules", async () => {
+
+      //prepeare store and products
+      let storesApi = new StoresApi();
+      let productApi = new ProductsApi();
+      let user = await UserCollection.insert(fakeUser({}));
+      const { store } = await storesApi.addStore(user.id,chance.sentence());
+      
+      const product1 = fakeProduct({storeId: store.id });
+      const product2 = fakeProduct({storeId: store.id });
+      await productApi.addProduct(user.id,product1);
+      await productApi.addProduct(user.id,product2);
+      await storesApi.addSaleRule(user.id, product1.storeId, mockSimpleSaleRule(product1.id, product1.name));
+      await storesApi.addSaleRule(user.id, product1.storeId, mockSimpleSaleRule(product2.id, product2.name));
+
+      const {saleRules} = await storesApi.getSaleRules(store.id,product1.id);
+
+      expect(saleRules.length).toEqual(1);
+  });
+  
     it("test good Add sRules", async () => {
 
         //prepeare store and products
@@ -183,7 +218,6 @@ describe("Store api model", () => {
         const store_from_db = await storesApi.getStore(store.store.id);
         const rulesAfterTest = store_from_db.store.saleRules;
 
-        console.log(addResult.err);
         expect(addResult.status).toEqual(OK_STATUS);
         expect(rulesBeforeTest.length).toEqual(0);
         expect(rulesAfterTest.length).toEqual(1);

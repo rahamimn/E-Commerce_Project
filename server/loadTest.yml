@@ -1,0 +1,42 @@
+config:
+  target: 'http://localhost:3000'
+  processor: "./dataGenerationForLoadTest.js"
+  plugins:
+    expect: {}
+  phases:
+    - duration: 60
+      arrivalRate: 10
+scenarios:
+  - flow:
+    - function: "generateRandomData"
+    - post:
+        url: "/usersApi/register"
+        json: 
+          userName: "{{userName}}"
+          password: "123456"
+          firstName: "a"
+          lastName: "a"
+          email: "da@dqw.c"
+          phone: "d123"
+        capture:
+          - json: "$.status"
+            as: status
+        expect:
+          - equals:
+            - "{{ status }}"
+            - 0 
+    - get:
+        url: "/login"
+        json:
+          userName: "{{userName}}"
+          password: "123456"
+        capture:
+          - json: "$.status"
+            as: status
+        expect:
+          - equals:
+            - "{{ status }}"
+            - 0
+
+
+
