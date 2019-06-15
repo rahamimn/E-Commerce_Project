@@ -27,6 +27,7 @@ export class Product {
 
 
     public updateDetails (productDetails){ 
+        this.name = productDetails.name;
         this.amountInventory = productDetails.amountInventory;
         this.price = productDetails.price;
         this.discountPrice = productDetails.discountPrice;

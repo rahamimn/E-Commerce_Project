@@ -45,8 +45,6 @@ export class StoresApi implements IStoresApi {
             const new_store_added = await StoreCollection.insert(new Store({
                 name: storeName,
                 workers: [],
-                rank: -1,
-                review: [],
                 purchasePolicy: "everyone can buy",
                 storeState: OPEN_STORE
             }), sessionOpt);
@@ -209,7 +207,7 @@ export class StoresApi implements IStoresApi {
         }
     }
 
-    async getPurchaseRules(storeId: string) {
+    async getPurchaseRules(storeId: string, productId: string) {
         addToRegularLogger(" get purchase rules from store ", {storeId});
 
         const store = await StoreCollection.findOne({_id: storeId});
@@ -217,8 +215,9 @@ export class StoresApi implements IStoresApi {
             addToErrorLogger(" getPurchaseRules -> the store does not exist! ");
             return ({status: ERR_STORE_PROBLEM, err: BAD_STORE_ID});
         }
+        console.log(productId,store.purchaseRules);
+        const purchaseRules = productId? filterPurchaseByProduct(store.purchaseRules,productId) : store.purchaseRules ;
 
-        const purchaseRules = store.purchaseRules;
         return ({status: OK_STATUS, purchaseRules: purchaseRules});
     };
 
@@ -297,7 +296,7 @@ export class StoresApi implements IStoresApi {
 
     };
 
-    async getSaleRules(storeId: string) {
+    async getSaleRules(storeId: string, productId: string) {
         addToRegularLogger(" get discount rules from store ", {storeId});
 
         const store = await StoreCollection.findOne({_id: storeId});
@@ -305,8 +304,8 @@ export class StoresApi implements IStoresApi {
             addToErrorLogger(" getSaleRules -> the store does not exist! ");
             return ({status: ERR_STORE_PROBLEM, err: BAD_STORE_ID});
         }
-
-        const saleRules = store.saleRules;
+        const saleRules = productId? filterSalesByProduct(store.saleRules,productId) : store.saleRules ;
+        
         return ({status: OK_STATUS, saleRules: saleRules});
     };
 
@@ -400,3 +399,25 @@ const validateSaleRule = (newSaleRule: any, saleRules: any[]) => {
 };
 
 
+
+
+
+const isCondRelevant = (cond,productId) => {
+    if(cond.type === Constants.PTYPE_COMPLEX)
+        return isCondRelevant(cond.op1,productId) || isCondRelevant(cond.op2,productId);
+    else{
+        return cond.product && cond.product.toString() === productId.toString();
+    }
+}
+const isDiscountRelevant = (discount,productId) => 
+    discount.products.some(prod => prod.id.toString() === productId.toString())
+
+const filterPurchaseByProduct = (PurchaseRules: any[], productId: string) => 
+    PurchaseRules.filter(rule => {
+        return isCondRelevant(rule.condition,productId)})
+
+const filterSalesByProduct = (saleRules: any[] , productId: string) => 
+    saleRules.filter(
+        rule => (
+            isCondRelevant(rule.condition,productId) ||
+            rule.discounts.some(disc => isDiscountRelevant(disc,productId))))
