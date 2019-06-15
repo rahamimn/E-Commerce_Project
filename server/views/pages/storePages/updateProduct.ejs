@@ -20,14 +20,6 @@
                     </div>
 
                     <div class="form-group row">
-                        <label for="sell_type" class="col-md-4 col-form-label text-md-right">
-                            Sell type </label>
-                        <div class="col-md-6">
-                            <input type="text" id="sellType" class="form-control" name="sellType" value="<%=product.sellType%>">
-                        </div>
-                    </div>
-
-                    <div class="form-group row">
                         <label for="price" class="col-md-4 col-form-label text-md-right">Price *</label>
                         <div class="col-md-6">
                             <input type="text" id="price" class="form-control" name="price" value="<%=product.price%>">
@@ -96,7 +88,6 @@
         event.preventDefault();
         var name = $("#productName").val();
         var amountInventory = $("#amountInventory").val();
-        var sellType = $("#sellType").val();
         var keyWordsFull = $("#keyWords").val();
         var keyWords = keyWordsFull.split(",", 10);
         var category = $("#category").val();
@@ -112,7 +103,6 @@
             name,
             amountInventory,
             price,
-            sellType,
             keyWords,
             category,
             imageUrl,

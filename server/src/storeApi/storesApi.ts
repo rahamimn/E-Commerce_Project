@@ -45,8 +45,6 @@ export class StoresApi implements IStoresApi {
             const new_store_added = await StoreCollection.insert(new Store({
                 name: storeName,
                 workers: [],
-                rank: -1,
-                review: [],
                 purchasePolicy: "everyone can buy",
                 storeState: OPEN_STORE
             }), sessionOpt);
