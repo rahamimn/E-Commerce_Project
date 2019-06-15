@@ -88,12 +88,14 @@ export class StoresApi implements IStoresApi {
             await StoreCollection.updateOne(store_object_from_db);
 
             const store = await StoreCollection.findById(storeId);
-            const workersRole = [] //SHOVAL - get workers api
-            let role, i;
-            for (i = 0; i < workersRole.length; i++) {
-                role = await RoleCollection.findById(workersRole[i]);
-                if (role.name === 'store-owner') {
-                    await sendNotification(role.ofUser, 'Close store', `${store.name} has been closed `);
+            if(store) {
+                const workersRole = await this.getWorkers('buyer',store.id);
+                if(workersRole.status == OK_STATUS) {
+                    let i;
+                    for (i = 0; i < workersRole.storeWorkers.length; i++) {
+                        let workerId = await UserCollection.findOne({userName:workersRole.storeWorkers[i].userName});
+                        await sendNotification(workerId.id, 'New order', `New order from store ${store.name}`);
+                    }
                 }
             }
 
@@ -143,15 +145,16 @@ export class StoresApi implements IStoresApi {
     async getWorkers(workerId: string, storeID: string) {
         try {
             addToRegularLogger(" get workers from store ", {workerId, storeID});
-
-            const role_details_of_user = await RoleCollection.findOne({ofUser: workerId, store: storeID});
-            if (!role_details_of_user) {
-                addToErrorLogger(" get workers the role does not exist! ");
-                return ({status: BAD_REQUEST, err: "user is'nt worker of this store"});
-            }
-            if (role_details_of_user.name === STORE_MANAGER && !role_details_of_user.permissions.some(perm => perm === WATCH_WORKERS_PERMISSION)) {
-                addToErrorLogger(" get Workers problem with permissions.. ");
-                return ({status: BAD_REQUEST, err: "manager doesn't has permission"});
+            if(!workerId && workerId.localeCompare('buyer') != 0) {
+                const role_details_of_user = await RoleCollection.findOne({ofUser: workerId, store: storeID});
+                if (!role_details_of_user) {
+                    addToErrorLogger(" get workers the role does not exist! ");
+                    return ({status: BAD_REQUEST, err: "user is'nt worker of this store"});
+                }
+                if (role_details_of_user.name === STORE_MANAGER && !role_details_of_user.permissions.some(perm => perm === WATCH_WORKERS_PERMISSION)) {
+                    addToErrorLogger(" get Workers problem with permissions.. ");
+                    return ({status: BAD_REQUEST, err: "manager doesn't has permission"});
+                }
             }
 
             const roles = await RoleCollection.find({store: storeID});
@@ -169,7 +172,6 @@ export class StoresApi implements IStoresApi {
                 const userName = (await UserCollection.findById(role.ofUser)).userName;
                 workers.push({userName: userName, role: role.getRoleDetails()})
             });
-
 
             return ({status: OK_STATUS, storeWorkers: workers});
         } catch (err) {

@@ -9,7 +9,7 @@ import {
     OrderCollection,
     CartCollection,
     StoreCollection,
-    RoleCollection
+    UserCollection
 } from "../persistance/mongoDb/Collections";
 import { addToRegularLogger, addToErrorLogger, addToSystemFailierLogger } from "../utils/addToLogger";
 import { sendNotification } from "../notificationApi/notifiactionApi";
@@ -18,6 +18,9 @@ import paymentSystem from "../paymentSystemProxy";
 import { sessionCarts } from "../usersApi/sessionCarts";
 import { ITransaction } from "../persistance/Icollection";
 import { initTransactions } from "../utils/utils";
+import { StoresApi } from "../storeApi/storesApi";
+
+const storesApi  = new StoresApi();
 
 const validateAddress = function(address){
     addToRegularLogger("validateAddress", {address});
@@ -92,20 +95,21 @@ export class OrdersApi implements IOrderApi{
                 addToErrorLogger("pay"+ ERR_SUPPLY_MSG);
                 return ({status: ERR_SUPPLY_SYSTEM, err:ERR_SUPPLY_MSG});
             }
- 
+
             //we can assume here that order completed succesfully
             const cartDetails = await cart.getDetails();
             const store = await StoreCollection.findById(cartDetails.store,sessionOpt);
             if(store) {
-                const workersRole = []  //SHOVAL - get workers api
-                let role, i;
-                for (i = 0; i < workersRole.length; i++) {
-                    role = await RoleCollection.findById(workersRole[i],sessionOpt);
-                    if (role.name === 'store-owner') {
-                        await sendNotification(role.ofUser, 'New order', `New order from store ${store.name}`,trans,false);
+                const workersRole = await storesApi.getWorkers('buyer',store.id);
+                if(workersRole.status == OK_STATUS) {
+                    let i;
+                    for (i = 0; i < workersRole.storeWorkers.length; i++) {
+                        let workerId = await UserCollection.findOne({userName:workersRole.storeWorkers[i].userName});
+                        await sendNotification(workerId.id, 'New order', `New order from store ${store.name}`, trans, false);
+                        }
                     }
                 }
-            }
+
 
             const order = await OrderCollection.insert(await cart.makeOrder(),sessionOpt);
             if(userId)
