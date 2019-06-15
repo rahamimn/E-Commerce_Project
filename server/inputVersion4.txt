@@ -1,0 +1,21 @@
+add admin
+A1
+123456
+add user
+U1
+123456
+add user
+U2
+123456
+add user
+U11
+123456
+add user
+U12
+123456
+add user
+U13
+123456
+add store
+U11
+S2
