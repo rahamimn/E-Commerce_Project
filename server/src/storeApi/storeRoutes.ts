@@ -136,9 +136,10 @@ usersApiRouter.post('/storesApi/:storeId/purchaseRules', purchaseRules);
 
 async function purchaseRules(req: Request, res: express.Response) {
     try {
-        const response = await storesApi.getPurchaseRules(req.params.storeId);
+        const response = await storesApi.getPurchaseRules(req.params.storeId, req.body.product);
         res.send(response);
     }
+
     catch (err) {
         addToSystemFailierLogger(" purchase rules from routes  ");
         res.send({status: Constants.BAD_REQUEST});
@@ -150,7 +151,7 @@ usersApiRouter.post('/storesApi/:storeId/saleRules', saleRules);
 
 async function saleRules(req: Request, res: express.Response) {
     try {
-        const response = await storesApi.getSaleRules(req.params.storeId);
+        const response = await storesApi.getSaleRules(req.params.storeId,req.body.product);
         res.send(response);
     }
     catch (err) {
