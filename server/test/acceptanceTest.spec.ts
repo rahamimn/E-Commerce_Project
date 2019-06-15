@@ -141,12 +141,12 @@ describe('AcceptanceTest',()=>{
     });
 
     it('UC 2.7 - Update cart (good)',async () => {
-        const res = await usersApi.updateCart({id: data.cartId,items:[{product:data.productId1,amount:1}]});
+        const res = await usersApi.updateCart(data.userWithCart.id,{id: data.cartId,items:[{product:data.productId1,amount:1}]});
         expect(res.status).toBe(OK_STATUS);
     });
 
     it('UC 2.7 - Update cart (amount too large)',async () => {
-        const res = await usersApi.updateCart({id: data.cartId,items:[{product:data.productId1,amount:1000}]});
+        const res = await usersApi.updateCart(data.userWithCart.id,{id: data.cartId,items:[{product:data.productId1,amount:1000}]});
         expect(res.status).toBe(BAD_REQUEST);
     });
     //------------Sagi------------------

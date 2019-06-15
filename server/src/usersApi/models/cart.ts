@@ -264,10 +264,6 @@ const getProductAmount = (productId: any, items: any) => {
         if (item.product == productId)
             itemAmount = item.amount;
     });
-
-    if (itemAmount < 0)
-        console.log('errorrr getProductAmount - not found item');
-
     return itemAmount;
 };
 

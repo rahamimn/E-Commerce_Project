@@ -124,12 +124,13 @@ usersApiRouter.post('/usersApi/validateCartRules', validateCartRules);
 
 async function validateCartRules(req: Request, res: express.Response) {
     try {
+        const userId = req.session.user ? req.session.user.id: null;
         const cartId = req.body.cartId;
 
         if (!cartId)
             res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
         else {
-            const response = await usersApi.validateCartRules(cartId);
+            const response = await usersApi.validateCartRules(userId,cartId);
             res.send(response);
         }
     }
@@ -144,12 +145,13 @@ usersApiRouter.post('/usersApi/updateCart', updateCart);
 
 async function updateCart(req: Request, res: express.Response) {
     try {
+        const userId = req.session.user ? req.session.user.id: null;
         const cartDetails = req.body.cartDetails;
 
         if (!cartDetails)
             res.send({status: Constants.MISSING_PARAMETERS, err: Constants.ERR_PARAMS_MSG});
         else {
-            const response = await usersApi.updateCart(cartDetails);
+            const response = await usersApi.updateCart(userId,cartDetails);
             res.send(response);
         }
     }

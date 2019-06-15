@@ -254,7 +254,7 @@ describe("Store api model", () => {
         expect(addResult.err).toEqual("rule name isnt unique");
     });
 
-  // it("test GET STORE WORKERS (currentlly in app.ts)", async () => {
+  // it("test GET STORE WORKERS", async () => {
 
   //   var user1 = fakeUser({});
   //   var user2 = await UserCollection.insert(user1);

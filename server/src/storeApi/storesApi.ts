@@ -215,7 +215,6 @@ export class StoresApi implements IStoresApi {
             addToErrorLogger(" getPurchaseRules -> the store does not exist! ");
             return ({status: ERR_STORE_PROBLEM, err: BAD_STORE_ID});
         }
-        console.log(productId,store.purchaseRules);
         const purchaseRules = productId? filterPurchaseByProduct(store.purchaseRules,productId) : store.purchaseRules ;
 
         return ({status: OK_STATUS, purchaseRules: purchaseRules});
