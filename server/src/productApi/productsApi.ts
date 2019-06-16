@@ -26,6 +26,17 @@ export class ProductsApi implements IProductApi{
             return ({status: BAD_REQUEST, err: "You have no permission for this action (User ID: " + userId + ")."});
         }
 
+        if (isNaN(Number(newProduct.amountInventory))) {
+            addToErrorLogger("addProduct " + "amount inventory must be a number");
+            return ({status: BAD_REQUEST, err: 'amount inventory must be a number'});
+        }
+
+        if (isNaN(Number(newProduct.price))) {
+            addToErrorLogger("addProduct " + "price must be a number");
+            return ({status: BAD_REQUEST, err: 'price must be a number'});
+        }
+
+
         if (newProduct.amountInventory < 0) {
             addToErrorLogger("addProduct " + BAD_AMOUNT);
             return ({status: BAD_REQUEST, err: BAD_AMOUNT});
