@@ -100,7 +100,7 @@ export class OrdersApi implements IOrderApi{
             const cartDetails = await cart.getDetails();
             const store = await StoreCollection.findById(cartDetails.store,sessionOpt);
             if(store) {
-                const workersRole = await storesApi.getWorkers('buyer',store.id);
+                const workersRole = await storesApi.getWorkersForNotification(store.id);
                 if(workersRole.status == OK_STATUS) {
                     let i;
                     for (i = 0; i < workersRole.storeWorkers.length; i++) {
