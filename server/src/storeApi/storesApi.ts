@@ -89,7 +89,7 @@ export class StoresApi implements IStoresApi {
 
             const store = await StoreCollection.findById(storeId);
             if(store) {
-                const workersRole = await this.getWorkers('buyer',store.id);
+                const workersRole = await this.getWorkersForNotification(store.id);
                 if(workersRole.status == OK_STATUS) {
                     let i;
                     for (i = 0; i < workersRole.storeWorkers.length; i++) {
@@ -145,7 +145,7 @@ export class StoresApi implements IStoresApi {
     async getWorkers(workerId: string, storeID: string) {
         try {
             addToRegularLogger(" get workers from store ", {workerId, storeID});
-            if(!workerId && workerId.localeCompare('buyer') != 0) {
+            //if(!workerId && workerId.localeCompare('buyer') != 0) {
                 const role_details_of_user = await RoleCollection.findOne({ofUser: workerId, store: storeID});
                 if (!role_details_of_user) {
                     addToErrorLogger(" get workers the role does not exist! ");
@@ -155,7 +155,36 @@ export class StoresApi implements IStoresApi {
                     addToErrorLogger(" get Workers problem with permissions.. ");
                     return ({status: BAD_REQUEST, err: "manager doesn't has permission"});
                 }
+            //}
+
+            const roles = await RoleCollection.find({store: storeID});
+
+
+            if (!roles) {
+                addToErrorLogger(" get Workers problem with permissions.. ");
+
+                return ({status: BAD_REQUEST, err: "Failed in get managers "});
             }
+
+            let workers = [];
+
+            await asyncForEach(roles, async role => {
+                const userName = (await UserCollection.findById(role.ofUser)).userName;
+                workers.push({userName: userName, role: role.getRoleDetails()})
+            });
+
+            return ({status: OK_STATUS, storeWorkers: workers});
+        } catch (err) {
+            addToSystemFailierLogger(" getWorkers : connectionLost  ");
+            if (err.message === 'connection lost')
+                return {status: CONNECTION_LOST, err: "connection Lost"};
+            return ({status: BAD_REQUEST, err: 'data isn\'t valid'});
+        }
+    };
+
+    async getWorkersForNotification(storeID: string) {
+        try {
+            addToRegularLogger(" get workers from store ", {storeID});
 
             const roles = await RoleCollection.find({store: storeID});
 

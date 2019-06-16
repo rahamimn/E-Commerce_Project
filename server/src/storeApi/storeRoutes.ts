@@ -104,6 +104,29 @@ async function getWorkers(req: Request, res: express.Response) {
     }
 }
 
+storesApiRouter.post('/storesApi/getWorkersForNotification', getWorkersForNotification);
+
+async function getWorkersForNotification(req: Request, res: express.Response) {
+    try {
+        const user = req.session.user;
+        if (!user) {
+            res.send({status: Constants.BAD_ACCESS_NO_VISITORS, err: Constants.ERR_Access_MSG});
+            return;
+        }
+        const storeId = req.body.storeId;
+
+        if (!storeId)
+            throw Error(ERR_GENERAL_MSG);
+
+        const response = await storesApi.getWorkersForNotification(storeId);
+        res.send(response);
+    }
+    catch (err) {
+        addToSystemFailierLogger(" get workers from routes  ");
+        res.send({status: Constants.BAD_REQUEST});
+    }
+}
+
 
 storesApiRouter.post('/storesApi/getStore', getStore);
 
