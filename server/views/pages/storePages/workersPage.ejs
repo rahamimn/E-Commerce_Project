@@ -54,7 +54,9 @@
   <div class="input-group-append">
     <!-- <button class="btn btn-outline-secondary" type="button" onclick="onSubmitSetOwner(event)">Set As Owner</button> -->
     <button class="btn btn-outline-secondary" type="button" onclick="onSubmitSetManager(event)">Set As Manager </button>
+    <%if(user.role.name === "store-owner"){%>
     <button class="btn btn-outline-secondary" type="button" onclick="onSubmitSugggestNewOwner(event)">Suggest New Owner</button>
+    <%}%>
   </div>
   </ul>
 </div>
