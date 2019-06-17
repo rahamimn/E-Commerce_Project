@@ -12,13 +12,13 @@ import {
     UserCollection
 } from "../persistance/mongoDb/Collections";
 import { addToRegularLogger, addToErrorLogger, addToSystemFailierLogger } from "../utils/addToLogger";
+import { sendNotification } from "../notificationApi/notifiactionApi";
 import supplySystem from "../supplySystemProxy";
 import paymentSystem from "../paymentSystemProxy";
 import { sessionCarts } from "../usersApi/sessionCarts";
 import { ITransaction } from "../persistance/Icollection";
 import { initTransactions } from "../utils/utils";
 import { StoresApi } from "../storeApi/storesApi";
-import {sendNotification} from "../usersApi/usersApi";
 
 const storesApi  = new StoresApi();
 

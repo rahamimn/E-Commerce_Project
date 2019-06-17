@@ -1,3 +1,703 @@
 
 
 
+
+info [Sat Jun 15 2019 13:41:40 GMT+0300 (שעון קיץ ירושלים)]  error in func:   login  TypeError: Cannot read property 'id' of null
+info [Sat Jun 15 2019 13:42:51 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+info [Sat Jun 15 2019 13:44:06 GMT+0300 (שעון קיץ ירושלים)]  error in func:  payMongoError: Transaction 11 has been aborted.
+
+info [Sat Jun 15 2019 13:48:36 GMT+0300 (שעון קיץ ירושלים)]  error in func:  payMongoError: Transaction 2 has been aborted.
+info [Sat Jun 15 2019 13:48:36 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+info [Sat Jun 15 2019 13:48:36 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+info [Sat Jun 15 2019 13:48:36 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+info [Sat Jun 15 2019 13:48:36 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+info [Sat Jun 15 2019 13:48:37 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+info [Sat Jun 15 2019 13:48:37 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+info [Sat Jun 15 2019 13:48:37 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+info [Sat Jun 15 2019 13:48:37 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+info [Sat Jun 15 2019 14:00:39 GMT+0300 (שעון קיץ ירושלים)]  error in func:   getWorkers : connectionLost  
+info [Sat Jun 15 2019 14:02:06 GMT+0300 (שעון קיץ ירושלים)]  error in func:  payMongoError: Transaction 2 has been aborted.
+info [Sat Jun 15 2019 14:02:09 GMT+0300 (שעון קיץ ירושלים)]  error in func:   getWorkers : connectionLost  
+
+info [Sat Jun 15 2019 14:08:24 GMT+0300 (שעון קיץ ירושלים)]  error in func:   getWorkers : connectionLost  
+info [Sat Jun 15 2019 14:08:25 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+info [Sat Jun 15 2019 14:08:25 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+info [Sat Jun 15 2019 14:08:25 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+
+info [Sat Jun 15 2019 14:11:33 GMT+0300 (שעון קיץ ירושלים)]  error in func:   getWorkers : connectionLost  
+info [Sat Jun 15 2019 14:12:41 GMT+0300 (שעון קיץ ירושלים)]  error in func:  payMongoError: Transaction 10 has been aborted.
+
+info [Sat Jun 15 2019 14:15:35 GMT+0300 (שעון קיץ ירושלים)]  error in func:   getWorkers : connectionLost  
+info [Sat Jun 15 2019 14:16:36 GMT+0300 (שעון קיץ ירושלים)]  error in func:  payMongoError: Transaction 10 has been aborted.
+
+info [Sat Jun 15 2019 14:17:10 GMT+0300 (שעון קיץ ירושלים)]  error in func:   login  TypeError: Cannot read property 'id' of null
+info [Sat Jun 15 2019 14:17:51 GMT+0300 (שעון קיץ ירושלים)]  error in func:   getWorkers : connectionLost  
+info [Sat Jun 15 2019 14:19:06 GMT+0300 (שעון קיץ ירושלים)]  error in func:  payMongoError: Transaction 5 has been aborted.
+
+info [Sat Jun 15 2019 14:22:13 GMT+0300 (שעון קיץ ירושלים)]  error in func:   getWorkers : connectionLost  
+info [Sat Jun 15 2019 14:23:36 GMT+0300 (שעון קיץ ירושלים)]  error in func:  payMongoError: Transaction 10 has been aborted.
+
+info [Sat Jun 15 2019 14:28:36 GMT+0300 (שעון קיץ ירושלים)]  error in func:  payMongoError: Transaction 5 has been aborted.
+
+info [Sat Jun 15 2019 14:40:00 GMT+0300 (שעון קיץ ירושלים)]  error in func:   getWorkers : connectionLost  
+
+info [Sat Jun 15 2019 14:43:06 GMT+0300 (שעון קיץ ירושלים)]  error in func:  payMongoError: Transaction 10 has been aborted.
+
+info [Sat Jun 15 2019 14:50:06 GMT+0300 (שעון קיץ ירושלים)]  error in func:  payMongoError: Transaction 10 has been aborted.
+
+info [Sat Jun 15 2019 14:53:06 GMT+0300 (שעון קיץ ירושלים)]  error in func:  payMongoError: Transaction 5 has been aborted.
+
+info [Sat Jun 15 2019 15:01:06 GMT+0300 (שעון קיץ ירושלים)]  error in func:  payMongoError: Transaction 1 has been aborted.
+
+info [Sat Jun 15 2019 15:03:36 GMT+0300 (שעון קיץ ירושלים)]  error in func:  payMongoError: Transaction 5 has been aborted.
+
+info [Sat Jun 15 2019 15:07:06 GMT+0300 (שעון קיץ ירושלים)]  error in func:  payMongoError: Transaction 5 has been aborted.
+
+info [Sat Jun 15 2019 15:10:06 GMT+0300 (שעון קיץ ירושלים)]  error in func:  payMongoError: Transaction 10 has been aborted.
+info [Sat Jun 15 2019 15:10:06 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+info [Sat Jun 15 2019 15:10:06 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+info [Sat Jun 15 2019 15:10:06 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+info [Sat Jun 15 2019 15:10:06 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+info [Sat Jun 15 2019 15:10:07 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+info [Sat Jun 15 2019 15:10:07 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+info [Sat Jun 15 2019 15:10:07 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+info [Sat Jun 15 2019 15:10:07 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+info [Sat Jun 15 2019 15:14:54 GMT+0300 (שעון קיץ ירושלים)]  error in func:  can not read file, bad name
+info [Sat Jun 15 2019 15:15:00 GMT+0300 (שעון קיץ ירושלים)]  error in func:   login  TypeError: Cannot read property 'id' of null
+info [Sat Jun 15 2019 15:15:07 GMT+0300 (שעון קיץ ירושלים)]  error in func:   login  TypeError: Cannot read property 'id' of null
+info [Sat Jun 15 2019 15:15:25 GMT+0300 (שעון קיץ ירושלים)]  error in func:   login  TypeError: Cannot read property 'id' of null
+
+info [Sat Jun 15 2019 15:17:36 GMT+0300 (שעון קיץ ירושלים)]  error in func:  payMongoError: Transaction 5 has been aborted.
+info [Sat Jun 15 2019 15:17:36 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+info [Sat Jun 15 2019 15:17:36 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+info [Sat Jun 15 2019 15:17:36 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+info [Sat Jun 15 2019 15:17:36 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+info [Sat Jun 15 2019 15:17:37 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+info [Sat Jun 15 2019 15:21:36 GMT+0300 (שעון קיץ ירושלים)]  error in func:  payMongoError: Transaction 5 has been aborted.
+info [Sat Jun 15 2019 15:21:36 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+info [Sat Jun 15 2019 15:21:36 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+info [Sat Jun 15 2019 15:21:36 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+info [Sat Jun 15 2019 15:21:36 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+info [Sat Jun 15 2019 15:34:27 GMT+0300 (שעון קיץ ירושלים)]  error in func:   login  TypeError: Cannot read property 'id' of null
+info [Sat Jun 15 2019 15:34:36 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+info [Sat Jun 15 2019 15:34:40 GMT+0300 (שעון קיץ ירושלים)]  error in func:   getWorkers : connectionLost  
+info [Sat Jun 15 2019 15:34:44 GMT+0300 (שעון קיץ ירושלים)]  error in func:   updateProduct  ValidationError: price: Path `price` (-100) is less than minimum allowed value (0).
+info [Sat Jun 15 2019 15:34:46 GMT+0300 (שעון קיץ ירושלים)]  error in func:   setProdactActivation  CastError: Cast to ObjectId failed for value "some-product-id" at path "_id" for model "Product"
+info [Sat Jun 15 2019 15:34:47 GMT+0300 (שעון קיץ ירושלים)]  error in func:   getWorkers : connectionLost  
+info [Sat Jun 15 2019 15:34:48 GMT+0300 (שעון קיץ ירושלים)]  error in func:   getWorkers : connectionLost  
+info [Sat Jun 15 2019 15:34:48 GMT+0300 (שעון קיץ ירושלים)]  error in func:   getWorkers : connectionLost  
+info [Sat Jun 15 2019 15:34:56 GMT+0300 (שעון קיץ ירושלים)]  error in func:   getWorkers : connectionLost  
+
+
+
+info [Sat Jun 15 2019 15:35:20 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+info [Sat Jun 15 2019 15:35:24 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+
+
+
+
+
+
+
+info [Sat Jun 15 2019 15:48:46 GMT+0300 (שעון קיץ ירושלים)]  error in func:   login  TypeError: Cannot read property 'id' of null
+info [Sat Jun 15 2019 15:48:54 GMT+0300 (שעון קיץ ירושלים)]  error in func:   getWorkers : connectionLost  
+info [Sat Jun 15 2019 15:48:55 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+info [Sat Jun 15 2019 15:49:03 GMT+0300 (שעון קיץ ירושלים)]  error in func:   updateProduct  ValidationError: price: Path `price` (-100) is less than minimum allowed value (0).
+info [Sat Jun 15 2019 15:49:05 GMT+0300 (שעון קיץ ירושלים)]  error in func:   setProdactActivation  CastError: Cast to ObjectId failed for value "some-product-id" at path "_id" for model "Product"
+
+
+
+
+info [Sat Jun 15 2019 15:49:43 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+info [Sat Jun 15 2019 15:49:47 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+info [Sat Jun 15 2019 15:49:51 GMT+0300 (שעון קיץ ירושלים)]  error in func:   getWorkers : connectionLost  
+
+
+
+
+
+
+info [Sat Jun 15 2019 15:53:05 GMT+0300 (שעון קיץ ירושלים)]  error in func:   login  TypeError: Cannot read property 'id' of null
+info [Sat Jun 15 2019 15:53:15 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+info [Sat Jun 15 2019 15:53:19 GMT+0300 (שעון קיץ ירושלים)]  error in func:   getWorkers : connectionLost  
+info [Sat Jun 15 2019 15:53:23 GMT+0300 (שעון קיץ ירושלים)]  error in func:   updateProduct  ValidationError: price: Path `price` (-100) is less than minimum allowed value (0).
+info [Sat Jun 15 2019 15:53:24 GMT+0300 (שעון קיץ ירושלים)]  error in func:   setProdactActivation  CastError: Cast to ObjectId failed for value "some-product-id" at path "_id" for model "Product"
+info [Sat Jun 15 2019 15:53:25 GMT+0300 (שעון קיץ ירושלים)]  error in func:   getWorkers : connectionLost  
+info [Sat Jun 15 2019 15:53:26 GMT+0300 (שעון קיץ ירושלים)]  error in func:   getWorkers : connectionLost  
+info [Sat Jun 15 2019 15:53:27 GMT+0300 (שעון קיץ ירושלים)]  error in func:   getWorkers : connectionLost  
+info [Sat Jun 15 2019 15:53:35 GMT+0300 (שעון קיץ ירושלים)]  error in func:   getWorkers : connectionLost  
+
+
+
+info [Sat Jun 15 2019 15:53:58 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+info [Sat Jun 15 2019 15:54:02 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+
+
+
+
+
+
+info [Sat Jun 15 2019 15:55:06 GMT+0300 (שעון קיץ ירושלים)]  error in func:   login  TypeError: Cannot read property 'id' of null
+
+info [Sat Jun 15 2019 15:55:41 GMT+0300 (שעון קיץ ירושלים)]  error in func:   login  TypeError: Cannot read property 'id' of null
+info [Sat Jun 15 2019 15:55:50 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+info [Sat Jun 15 2019 15:55:54 GMT+0300 (שעון קיץ ירושלים)]  error in func:   getWorkers : connectionLost  
+info [Sat Jun 15 2019 15:55:58 GMT+0300 (שעון קיץ ירושלים)]  error in func:   updateProduct  ValidationError: price: Path `price` (-100) is less than minimum allowed value (0).
+info [Sat Jun 15 2019 15:56:00 GMT+0300 (שעון קיץ ירושלים)]  error in func:   setProdactActivation  CastError: Cast to ObjectId failed for value "some-product-id" at path "_id" for model "Product"
+info [Sat Jun 15 2019 15:56:01 GMT+0300 (שעון קיץ ירושלים)]  error in func:   getWorkers : connectionLost  
+info [Sat Jun 15 2019 15:56:02 GMT+0300 (שעון קיץ ירושלים)]  error in func:   getWorkers : connectionLost  
+info [Sat Jun 15 2019 15:56:02 GMT+0300 (שעון קיץ ירושלים)]  error in func:   getWorkers : connectionLost  
+info [Sat Jun 15 2019 15:56:10 GMT+0300 (שעון קיץ ירושלים)]  error in func:   getWorkers : connectionLost  
+
+
+
+
+info [Sat Jun 15 2019 15:56:38 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+info [Sat Jun 15 2019 15:56:42 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+
+
+
+
+
+
+info [Sat Jun 15 2019 16:59:15 GMT+0300 (שעון קיץ ירושלים)]  error in func:   login  TypeError: Cannot read property 'id' of null
+info [Sat Jun 15 2019 16:59:24 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+info [Sat Jun 15 2019 16:59:33 GMT+0300 (שעון קיץ ירושלים)]  error in func:   updateProduct  ValidationError: price: Path `price` (-100) is less than minimum allowed value (0).
+info [Sat Jun 15 2019 16:59:34 GMT+0300 (שעון קיץ ירושלים)]  error in func:   setProdactActivation  CastError: Cast to ObjectId failed for value "some-product-id" at path "_id" for model "Product"
+
+
+
+info [Sat Jun 15 2019 17:00:07 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+info [Sat Jun 15 2019 17:00:11 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+
+
+
+
+
+
+info [Sat Jun 15 2019 17:07:03 GMT+0300 (שעון קיץ ירושלים)]  error in func:   login  TypeError: Cannot read property 'id' of null
+info [Sat Jun 15 2019 17:07:13 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+info [Sat Jun 15 2019 17:07:21 GMT+0300 (שעון קיץ ירושלים)]  error in func:   updateProduct  ValidationError: price: Path `price` (-100) is less than minimum allowed value (0).
+info [Sat Jun 15 2019 17:07:23 GMT+0300 (שעון קיץ ירושלים)]  error in func:   setProdactActivation  CastError: Cast to ObjectId failed for value "some-product-id" at path "_id" for model "Product"
+
+
+
+
+info [Sat Jun 15 2019 17:08:01 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+info [Sat Jun 15 2019 17:08:05 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+
+
+
+
+
+info [Sat Jun 15 2019 17:08:41 GMT+0300 (שעון קיץ ירושלים)]  error in func:   login  TypeError: Cannot read property 'id' of null
+info [Sat Jun 15 2019 17:08:51 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+info [Sat Jun 15 2019 17:08:59 GMT+0300 (שעון קיץ ירושלים)]  error in func:   updateProduct  ValidationError: price: Path `price` (-100) is less than minimum allowed value (0).
+info [Sat Jun 15 2019 17:09:00 GMT+0300 (שעון קיץ ירושלים)]  error in func:   setProdactActivation  CastError: Cast to ObjectId failed for value "some-product-id" at path "_id" for model "Product"
+
+
+
+info [Sat Jun 15 2019 17:09:33 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+info [Sat Jun 15 2019 17:09:38 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+
+
+
+
+
+
+
+info [Sat Jun 15 2019 17:24:41 GMT+0300 (שעון קיץ ירושלים)]  error in func:   login  TypeError: Cannot read property 'id' of null
+info [Sat Jun 15 2019 17:24:49 GMT+0300 (שעון קיץ ירושלים)]  error in func:   getWorkers : connectionLost  
+info [Sat Jun 15 2019 17:24:50 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+info [Sat Jun 15 2019 17:24:54 GMT+0300 (שעון קיץ ירושלים)]  error in func:   getWorkers : connectionLost  
+info [Sat Jun 15 2019 17:24:58 GMT+0300 (שעון קיץ ירושלים)]  error in func:   updateProduct  ValidationError: price: Path `price` (-100) is less than minimum allowed value (0).
+info [Sat Jun 15 2019 17:25:00 GMT+0300 (שעון קיץ ירושלים)]  error in func:   setProdactActivation  CastError: Cast to ObjectId failed for value "some-product-id" at path "_id" for model "Product"
+info [Sat Jun 15 2019 17:25:01 GMT+0300 (שעון קיץ ירושלים)]  error in func:   getWorkers : connectionLost  
+info [Sat Jun 15 2019 17:25:01 GMT+0300 (שעון קיץ ירושלים)]  error in func:   getWorkers : connectionLost  
+info [Sat Jun 15 2019 17:25:02 GMT+0300 (שעון קיץ ירושלים)]  error in func:   getWorkers : connectionLost  
+info [Sat Jun 15 2019 17:25:10 GMT+0300 (שעון קיץ ירושלים)]  error in func:   getWorkers : connectionLost  
+
+
+
+
+info [Sat Jun 15 2019 17:25:37 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+info [Sat Jun 15 2019 17:25:42 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+info [Sat Jun 15 2019 17:25:46 GMT+0300 (שעון קיץ ירושלים)]  error in func:   getWorkers : connectionLost  
+
+
+
+
+
+
+info [Sat Jun 15 2019 17:36:05 GMT+0300 (שעון קיץ ירושלים)]  error in func:   login  TypeError: Cannot read property 'id' of null
+info [Sat Jun 15 2019 17:36:14 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+info [Sat Jun 15 2019 17:36:22 GMT+0300 (שעון קיץ ירושלים)]  error in func:   updateProduct  ValidationError: price: Path `price` (-100) is less than minimum allowed value (0).
+info [Sat Jun 15 2019 17:36:24 GMT+0300 (שעון קיץ ירושלים)]  error in func:   setProdactActivation  CastError: Cast to ObjectId failed for value "some-product-id" at path "_id" for model "Product"
+
+
+
+info [Sat Jun 15 2019 17:36:59 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+info [Sat Jun 15 2019 17:37:03 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+
+
+
+
+
+
+info [Sat Jun 15 2019 17:42:31 GMT+0300 (שעון קיץ ירושלים)]  error in func:   login  TypeError: Cannot read property 'id' of null
+info [Sat Jun 15 2019 17:42:42 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+info [Sat Jun 15 2019 17:42:50 GMT+0300 (שעון קיץ ירושלים)]  error in func:   updateProduct  ValidationError: price: Path `price` (-100) is less than minimum allowed value (0).
+info [Sat Jun 15 2019 17:42:52 GMT+0300 (שעון קיץ ירושלים)]  error in func:   setProdactActivation  CastError: Cast to ObjectId failed for value "some-product-id" at path "_id" for model "Product"
+
+
+
+
+info [Sat Jun 15 2019 17:43:31 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+info [Sat Jun 15 2019 17:43:35 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+
+
+
+
+
+
+info [Sat Jun 15 2019 17:44:22 GMT+0300 (שעון קיץ ירושלים)]  error in func:   login  TypeError: Cannot read property 'id' of null
+info [Sat Jun 15 2019 17:44:32 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+info [Sat Jun 15 2019 17:44:40 GMT+0300 (שעון קיץ ירושלים)]  error in func:   updateProduct  ValidationError: price: Path `price` (-100) is less than minimum allowed value (0).
+info [Sat Jun 15 2019 17:44:41 GMT+0300 (שעון קיץ ירושלים)]  error in func:   setProdactActivation  CastError: Cast to ObjectId failed for value "some-product-id" at path "_id" for model "Product"
+
+
+
+info [Sat Jun 15 2019 17:45:15 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+info [Sat Jun 15 2019 17:45:19 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+
+
+
+
+
+
+
+info [Sat Jun 15 2019 17:48:54 GMT+0300 (שעון קיץ ירושלים)]  error in func:   login  TypeError: Cannot read property 'id' of null
+info [Sat Jun 15 2019 17:49:03 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+info [Sat Jun 15 2019 17:49:07 GMT+0300 (שעון קיץ ירושלים)]  error in func:   getWorkers : connectionLost  
+info [Sat Jun 15 2019 17:49:11 GMT+0300 (שעון קיץ ירושלים)]  error in func:   updateProduct  ValidationError: price: Path `price` (-100) is less than minimum allowed value (0).
+info [Sat Jun 15 2019 17:49:13 GMT+0300 (שעון קיץ ירושלים)]  error in func:   setProdactActivation  CastError: Cast to ObjectId failed for value "some-product-id" at path "_id" for model "Product"
+info [Sat Jun 15 2019 17:49:14 GMT+0300 (שעון קיץ ירושלים)]  error in func:   getWorkers : connectionLost  
+info [Sat Jun 15 2019 17:49:15 GMT+0300 (שעון קיץ ירושלים)]  error in func:   getWorkers : connectionLost  
+info [Sat Jun 15 2019 17:49:15 GMT+0300 (שעון קיץ ירושלים)]  error in func:   getWorkers : connectionLost  
+info [Sat Jun 15 2019 17:49:23 GMT+0300 (שעון קיץ ירושלים)]  error in func:   getWorkers : connectionLost  
+
+
+
+
+info [Sat Jun 15 2019 17:49:51 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+
+info [Sat Jun 15 2019 17:50:00 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+
+
+
+
+
+info [Sat Jun 15 2019 17:54:26 GMT+0300 (שעון קיץ ירושלים)]  error in func:   login  TypeError: Cannot read property 'id' of null
+info [Sat Jun 15 2019 17:54:35 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+info [Sat Jun 15 2019 17:54:44 GMT+0300 (שעון קיץ ירושלים)]  error in func:   updateProduct  ValidationError: price: Path `price` (-100) is less than minimum allowed value (0).
+info [Sat Jun 15 2019 17:54:45 GMT+0300 (שעון קיץ ירושלים)]  error in func:   setProdactActivation  CastError: Cast to ObjectId failed for value "some-product-id" at path "_id" for model "Product"
+
+
+
+info [Sat Jun 15 2019 17:55:18 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+info [Sat Jun 15 2019 17:55:22 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+
+
+
+
+
+
+info [Sat Jun 15 2019 17:59:39 GMT+0300 (שעון קיץ ירושלים)]  error in func:   login  TypeError: Cannot read property 'id' of null
+info [Sat Jun 15 2019 17:59:48 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+info [Sat Jun 15 2019 17:59:56 GMT+0300 (שעון קיץ ירושלים)]  error in func:   updateProduct  ValidationError: price: Path `price` (-100) is less than minimum allowed value (0).
+info [Sat Jun 15 2019 17:59:58 GMT+0300 (שעון קיץ ירושלים)]  error in func:   setProdactActivation  CastError: Cast to ObjectId failed for value "some-product-id" at path "_id" for model "Product"
+
+
+
+
+info [Sat Jun 15 2019 18:00:38 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+
+info [Sat Jun 15 2019 18:00:47 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+
+
+
+
+info [Sat Jun 15 2019 18:01:04 GMT+0300 (שעון קיץ ירושלים)]  error in func:   login  TypeError: Cannot read property 'id' of null
+info [Sat Jun 15 2019 18:01:14 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+info [Sat Jun 15 2019 18:01:22 GMT+0300 (שעון קיץ ירושלים)]  error in func:   updateProduct  ValidationError: price: Path `price` (-100) is less than minimum allowed value (0).
+info [Sat Jun 15 2019 18:01:23 GMT+0300 (שעון קיץ ירושלים)]  error in func:   setProdactActivation  CastError: Cast to ObjectId failed for value "some-product-id" at path "_id" for model "Product"
+
+
+
+info [Sat Jun 15 2019 18:02:32 GMT+0300 (שעון קיץ ירושלים)]  error in func:   login  TypeError: Cannot read property 'id' of null
+info [Sat Jun 15 2019 18:02:41 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+info [Sat Jun 15 2019 18:02:49 GMT+0300 (שעון קיץ ירושלים)]  error in func:   updateProduct  ValidationError: price: Path `price` (-100) is less than minimum allowed value (0).
+info [Sat Jun 15 2019 18:02:51 GMT+0300 (שעון קיץ ירושלים)]  error in func:   setProdactActivation  CastError: Cast to ObjectId failed for value "some-product-id" at path "_id" for model "Product"
+
+
+info [Sat Jun 15 2019 18:03:21 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+
+info [Sat Jun 15 2019 18:03:28 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+
+
+
+
+
+
+info [Sat Jun 15 2019 18:56:18 GMT+0300 (שעון קיץ ירושלים)]  error in func:   login  TypeError: Cannot read property 'id' of null
+info [Sat Jun 15 2019 18:56:27 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+info [Sat Jun 15 2019 18:56:35 GMT+0300 (שעון קיץ ירושלים)]  error in func:   updateProduct  ValidationError: price: Path `price` (-100) is less than minimum allowed value (0).
+info [Sat Jun 15 2019 18:56:37 GMT+0300 (שעון קיץ ירושלים)]  error in func:   setProdactActivation  CastError: Cast to ObjectId failed for value "some-product-id" at path "_id" for model "Product"
+
+info [Sat Jun 15 2019 18:56:57 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+
+
+
+info [Sat Jun 15 2019 18:57:22 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+
+
+
+
+
+info [Sat Jun 15 2019 19:03:48 GMT+0300 (שעון קיץ ירושלים)]  error in func:   login  TypeError: Cannot read property 'id' of null
+info [Sat Jun 15 2019 19:03:57 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+info [Sat Jun 15 2019 19:04:05 GMT+0300 (שעון קיץ ירושלים)]  error in func:   updateProduct  ValidationError: price: Path `price` (-100) is less than minimum allowed value (0).
+info [Sat Jun 15 2019 19:04:06 GMT+0300 (שעון קיץ ירושלים)]  error in func:   setProdactActivation  CastError: Cast to ObjectId failed for value "some-product-id" at path "_id" for model "Product"
+
+info [Sat Jun 15 2019 19:04:25 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+
+
+info [Sat Jun 15 2019 19:04:46 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+
+
+
+
+
+
+info [Sat Jun 15 2019 19:05:09 GMT+0300 (שעון קיץ ירושלים)]  error in func:   login  TypeError: Cannot read property 'id' of null
+info [Sat Jun 15 2019 19:05:19 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+info [Sat Jun 15 2019 19:05:27 GMT+0300 (שעון קיץ ירושלים)]  error in func:   updateProduct  ValidationError: price: Path `price` (-100) is less than minimum allowed value (0).
+info [Sat Jun 15 2019 19:05:28 GMT+0300 (שעון קיץ ירושלים)]  error in func:   setProdactActivation  CastError: Cast to ObjectId failed for value "some-product-id" at path "_id" for model "Product"
+
+info [Sat Jun 15 2019 19:05:47 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+
+
+info [Sat Jun 15 2019 19:06:06 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+
+
+
+
+
+
+info [Sun Jun 16 2019 11:28:31 GMT+0300 (שעון קיץ ירושלים)]  error in func:   login  TypeError: Cannot read property 'id' of null
+info [Sun Jun 16 2019 11:28:45 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+info [Sun Jun 16 2019 11:28:54 GMT+0300 (שעון קיץ ירושלים)]  error in func:   updateProduct  ValidationError: price: Path `price` (-100) is less than minimum allowed value (0).
+info [Sun Jun 16 2019 11:28:56 GMT+0300 (שעון קיץ ירושלים)]  error in func:   setProdactActivation  CastError: Cast to ObjectId failed for value "some-product-id" at path "_id" for model "Product"
+
+info [Sun Jun 16 2019 11:29:18 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+
+
+info [Sun Jun 16 2019 11:29:42 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+
+
+
+
+
+
+info [Sun Jun 16 2019 11:30:13 GMT+0300 (שעון קיץ ירושלים)]  error in func:   login  TypeError: Cannot read property 'id' of null
+info [Sun Jun 16 2019 11:30:24 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+info [Sun Jun 16 2019 11:30:33 GMT+0300 (שעון קיץ ירושלים)]  error in func:   updateProduct  ValidationError: price: Path `price` (-100) is less than minimum allowed value (0).
+info [Sun Jun 16 2019 11:30:34 GMT+0300 (שעון קיץ ירושלים)]  error in func:   setProdactActivation  CastError: Cast to ObjectId failed for value "some-product-id" at path "_id" for model "Product"
+
+info [Sun Jun 16 2019 11:30:54 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+
+
+info [Sun Jun 16 2019 11:31:18 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+
+
+
+
+
+
+info [Sun Jun 16 2019 13:20:31 GMT+0300 (שעון קיץ ירושלים)]  error in func:   login  TypeError: Cannot read property 'id' of null
+info [Sun Jun 16 2019 13:20:41 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+info [Sun Jun 16 2019 13:20:49 GMT+0300 (שעון קיץ ירושלים)]  error in func:   updateProduct  ValidationError: price: Path `price` (-100) is less than minimum allowed value (0).
+info [Sun Jun 16 2019 13:20:51 GMT+0300 (שעון קיץ ירושלים)]  error in func:   setProdactActivation  CastError: Cast to ObjectId failed for value "some-product-id" at path "_id" for model "Product"
+
+info [Sun Jun 16 2019 13:21:10 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+
+
+info [Sun Jun 16 2019 13:21:32 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+
+
+
+
+
+
+info [Sun Jun 16 2019 13:21:58 GMT+0300 (שעון קיץ ירושלים)]  error in func:   login  TypeError: Cannot read property 'id' of null
+info [Sun Jun 16 2019 13:22:08 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+info [Sun Jun 16 2019 13:22:17 GMT+0300 (שעון קיץ ירושלים)]  error in func:   updateProduct  ValidationError: price: Path `price` (-100) is less than minimum allowed value (0).
+info [Sun Jun 16 2019 13:22:19 GMT+0300 (שעון קיץ ירושלים)]  error in func:   setProdactActivation  CastError: Cast to ObjectId failed for value "some-product-id" at path "_id" for model "Product"
+
+info [Sun Jun 16 2019 13:22:38 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+
+
+info [Sun Jun 16 2019 13:22:57 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+
+
+
+
+
+
+info [Sun Jun 16 2019 13:26:57 GMT+0300 (שעון קיץ ירושלים)]  error in func:   login  TypeError: Cannot read property 'id' of null
+info [Sun Jun 16 2019 13:27:07 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+info [Sun Jun 16 2019 13:27:17 GMT+0300 (שעון קיץ ירושלים)]  error in func:   updateProduct  ValidationError: price: Path `price` (-100) is less than minimum allowed value (0).
+info [Sun Jun 16 2019 13:27:19 GMT+0300 (שעון קיץ ירושלים)]  error in func:   setProdactActivation  CastError: Cast to ObjectId failed for value "some-product-id" at path "_id" for model "Product"
+
+info [Sun Jun 16 2019 13:27:40 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+
+
+info [Sun Jun 16 2019 13:28:01 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+
+
+
+
+
+
+info [Sun Jun 16 2019 13:41:49 GMT+0300 (שעון קיץ ירושלים)]  error in func:   login  TypeError: Cannot read property 'id' of null
+info [Sun Jun 16 2019 13:41:58 GMT+0300 (שעון קיץ ירושלים)]  error in func:   getWorkers : connectionLost  
+info [Sun Jun 16 2019 13:41:59 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+info [Sun Jun 16 2019 13:42:07 GMT+0300 (שעון קיץ ירושלים)]  error in func:   updateProduct  ValidationError: price: Path `price` (-100) is less than minimum allowed value (0).
+info [Sun Jun 16 2019 13:42:09 GMT+0300 (שעון קיץ ירושלים)]  error in func:   setProdactActivation  CastError: Cast to ObjectId failed for value "some-product-id" at path "_id" for model "Product"
+
+info [Sun Jun 16 2019 13:42:28 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+
+info [Sun Jun 16 2019 13:42:43 GMT+0300 (שעון קיץ ירושלים)]  error in func:   getWorkers : connectionLost  
+
+info [Sun Jun 16 2019 13:42:49 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+
+
+
+
+
+
+info [Sun Jun 16 2019 13:57:09 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+info [Sun Jun 16 2019 13:57:19 GMT+0300 (שעון קיץ ירושלים)]  error in func:   login  TypeError: Cannot read property 'id' of null
+info [Sun Jun 16 2019 13:57:28 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+info [Sun Jun 16 2019 13:57:36 GMT+0300 (שעון קיץ ירושלים)]  error in func:   updateProduct  ValidationError: price: Path `price` (-100) is less than minimum allowed value (0).
+info [Sun Jun 16 2019 13:57:38 GMT+0300 (שעון קיץ ירושלים)]  error in func:   setProdactActivation  CastError: Cast to ObjectId failed for value "some-product-id" at path "_id" for model "Product"
+
+
+
+info [Sun Jun 16 2019 13:58:12 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+
+
+
+
+
+
+info [Sun Jun 16 2019 14:02:15 GMT+0300 (שעון קיץ ירושלים)]  error in func:   login  TypeError: Cannot read property 'id' of null
+info [Sun Jun 16 2019 14:02:24 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+info [Sun Jun 16 2019 14:02:32 GMT+0300 (שעון קיץ ירושלים)]  error in func:   updateProduct  ValidationError: price: Path `price` (-100) is less than minimum allowed value (0).
+info [Sun Jun 16 2019 14:02:34 GMT+0300 (שעון קיץ ירושלים)]  error in func:   setProdactActivation  CastError: Cast to ObjectId failed for value "some-product-id" at path "_id" for model "Product"
+
+info [Sun Jun 16 2019 14:02:52 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+
+
+info [Sun Jun 16 2019 14:03:13 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+
+
+
+
+
+
+info [Sun Jun 16 2019 14:05:40 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+info [Sun Jun 16 2019 14:05:50 GMT+0300 (שעון קיץ ירושלים)]  error in func:   login  TypeError: Cannot read property 'id' of null
+info [Sun Jun 16 2019 14:05:59 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+info [Sun Jun 16 2019 14:06:07 GMT+0300 (שעון קיץ ירושלים)]  error in func:   updateProduct  ValidationError: price: Path `price` (-100) is less than minimum allowed value (0).
+info [Sun Jun 16 2019 14:06:09 GMT+0300 (שעון קיץ ירושלים)]  error in func:   setProdactActivation  CastError: Cast to ObjectId failed for value "some-product-id" at path "_id" for model "Product"
+
+
+
+info [Sun Jun 16 2019 14:06:43 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+
+
+
+
+
+
+info [Sun Jun 16 2019 14:09:06 GMT+0300 (שעון קיץ ירושלים)]  error in func:  payMongoError: Transaction 5 has been aborted.
+
+
+info [Sun Jun 16 2019 14:24:19 GMT+0300 (שעון קיץ ירושלים)]  error in func:   add Product  ValidationError: amountInventory: Cast to Number failed for value "tert" at path "amountInventory"
+info [Sun Jun 16 2019 14:27:59 GMT+0300 (שעון קיץ ירושלים)]  error in func:   add Product  ValidationError: price: Cast to Number failed for value "gh" at path "price"
+
+
+info [Sun Jun 16 2019 14:44:17 GMT+0300 (שעון קיץ ירושלים)]  error in func:   add Product  ValidationError: amountInventory: Cast to Number failed for value "d" at path "amountInventory"
+info [Sun Jun 16 2019 14:46:37 GMT+0300 (שעון קיץ ירושלים)]  error in func:   add Product  ValidationError: amountInventory: Cast to Number failed for value "g" at path "amountInventory"
+info [Sun Jun 16 2019 14:46:37 GMT+0300 (שעון קיץ ירושלים)]  error in func:   add Product  ValidationError: amountInventory: Cast to Number failed for value "g" at path "amountInventory"
+info [Sun Jun 16 2019 14:46:39 GMT+0300 (שעון קיץ ירושלים)]  error in func:   add Product  ValidationError: amountInventory: Cast to Number failed for value "g" at path "amountInventory"
+
+info [Sun Jun 16 2019 14:55:08 GMT+0300 (שעון קיץ ירושלים)]  error in func:  can not read file, bad name
+
+info [Sun Jun 16 2019 15:35:23 GMT+0300 (שעון קיץ ירושלים)]  error in func:   add Product  ValidationError: amountInventory: Cast to Number failed for value "dd" at path "amountInventory"
+
+info [Sun Jun 16 2019 15:36:28 GMT+0300 (שעון קיץ ירושלים)]  error in func:   add Product  ValidationError: amountInventory: Cast to Number failed for value "tt" at path "amountInventory"
+
+info [Sun Jun 16 2019 15:38:00 GMT+0300 (שעון קיץ ירושלים)]  error in func:   add Product  ValidationError: amountInventory: Cast to Number failed for value "dd" at path "amountInventory"
+
+info [Sun Jun 16 2019 15:39:15 GMT+0300 (שעון קיץ ירושלים)]  error in func:   add Product  ValidationError: amountInventory: Cast to Number failed for value "dd" at path "amountInventory"
+
+
+
+info [Sun Jun 16 2019 15:43:02 GMT+0300 (שעון קיץ ירושלים)]  error in func:   login  TypeError: Cannot read property 'id' of null
+info [Sun Jun 16 2019 15:43:11 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+info [Sun Jun 16 2019 15:43:19 GMT+0300 (שעון קיץ ירושלים)]  error in func:   updateProduct  ValidationError: price: Path `price` (-100) is less than minimum allowed value (0).
+info [Sun Jun 16 2019 15:43:21 GMT+0300 (שעון קיץ ירושלים)]  error in func:   setProdactActivation  CastError: Cast to ObjectId failed for value "some-product-id" at path "_id" for model "Product"
+
+info [Sun Jun 16 2019 15:43:39 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+
+info [Sun Jun 16 2019 15:43:49 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+
+
+
+
+
+
+info [Mon Jun 17 2019 14:01:45 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+info [Mon Jun 17 2019 14:01:55 GMT+0300 (שעון קיץ ירושלים)]  error in func:   login  TypeError: Cannot read property 'id' of null
+info [Mon Jun 17 2019 14:02:04 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+info [Mon Jun 17 2019 14:02:14 GMT+0300 (שעון קיץ ירושלים)]  error in func:   updateProduct  ValidationError: price: Path `price` (-100) is less than minimum allowed value (0).
+info [Mon Jun 17 2019 14:02:16 GMT+0300 (שעון קיץ ירושלים)]  error in func:   setProdactActivation  CastError: Cast to ObjectId failed for value "some-product-id" at path "_id" for model "Product"
+
+
+info [Mon Jun 17 2019 14:02:48 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+info [Mon Jun 17 2019 14:19:46 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+info [Mon Jun 17 2019 14:19:50 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+info [Mon Jun 17 2019 14:20:00 GMT+0300 (שעון קיץ ירושלים)]  error in func:   login  TypeError: Cannot read property 'id' of null
+info [Mon Jun 17 2019 14:20:10 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+info [Mon Jun 17 2019 14:20:18 GMT+0300 (שעון קיץ ירושלים)]  error in func:   updateProduct  ValidationError: price: Path `price` (-100) is less than minimum allowed value (0).
+info [Mon Jun 17 2019 14:20:20 GMT+0300 (שעון קיץ ירושלים)]  error in func:   setProdactActivation  CastError: Cast to ObjectId failed for value "some-product-id" at path "_id" for model "Product"
+
+
+
+
+
+
+
+
+info [Mon Jun 17 2019 14:22:49 GMT+0300 (שעון קיץ ירושלים)]  error in func:   cart   
+
+
+
+
+
+
+
+
