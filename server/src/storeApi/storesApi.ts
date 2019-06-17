@@ -17,10 +17,12 @@ import {Role} from '../usersApi/models/role';
 import {IStoresApi} from './storesApiInterface';
 import {asyncForEach, initTransactions} from '../utils/utils';
 import {addToRegularLogger, addToErrorLogger, addToSystemFailierLogger} from '../utils/addToLogger';
-import {sendNotification} from "../notificationApi/notifiactionApi";
 import {ITransaction} from '../persistance/Icollection';
 import * as Constants from "../consts";
 import {updateSaleIds} from "./mockRules";
+import {sendNotification} from "../usersApi/usersApi";
+
+
 
 const uuidv4 = require('uuid/v4');
 

@@ -16,7 +16,7 @@ import {productsApiRouter} from "./productApi/productRoutes";
 import cors from 'cors';
 import { setDefaultData, setData } from '../test/accetpanceTestUtils';
 import { webRoutes } from './viewsRoutes';
-import { connectWsServer } from './notificationApi/notifiactionApi';
+import { connectWsServer } from './webSocket/webSocket';
 import { read_from_input_file } from "../test/readFromFile";
 
 require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });

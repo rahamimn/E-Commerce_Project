@@ -9,7 +9,7 @@ import { Role } from "./models/role";
 import { User } from "./models/user";
 import { asyncForEach, initTransactions } from "../utils/utils";
 import { addToRegularLogger, addToErrorLogger, addToSystemFailierLogger } from "../utils/addToLogger";
-import { sendNotification } from "../notificationApi/notifiactionApi";
+import {clientSockets} from "../webSocket/webSocket";
 import { ITransaction } from "../persistance/Icollection";
 import { sessionCarts } from "./sessionCarts";
 
@@ -26,6 +26,19 @@ const hashPassword = (password: string, salt: string) => {
 
     return bcrypt.hashSync(password+process.env.HASH_SECRET_KEY, salt);
 };
+
+ export const sendNotification = async (userId, header, message, trans?: ITransaction, toCommit?: boolean) => {
+    const usersApi = new UsersApi();
+    if(clientSockets[userId] && clientSockets[userId].socket ){
+        clientSockets[userId].maxId++;
+        const id = clientSockets[userId].maxId-1;
+        clientSockets[userId].notifications[id] = {header,message}
+        clientSockets[userId].socket.emit('notification',header,message,id);
+    }
+    else {
+        await usersApi.pushNotification(userId,header,message,trans,toCommit);
+    }
+}
 
 const validateUserCart = function(userId,cart){
     addToRegularLogger(" validateUserCart ", {userId , cart});
