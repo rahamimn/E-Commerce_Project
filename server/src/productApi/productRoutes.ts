@@ -131,3 +131,29 @@ async function activeProduct(req: Request, res: express.Response) {
         res.send({status: Constants.BAD_REQUEST});
     }
 }
+
+
+
+productsApiRouter.post('/productsApi/productsNames', productsNames);
+
+async function productsNames(req: Request, res: express.Response) {
+    try {
+        const keyWords = req.body.keywords && req.body.keywords.split(",");
+        const storeId = req.body.storeId;
+        const {products} = await productsApi.getProducts({
+            name: req.body.name !== "" ? req.body.name : undefined,
+            keyWords: req.body.keywords !== "" ? keyWords : undefined,
+            category: req.body.category !== "Category" ? req.body.category : undefined,
+            storeId
+        });
+        const prodNames = products.map(prod => prod.name);
+        const setNames = new Set(prodNames);
+        const arrayNames = Array.from(setNames);
+        res.send({productsNames: arrayNames});
+    }
+    catch (err) {
+        addToSystemFailierLogger(" productsNames  ");
+        console.log(err);
+        res.send({status: Constants.BAD_REQUEST});
+    }
+}
