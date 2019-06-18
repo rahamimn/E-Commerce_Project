@@ -58,7 +58,7 @@ export class ProductsApi implements IProductApi{
             return {status: OK_STATUS , product: productToInsert}
 
         } catch(err) {
-            addToSystemFailierLogger(" add Product  "+ err);
+            addToSystemFailierLogger(" add Product  "+ err.stack);
             if(err.message === 'connection lost')
                 return {status: CONNECTION_LOST, err:"connection Lost"};
             else
@@ -106,7 +106,7 @@ export class ProductsApi implements IProductApi{
             return {status: OK_STATUS ,product: product_AfterRemove}
 
         } catch(err) {
-            addToSystemFailierLogger(" setProdactActivation  "+ err);
+            addToSystemFailierLogger(" setProdactActivation  "+ err.stack);
             if(err.message === "connection Lost")
                 return {status: CONNECTION_LOST, err:"connection lost"};
             return ({status: BAD_REQUEST, err:'data not valid'});
@@ -147,7 +147,7 @@ export class ProductsApi implements IProductApi{
             return {status: OK_STATUS ,product: product_AfterUpdate}
 
         } catch(err) {
-            addToSystemFailierLogger(" updateProduct  "+ err);
+            addToSystemFailierLogger(" updateProduct  "+ err.stack);
             if(err.message === "connection lost")
                 return {status: CONNECTION_LOST, err:"connection Lost"};
             return ({status: BAD_REQUEST, err:'data not valid'});
@@ -178,7 +178,7 @@ export class ProductsApi implements IProductApi{
             return {status: OK_STATUS ,products: productsToReturn}
 
         } catch(err) {
-            addToSystemFailierLogger(" getProducts  "+ err);
+            addToSystemFailierLogger(" getProducts  "+ err.stack);
             if(err.message === 'connection lost')
                 return {status: CONNECTION_LOST, err:"connection Lost"};
             else
@@ -205,7 +205,7 @@ export class ProductsApi implements IProductApi{
 
                
         } catch(err) {
-            addToSystemFailierLogger(" getProductDetails  "+ err);
+            addToSystemFailierLogger(" getProductDetails  "+ err.stack);
             if(err.message === 'connection lost')
                 return {status: CONNECTION_LOST, err:"connection Lost"};
             else
@@ -232,7 +232,7 @@ export class ProductsApi implements IProductApi{
             return true;
         }
         catch(e){
-            addToSystemFailierLogger(" isStoreVaild : connectionLost  "+ e);
+            addToSystemFailierLogger(" isStoreVaild : connectionLost  "+ e.stack);
             return false;
         }
     }
@@ -280,7 +280,7 @@ export class ProductsApi implements IProductApi{
                 return false;
 
         } catch(err) {
-            addToSystemFailierLogger(" doesStoreHaveThisProduct  "+ err);
+            addToSystemFailierLogger(" doesStoreHaveThisProduct  "+ err.stack);
             return false;
         }       
     }

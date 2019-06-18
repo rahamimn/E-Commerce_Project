@@ -240,7 +240,7 @@ webRoutes.post("/login", async (req: Request, res: express.Response) => {
       }
     }
   } catch (err) {
-    addToSystemFailierLogger(" view routes  ");
+    addToSystemFailierLogger(" view routes  " + err.stack);
     res.send({ status: BAD_REQUEST });
   }
 });

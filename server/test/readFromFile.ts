@@ -171,13 +171,13 @@ export const read_from_input_file = async () => {
                 
                 default:
                     console.log("does not support  " + names[i]);
-                    addToSystemFailierLogger("does not support  " + names[i]);
+                    addToSystemFailierLogger("does not support  " + names[i] );
                     //add to the system failier logger
         }
     }
 }
 catch(e){
-    addToSystemFailierLogger("can not read file, bad name" );
+    addToSystemFailierLogger("can not read file, bad name" + e.stack);
 
 }
     };

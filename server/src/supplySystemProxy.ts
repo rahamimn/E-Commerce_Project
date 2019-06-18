@@ -66,7 +66,7 @@ const supply = async (supplyData: {name:string, address:string, zip:string, coun
                     ...supplyData}),
                 {headers: { 'Content-Type': 'application/x-www-form-urlencoded'}}
             );
-            if(isNumber(Number(res.data)))
+            if(isNaN(Number(res.data)))
                 return -1;
             return res.data;
         }         

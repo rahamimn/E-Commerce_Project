@@ -93,7 +93,7 @@ export class Cart {
             return true;
         }
         catch (error) {
-            addToSystemFailierLogger(" cart   ");
+            addToSystemFailierLogger(" cart   " + error.stack);
             return false;
         }
 

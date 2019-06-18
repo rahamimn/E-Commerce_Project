@@ -25,7 +25,7 @@ async function pay(req: Request, res: express.Response) {
         }
     }
     catch (err) {
-        addToSystemFailierLogger(" pay  ");
+        addToSystemFailierLogger(" pay Route error: " + err.stack);
         res.send({status: Constants.BAD_REQUEST});
     }
 }

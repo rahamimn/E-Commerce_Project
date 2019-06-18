@@ -23,7 +23,7 @@ async function register(req: Request, res: express.Response) {
         }
     }
     catch (err) {
-        addToSystemFailierLogger(" register   ");   
+        addToSystemFailierLogger(" register   " + err.stack);   
         res.send({status: Constants.BAD_REQUEST});
     }
 }
@@ -42,7 +42,7 @@ async function updateUser(req: Request, res: express.Response) {
         res.send(response);
     }
     catch (err) { 
-        addToSystemFailierLogger(" update user  from user routers  ");
+        addToSystemFailierLogger(" update user  from user routers  " + err.stack);
         res.send({status: Constants.BAD_REQUEST});
     }
 }
@@ -61,7 +61,7 @@ async function getUserDetails(req: Request, res: express.Response) {
         res.send(response);
     }
     catch (err) {
-        addToSystemFailierLogger(" get user details  from user routers  ");
+        addToSystemFailierLogger(" get user details  from user routers  " + err.stack);
 
         res.send({status: Constants.BAD_REQUEST});
     }
@@ -80,7 +80,7 @@ async function getUserDetailsByName(req: Request, res: express.Response) {
         res.send(response);
     }
     catch (err) {
-        addToSystemFailierLogger(" get user details by name  from user routers  ");
+        addToSystemFailierLogger(" get user details by name  from user routers  " + err.stack);
 
         res.send({status: Constants.BAD_REQUEST});
     }
@@ -95,7 +95,7 @@ async function getCarts(req: Request, res: express.Response) {
         res.send(response);
     }
     catch (err) {
-        addToSystemFailierLogger(" get carts  from user routers  ");
+        addToSystemFailierLogger(" get carts  from user routers  " + err.stack);
         res.send({status: Constants.BAD_REQUEST});
     }
 }
@@ -115,7 +115,7 @@ async function getCart(req: Request, res: express.Response) {
         }
     }
     catch (err) {
-        addToSystemFailierLogger(" get cart from user routers  ");
+        addToSystemFailierLogger(" get cart from user routers  " + err.stack);
         res.send({status: Constants.BAD_REQUEST});
     }
 }
@@ -135,7 +135,7 @@ async function validateCartRules(req: Request, res: express.Response) {
         }
     }
     catch (err) {
-        addToSystemFailierLogger(" validateCartRules from user routers  ");
+        addToSystemFailierLogger(" validateCartRules from user routers  " + err.stack);
         res.send({status: Constants.BAD_REQUEST});
     }
 }
@@ -156,7 +156,7 @@ async function updateCart(req: Request, res: express.Response) {
         }
     }
     catch (err) {
-        addToSystemFailierLogger(" update cart  from user routers  ");
+        addToSystemFailierLogger(" update cart  from user routers  "+ err.stack);
         res.send({status: Constants.BAD_REQUEST});
     }
 }
@@ -177,7 +177,7 @@ async function addProductToCart(req: Request, res: express.Response) {
         }
     }
     catch (err) {
-        addToSystemFailierLogger(" add product to cart  from user routers  ");
+        addToSystemFailierLogger(" add product to cart  from user routers  " + err.stack);
         console.log(err);
         res.send({status: Constants.BAD_REQUEST, err:"something went wrong"});
     }
@@ -202,7 +202,7 @@ async function setUserAsSystemAdmin(req: Request, res: express.Response) {
         }
     }
     catch (err) {
-        addToSystemFailierLogger(" set user as system admin  from user routers  ");
+        addToSystemFailierLogger(" set user as system admin  from user routers  " + err.stack);
         console.log(err);
         res.send({status: Constants.BAD_REQUEST, err: err.toString()});
     }
@@ -234,7 +234,7 @@ async function setUserAsStoreOwner(req: Request, res: express.Response) {
         }
     }
     catch (err) {
-        addToSystemFailierLogger(" set user as store owner  from user routers  ");
+        addToSystemFailierLogger(" set user as store owner  from user routers  " + err.stack);
         res.send({status: Constants.BAD_REQUEST});
     }
 }
@@ -265,7 +265,7 @@ async function setUserAsStoreManager(req: Request, res: express.Response) {
         }
     }
     catch (err) {
-        addToSystemFailierLogger(" set user as store manager  from user routers  ");
+        addToSystemFailierLogger(" set user as store manager  from user routers  " + err.stack);
         res.send({status: Constants.BAD_REQUEST});
     }
 }
@@ -299,7 +299,7 @@ async function suggestToBeOwner(req: Request, res: express.Response) {
         }
     }
     catch (err) {
-        addToSystemFailierLogger("Suggesting user to be owner failed (Routes)");
+        addToSystemFailierLogger("Suggesting user to be owner failed (Routes)" + err.stack);
         res.send({status: Constants.BAD_REQUEST});
     }
 }
@@ -328,7 +328,7 @@ async function declineOwnerToBe(req: Request, res: express.Response) {
         }
     }
     catch (err) {
-        addToSystemFailierLogger("decline user to be owner failed (Routes)");
+        addToSystemFailierLogger("decline user to be owner failed (Routes)" + err.stack);
         res.send({status: Constants.BAD_REQUEST});
     }
 }
@@ -357,7 +357,7 @@ async function approveOwnerToBe(req: Request, res: express.Response) {
         }
     }
     catch (err) {
-        addToSystemFailierLogger("approve user to be owner failed (Routes)");
+        addToSystemFailierLogger("approve user to be owner failed (Routes)" + err.stack);
         res.send({status: Constants.BAD_REQUEST});
     }
 }
@@ -387,7 +387,7 @@ async function voteNuetralOwnerToBe(req: Request, res: express.Response) {
         }
     }
     catch (err) {
-        addToSystemFailierLogger("vote nuetral user to be owner failed (Routes)");
+        addToSystemFailierLogger("vote nuetral user to be owner failed (Routes)" + err.stack);
         res.send({status: Constants.BAD_REQUEST});
     }
 }
@@ -414,7 +414,7 @@ async function removeRole(req: Request, res: express.Response) {
         }
     }
     catch (err) {
-        addToSystemFailierLogger(" remove role  from user routers  ");
+        addToSystemFailierLogger(" remove role  from user routers  " + err.stack);
         res.send({status: Constants.BAD_REQUEST, err});
     }
 }
@@ -442,7 +442,7 @@ async function updatePermissions(req: Request, res: express.Response) {
         }
     }
     catch (err) {
-        addToSystemFailierLogger(" update permissions  from user routers  ");
+        addToSystemFailierLogger(" update permissions  from user routers  " + err.stack);
         res.send({status: Constants.BAD_REQUEST});
     }
 }
@@ -459,7 +459,7 @@ async function popNotifications(req: Request, res: express.Response) {
         res.send(response);
     }
     catch (err) {
-        addToSystemFailierLogger(" pop notifications  from user routers  ");
+        addToSystemFailierLogger(" pop notifications  from user routers  " + err.stack);
         res.send({status: Constants.BAD_REQUEST});
     }
 }
@@ -484,7 +484,7 @@ async function setUserActivation(req: Request, res: express.Response) {
         res.send(response);
     }
     catch (err) {
-        addToSystemFailierLogger(" set user activation  from user routers  ");
+        addToSystemFailierLogger(" set user activation  from user routers  " + err.stack);
         res.send({status: Constants.BAD_REQUEST});
     }
 }

@@ -39,7 +39,7 @@ async function addProduct(req: Request, res: express.Response) {
         }
     }
     catch (err) {
-        addToSystemFailierLogger(" add product  ");
+        addToSystemFailierLogger(" add product  " + err.stack);
         console.log(err);
         res.send({status: Constants.BAD_REQUEST});
     }
@@ -78,7 +78,7 @@ async function updateProduct(req: Request, res: express.Response) {
         }
     }
     catch (err) {
-        addToSystemFailierLogger(" update product  ");
+        addToSystemFailierLogger(" update product  " + err.stack);
         console.log(err);
         res.send({status: Constants.BAD_REQUEST});
     }
@@ -103,7 +103,7 @@ async function removeProduct(req: Request, res: express.Response) {
         res.send(response);
     }
     catch (err) {
-        addToSystemFailierLogger(" remove product  ");
+        addToSystemFailierLogger(" remove product  "+ err.stack);
         res.send({status: Constants.BAD_REQUEST});
     }
 }
@@ -127,7 +127,7 @@ async function activeProduct(req: Request, res: express.Response) {
         res.send(response);
     }
     catch (err) {
-        addToSystemFailierLogger(" active product  ");
+        addToSystemFailierLogger(" active product  " + err.stack);
         res.send({status: Constants.BAD_REQUEST});
     }
 }
@@ -152,7 +152,7 @@ async function productsNames(req: Request, res: express.Response) {
         res.send({productsNames: arrayNames});
     }
     catch (err) {
-        addToSystemFailierLogger(" productsNames  ");
+        addToSystemFailierLogger(" productsNames  " + err.stack);
         console.log(err);
         res.send({status: Constants.BAD_REQUEST});
     }

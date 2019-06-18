@@ -22,7 +22,7 @@ const verifyPassword = (candidatePassword:string, salt: string, userPassword: st
 };
 
 const hashPassword = (password: string, salt: string) => {
-    addToRegularLogger(" hashPassword ", {password , salt});
+    addToRegularLogger(" hashPassword ", {salt});
 
     return bcrypt.hashSync(password+process.env.HASH_SECRET_KEY, salt);
 };
@@ -60,7 +60,7 @@ export class UsersApi implements IUsersApi{
             }
         }
         catch(err){
-            addToSystemFailierLogger(" login  " + err);
+            addToSystemFailierLogger(" login  " + err.stack);
             if(err.message === 'connection lost') 
                 return {status: Constants.CONNECTION_LOST, err:"connection Lost"};
             return ({status: Constants.BAD_USERNAME, err:'data isn\'t valid'});
@@ -118,7 +118,7 @@ export class UsersApi implements IUsersApi{
             }
             else{
                 await trans.abortTransaction();
-                addToSystemFailierLogger(" register  " + err);
+                addToSystemFailierLogger(" register  " + err.stack);
                 return {status:Constants.BAD_USERNAME, err:"otherError"};
             }
         }
@@ -134,7 +134,7 @@ export class UsersApi implements IUsersApi{
             }
             return ({status: Constants.OK_STATUS , user: user.getUserDetails()});
         } catch(e){
-            addToSystemFailierLogger(" connection lost  "+ e);
+            addToSystemFailierLogger(" connection lost  "+ e.stack);
             if(e.message === 'connection lost') 
                 return {status: Constants.CONNECTION_LOST, err:"connection Lost"};
             else
@@ -153,7 +153,7 @@ export class UsersApi implements IUsersApi{
             }
             return ({status: Constants.OK_STATUS , user: user.getUserDetails()});
         } catch(e){
-            addToSystemFailierLogger(" connection lost  " + e);
+            addToSystemFailierLogger(" connection lost  " + e.stack);
             if(e.message === 'connection lost') 
                 return {status: Constants.CONNECTION_LOST, err:"connection Lost"};
             else
@@ -174,7 +174,7 @@ export class UsersApi implements IUsersApi{
             userToUpdate = await UserCollection.updateOne(userToUpdate);
             return ({status: Constants.OK_STATUS});
         } catch(e){
-            addToSystemFailierLogger(" connection lost  " + e);
+            addToSystemFailierLogger(" connection lost  " + e.stack);
             if(e.message === 'connection lost') 
                 return {status: Constants.CONNECTION_LOST, err:"connection Lost"};
             else
@@ -199,7 +199,7 @@ export class UsersApi implements IUsersApi{
                     {status: Constants.BAD_REQUEST}
             }
         } catch(e){
-            addToSystemFailierLogger(" connection lost  " + e);
+            addToSystemFailierLogger(" connection lost  " + e.stack);
             if(e.message === 'connection lost') 
                 return {status: Constants.CONNECTION_LOST, err:"connection Lost"};
             else
@@ -219,7 +219,7 @@ export class UsersApi implements IUsersApi{
             return ({status: Constants.OK_STATUS, isPassedRules:isPassedRules});
 
         } catch(e){
-            addToSystemFailierLogger(" connection lost  ");
+            addToSystemFailierLogger(" connection lost  " + e.stack);
             if(e.message === 'connection lost')
                 return {status: Constants.CONNECTION_LOST, err:"connection Lost"};
             else
@@ -254,7 +254,7 @@ export class UsersApi implements IUsersApi{
 
             return ({status:Constants.BAD_REQUEST, err:'items not valid' });
         } catch(e){
-            addToSystemFailierLogger(" connection lost  " + e);
+            addToSystemFailierLogger(" connection lost  " + e.stack);
             if(e.message === 'connection lost') 
                 return {status: Constants.CONNECTION_LOST, err:"connection Lost"};
             else
@@ -284,7 +284,7 @@ export class UsersApi implements IUsersApi{
             const cartsWithProducts = await Promise.all(carts.map( cart => cart.getDetails()));
             return ({status: Constants.OK_STATUS , carts:cartsWithProducts});
         } catch(e){
-            addToSystemFailierLogger(" connection lost  " + e);
+            addToSystemFailierLogger(" connection lost  " + e.stack);
             if(e.message === 'connection lost') 
                 return {status: Constants.CONNECTION_LOST, err:"connection Lost"};
             else
@@ -342,7 +342,7 @@ export class UsersApi implements IUsersApi{
             return ({status: Constants.OK_STATUS , cart});
         } catch(e){
             //console.log(e);
-            addToSystemFailierLogger(" connection lost  " + e);
+            addToSystemFailierLogger(" connection lost  " + e.stack);
             if(e.message === 'connection lost') 
                 return {status: Constants.CONNECTION_LOST, err:"connection Lost"};
             else
@@ -373,7 +373,7 @@ export class UsersApi implements IUsersApi{
             await sendNotification(appointedUser.id,'System Message','some one has appointed you \n please commit login again',trans,true);
             return ({status: Constants.OK_STATUS});
         } catch(e){
-            addToSystemFailierLogger(" connection lost  " + e);
+            addToSystemFailierLogger(" connection lost  " + e.stack);
             if(e.message === 'connection lost') 
                 return {status: Constants.CONNECTION_LOST, err:"connection Lost"};
             return ({status: Constants.BAD_REQUEST, err:'data isn\'t valid'});
@@ -420,7 +420,7 @@ export class UsersApi implements IUsersApi{
             await sendNotification(appointedUser.id,`Store ${store.name}`,'Congratulation you\'re owner now');
             return ({status: Constants.OK_STATUS});
         } catch(e){
-            addToSystemFailierLogger(" connection lost  " + e);
+            addToSystemFailierLogger(" connection lost  " + e.stack);
             if(e.message === 'connection lost') 
                 return {status: Constants.CONNECTION_LOST, err:"connection Lost"};
             return ({status: Constants.BAD_REQUEST, err:'data isn\'t valid'});
@@ -462,7 +462,7 @@ export class UsersApi implements IUsersApi{
             await sendNotification(appointedUser.id,`Store ${store.name}`,'Congratulation you\'re manager now');
             return ({status: Constants.OK_STATUS});
         } catch(e){
-            addToSystemFailierLogger(" connection lost  " + e);
+            addToSystemFailierLogger(" connection lost  " + e.stack);
             if(e.message === 'connection lost') 
                 return {status: Constants.CONNECTION_LOST, err:"connection Lost"};
             return ({status: Constants.BAD_REQUEST, err:'data isn\'t valid'});
@@ -494,7 +494,7 @@ export class UsersApi implements IUsersApi{
 
             return {status: Constants.OK_STATUS };
         } catch(e){
-            addToSystemFailierLogger(" connection lost  " + e);
+            addToSystemFailierLogger(" connection lost  " + e.stack);
             if(e.message === 'connection lost') 
                 return {status: Constants.CONNECTION_LOST, err:"connection Lost"};
             return ({status: Constants.BAD_REQUEST, err:'data isn\'t valid'});
@@ -517,7 +517,7 @@ export class UsersApi implements IUsersApi{
 
             return {status: Constants.OK_STATUS , notifications};
         } catch(e){
-            addToSystemFailierLogger("popNotifications connection lost  " + e);
+            addToSystemFailierLogger("popNotifications connection lost  " + e.stack);
             if(e.message === 'connection lost') 
                 return {status: Constants.CONNECTION_LOST, err:"connection Lost"};
             return ({status: Constants.BAD_REQUEST, err:'data isn\'t valid'});
@@ -543,7 +543,7 @@ export class UsersApi implements IUsersApi{
         } catch(e){
             if(trans)
                 await trans.abortTransaction();
-            addToSystemFailierLogger(" connection lost  " + e);
+            addToSystemFailierLogger(" connection lost  " + e.stack);
             if(e.message === 'connection lost') 
                 return {status: Constants.CONNECTION_LOST, err:"connection Lost"};
             return ({status: Constants.BAD_REQUEST, err:'data isn\'t valid'});
@@ -580,7 +580,7 @@ export class UsersApi implements IUsersApi{
                 return {status: Constants.BAD_REQUEST, err: 'not appointee of commiter' };
             }
         } catch(e){
-            addToSystemFailierLogger(" connection lost  " + e);
+            addToSystemFailierLogger(" connection lost  " + e.stack);
             if(e.message === 'connection lost') 
                 return {status: Constants.CONNECTION_LOST, err:"connection Lost"};
             return ({status: Constants.BAD_REQUEST, err:'data isn\'t valid'});
@@ -618,7 +618,7 @@ export class UsersApi implements IUsersApi{
             user = await UserCollection.updateOne(user);
             return ({status: Constants.OK_STATUS , user});
         } catch(e){
-            addToSystemFailierLogger(" connection lost  " + e);
+            addToSystemFailierLogger(" connection lost  " + e.stack);
             if(e.message === 'connection lost') 
                 return {status: Constants.CONNECTION_LOST, err:"connection Lost"};
             return ({status: Constants.BAD_REQUEST, err:'data isn\'t valid'});
@@ -643,7 +643,7 @@ export class UsersApi implements IUsersApi{
 
             return ({status: Constants.OK_STATUS , stores});
         } catch(e){
-            addToSystemFailierLogger(" connection lost  " + e);
+            addToSystemFailierLogger(" connection lost  " + e.stack);
             if(e.message === 'connection lost') 
                 return {status: Constants.CONNECTION_LOST, err:"connection Lost"};
             return ({status: Constants.BAD_REQUEST, err:'data isn\'t valid'});
@@ -661,7 +661,7 @@ export class UsersApi implements IUsersApi{
             }
             return ({status: Constants.OK_STATUS , role});
         } catch(e){
-            addToSystemFailierLogger(" connection lost  " + e);
+            addToSystemFailierLogger(" connection lost  " + e.stack);
             if(e.message === 'connection lost') 
                 return {status: Constants.CONNECTION_LOST, err:"connection Lost"};
             return ({status: Constants.BAD_REQUEST, err:'data isn\'t valid'});
@@ -747,7 +747,7 @@ export class UsersApi implements IUsersApi{
         }
         catch(err)
         {
-            addToSystemFailierLogger("declineOwnerToBe Failed to decline pending owner"+ err);         
+            addToSystemFailierLogger("declineOwnerToBe Failed to decline pending owner"+ err.stack);         
             return ({status: Constants.BAD_REQUEST, err: "Failed to decline pending-owner"});
         }
         
@@ -790,7 +790,7 @@ export class UsersApi implements IUsersApi{
         }
         catch(err)
         {
-            addToSystemFailierLogger("voteNuetralOwnerToBe Failed to vote nuetral for pending owner "+ err);         
+            addToSystemFailierLogger("voteNuetralOwnerToBe Failed to vote nuetral for pending owner "+ err.stack);         
             return ({status: Constants.BAD_REQUEST, err: "Failed to vote nuetral for pending owner"});
         }
         
@@ -845,7 +845,7 @@ export class UsersApi implements IUsersApi{
         }
         catch(err)
         {
-            addToSystemFailierLogger("approveOwnerToBe Failed to approve pending owner " + err);         
+            addToSystemFailierLogger("approveOwnerToBe Failed to approve pending owner " + err.stack);         
             return ({status: Constants.BAD_REQUEST, err: "Failed to approve pending-owner"});
         } 
         return ({status: Constants.OK_STATUS});
@@ -878,7 +878,7 @@ export class UsersApi implements IUsersApi{
         }
         catch(err)
         {
-            addToSystemFailierLogger("isStillPending Failed to check if still pending owner"+ err);         
+            addToSystemFailierLogger("isStillPending Failed to check if still pending owner"+ err.stack);         
             return ({status: Constants.BAD_REQUEST, err: "Failed to check if still pending owner"});
         }
     }
@@ -906,7 +906,7 @@ export class UsersApi implements IUsersApi{
         }
         catch(err)
         {
-            addToSystemFailierLogger("isUserAlreadyPending Failed to check if still pending owner"+ err);         
+            addToSystemFailierLogger("isUserAlreadyPending Failed to check if still pending owner"+ err.stack);         
             return ({status: Constants.BAD_REQUEST, err: "Failed to check if still pending owner"});
         }
     }
@@ -939,7 +939,7 @@ export class UsersApi implements IUsersApi{
         }
         catch(err)
         {
-            addToSystemFailierLogger("isPendingOwnerDeclined Failed to check if pending owner has been declined "+ err);         
+            addToSystemFailierLogger("isPendingOwnerDeclined Failed to check if pending owner has been declined "+ err.stack);         
             return ({status: Constants.BAD_REQUEST, err: "Failed to check if pending owner has been declined"});
         }
     }

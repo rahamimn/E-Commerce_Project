@@ -39,7 +39,7 @@ function validatePayment(payment) {
         return isVaildLength && !isNotNumber && isEnteredExpiration;
     }
     catch (err){
-        addToSystemFailierLogger("validatePayment " + err);
+        addToSystemFailierLogger("validatePayment " + err.stack);
         return false;
     }
 }
@@ -79,6 +79,7 @@ export class OrdersApi implements IOrderApi{
             [trans,sessionOpt] = await initTransactions();
             if(!await cart.updateInventory(true,sessionOpt)){
                 addToErrorLogger("pay"+ ERR_INVENTORY_MSG);
+                await trans.abortTransaction();
                 return ({status: ERR_INVENTORY_PROBLEM, err: ERR_INVENTORY_MSG});
             }
  
@@ -86,6 +87,7 @@ export class OrdersApi implements IOrderApi{
             if((paymentTransaction = await paymentSystem.takePayment(paymentData)) === -1){
                 await cart.updateInventory(false,sessionOpt);
                 addToErrorLogger("pay"+ ERR_PAYMENT_MSG);
+                await trans.abortTransaction();
                 return ({status: ERR_PAYMENT_SYSTEM, err:ERR_PAYMENT_MSG});
             }
 
@@ -93,6 +95,7 @@ export class OrdersApi implements IOrderApi{
                 await paymentSystem.refund(paymentTransaction);
                 await cart.updateInventory(false,sessionOpt);
                 addToErrorLogger("pay"+ ERR_SUPPLY_MSG);
+                await trans.abortTransaction();
                 return ({status: ERR_SUPPLY_SYSTEM, err:ERR_SUPPLY_MSG});
             }
 
@@ -121,8 +124,7 @@ export class OrdersApi implements IOrderApi{
             
         } catch(error) {
             await trans.abortTransaction();
-            console.log(error)
-            addToSystemFailierLogger("pay" + error);
+            addToSystemFailierLogger("pay" + error.stack);
             if(error.message === 'connection lost') 
                 return {status: CONNECTION_LOST, err:"connection Lost"};
             else
