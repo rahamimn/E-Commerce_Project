@@ -48,7 +48,7 @@
     <%})%>
   </tbody>
 </table>
-
+<%if(user.role.name === "store-owner"){%>
 <div class="input-group">
   <input type="text" id="userName" class="form-control" placeholder="Enter username" width="18">
   <div class="input-group-append">
@@ -108,6 +108,7 @@
 
 
 </div>
+<%}%>
 </div>
 </main>
 </div>
