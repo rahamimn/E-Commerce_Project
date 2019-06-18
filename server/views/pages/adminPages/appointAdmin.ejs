@@ -36,7 +36,6 @@ function onSubmitRegister(event){
     appointedUserName: userName
     })
   .then(data => {
-      alert(data.status,data.err );
       if(data.status<0)
         $("#new-admin-error").text(data.err);
       else

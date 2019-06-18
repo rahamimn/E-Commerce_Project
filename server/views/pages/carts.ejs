@@ -55,11 +55,11 @@
                     </div>
                     <button type="button" onclick="validateCartRules('<%= cart.id%>')" class="btn btn-info pull-right">Check</button>
                 </div>
-                <div id="validate-rules-label" class="pull-right" style="margin: 5px; display: none">
+                <div id="vl_<%=cart.id%>" class="pull-right" style="margin: 5px; display: none">
                     Cart doesnt pass the Store Purchase Rules, please visit store page and update your cart.
                 </div>
             </div>
-           <div id="continue-checkout-label" style="display: none" class="card-footer" >
+           <div id="cc_<%=cart.id%>" style="display: none" class="card-footer" >
                <div class="pull-right" style="margin: 10px ; display:flex ; justify-content:flex-end" >
                    <div class="pull-right" style="margin: 5px">
                        Total price: <b><%=cart.totalPrice%>$</b>
@@ -85,10 +85,10 @@
             console.log(response);
         if(response.status===0){
             if(response.isPassedRules){
-                document.getElementById("continue-checkout-label").style.display = 'block';
+                document.getElementById("cc_"+cartId).style.display = 'block';
             }
             else{
-                document.getElementById("validate-rules-label").style.display = 'block';
+                document.getElementById("vl_"+cartId).style.display = 'block';
             }
         }
         else if(response.status < 0)

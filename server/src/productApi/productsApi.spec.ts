@@ -63,28 +63,6 @@ describe('Product model',() => {
     expect(response.err).toEqual(BAD_PRICE);
   });
 
-  it.skip('addProduct with NEGATIVE AMOUNT - Test', async () => {
-    let user = await UserCollection.insert(fakeUser({}));
-    const storeName = chance.sentence();
-    const store = await storesApi.addStore(user.id,storeName);
-    
-    let product = fakeProduct({});
-    product.storeId = store.store.id;
-
-    product.amountInventory = product.amountInventory*-1;
-    try{
-        let response = await productsApi.addProduct(
-        user.id,product
-        );
-    }
-    catch (e) {
-        expect(true).toEqual(true);
-    }
-
-    // expect(response.status).toEqual(BAD_REQUEST);
-    // expect(response.err).toEqual(BAD_AMOUNT);
-  });
-
   it('addProduct with INVALID STORE ID - Test', async () => {
     let user = await UserCollection.insert(fakeUser({}));
     const storeName = chance.sentence();
@@ -204,48 +182,6 @@ describe('Product model',() => {
 
     });
 
-  
-  it.skip('removeProduct with UNACTIVATED STORE ID- Test', async () => {
-
-    let storesApi = new StoresApi();
-    let user = await UserCollection.insert(fakeUser({}));
-    const storeName = chance.sentence();
-    const store = await storesApi.addStore(user.id,storeName);
-
-    let product = fakeProduct({});
-    
-    let response = await productsApi.addProduct(user.id,product);
-    let product_BeforeRemove = await ProductCollection.findById(response.product.id);
-    let product_AfterRemove = await productsApi.setProdactActivation(user.id, product_BeforeRemove.id);
-  
-    //NIR: need to fix
-    expect(response.status).toEqual(OK_STATUS);
-    expect(product_BeforeRemove.isActivated).toBeTruthy;
-    expect(product_AfterRemove.product.isActivated).toBeFalsy;
-
-  });
-
-
-  it.skip('removeProduct WITH NO PERMISSION - Test', async () => {
-
-    let storesApi = new StoresApi();
-    let user = await UserCollection.insert(fakeUser({}));
-    const storeName = chance.sentence();
-    const store = await storesApi.addStore(user.id, storeName);
-
-    let product = fakeProduct({});
-    
-    let response = await productsApi.addProduct(user.id,product);
-    let product_BeforeRemove = await ProductCollection.findById(response.product.id);
-
-    let userWithNoPermission = await UserCollection.insert(fakeUser({}));
-    let product_AfterRemove = await productsApi.setProdactActivation(userWithNoPermission.id, product_BeforeRemove.id);
-  
-    expect(product_AfterRemove.status).toEqual(BAD_REQUEST);
-    expect((product_AfterRemove.err).startsWith("You have no permission for this action"));
-    
-
-  });
 
 
   
@@ -269,27 +205,6 @@ describe('Product model',() => {
         expect(productAfterUpdate.product.amountInventory).toEqual(productDetails.amountInventory);
     });
     
-
-  it.skip('updateProduct with user bad premmision - Test-', async () => {
-    let storesApi = new StoresApi();
-    let user = await UserCollection.insert(fakeUser({}));
-    const storeName = chance.sentence();
-    const store = await storesApi.addStore(user.id,storeName);
-
-    let product = fakeProduct({});
-    product.storeId = store.store.id;
-    let productToDB = await productsApi.addProduct(user.id, product);
-    let productFromDB = await productsApi.getProductDetails(productToDB.product.id);
-
-    let productDetails = productFromDB.product;
-    productDetails.amountInventory = 42;
-
-    let userWithNoPermission = await UserCollection.insert(fakeUser({}));
-    let productAfterUpdate = await productsApi.updateProduct(userWithNoPermission.id, store.store.id, productDetails.id, productDetails);
-
-    expect(productAfterUpdate.status).toEqual(BAD_REQUEST);
-    expect((productAfterUpdate.err).startsWith("You have no permission for this action"));
-});
 
 
 it('getProducts with 3 params: {storeId, category, keyWords}', async () => {

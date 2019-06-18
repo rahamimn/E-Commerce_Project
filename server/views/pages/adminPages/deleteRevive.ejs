@@ -95,7 +95,6 @@ function deleteUser(event){
   postData(`/usersApi/setUserActivation`, {
       userName, toActivate:false})
   .then(data => {
-      alert(data.status,data.err);
       if(data.status<0)
         $("#delete-user-error").text(data.err);
       else{

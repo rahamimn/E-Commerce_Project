@@ -1,5 +1,6 @@
 import { User } from "./usersApi/models/user";
 import axios from 'axios'; 
+import { isNumber } from "util";
 const qs = require('querystring');
 
 let mockRespond = {
@@ -42,6 +43,9 @@ const takePayment = async (paymentData: {card_number:string, ccv:string, month:s
                     ...paymentData}),
                 {headers: { 'Content-Type': 'application/x-www-form-urlencoded'}}
             );
+            
+            if(isNumber(Number(res.data)))
+                return -1;
             return res.data;
         }
         catch{

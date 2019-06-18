@@ -66,7 +66,7 @@ UPDATE_PRODUCT_PERMISSION
 export const read_from_input_file = async () => {
     try{
     let fs = require('fs');
-    let names = fs.readFileSync('input.txt').toString().split("\n"); 
+    let names = fs.readFileSync('inputVersion4.txt').toString().split("\n"); 
     //var names = read("/../..input.txt").split("\n"); 
     for (let i = 0; i < names.length; ++i) {
               names[i] = names[i].trim();

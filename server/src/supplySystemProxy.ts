@@ -1,6 +1,7 @@
 import { User } from "./usersApi/models/user";
 import {Cart} from "./usersApi/models/cart";
 import axios from "axios";
+import { isNumber } from "util";
 const qs = require('querystring');
 
 let mockRespond = {
@@ -65,6 +66,8 @@ const supply = async (supplyData: {name:string, address:string, zip:string, coun
                     ...supplyData}),
                 {headers: { 'Content-Type': 'application/x-www-form-urlencoded'}}
             );
+            if(isNumber(Number(res.data)))
+                return -1;
             return res.data;
         }         
         catch{
