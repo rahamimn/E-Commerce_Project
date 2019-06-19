@@ -6,6 +6,7 @@ import { addToSystemFailierLogger } from "../src/utils/addToLogger";
 import { Role } from "../src/usersApi/models/role";
 
 let adminID;
+let isThereAdmin = false;
 
 
 /*
@@ -93,11 +94,12 @@ export const read_from_input_file = async () => {
             case "add admin":
                 let new_admin_id;
                 let name_of_admin = names[i + 1];
-                let password_of_admin = names[i + 2];
+                let password_of_admin = names[i + 2];                
                 new_admin_id = (await insertRegisterdUser(name_of_admin, password_of_admin, true));
                 adminID = new_admin_id;
                 registered_users.push({userId: new_admin_id.id, userName: new_admin_id.userName  });
                 i = i + 2;
+                isThereAdmin = true;
                 break;
     
             case "add store":
@@ -181,4 +183,8 @@ catch(e){
 
 }
     };
+
+    export function getIsThereAdmin(){
+        return isThereAdmin;
+    }
 

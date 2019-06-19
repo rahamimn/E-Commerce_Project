@@ -12,12 +12,14 @@ import {usersApiRouter} from './usersApi/userRoutes';
 import {storesApiRouter} from "./storeApi/storeRoutes";
 import {productsApiRouter} from "./productApi/productRoutes";
 //import {oredersApiRouter} from "./orederApi/orederRoutes";
+import payment from './paymentSystemProxy';
+import supply from './supplySystemProxy';
 
 import cors from 'cors';
 import { setDefaultData, setData } from '../test/accetpanceTestUtils';
 import { webRoutes } from './viewsRoutes';
 import { connectWsServer } from './notificationApi/notifiactionApi';
-import { read_from_input_file } from "../test/readFromFile";
+import { read_from_input_file, getIsThereAdmin } from "../test/readFromFile";
 
 require('dotenv').config({ path: path.resolve(__dirname, '../../.env') });
 const dbHost = process.env.DB_HOST;
@@ -54,7 +56,14 @@ if(process.argv.some( arg => arg === '-initWithSomeData')){
     await mongoose.connection.db.dropDatabase();
     //await setData();
     await read_from_input_file();
-}
+    let isThereAdmin = getIsThereAdmin();
+    let isNoExternal = !await supply.handshake() || !await payment.handshake();
+    if (!isThereAdmin || isNoExternal)
+        await mongoose.connection.db.dropDatabase();
+        
+        console.error(`system has to have admin and connection to ext systems!`);
+        throw(new Error("no admin or external system"));
+    }
 })();
 
 const app  = express();
